@@ -25,39 +25,46 @@
     </div>
 
     <div id="content-skala">
-        @include('master.skala-predikat.partials.skala')
+    @include('master.skala-predikat.partials.skala', ['skalaNilai' => $skalaNilai ?? []])
     </div>
 
     <div id="content-predikat" class="hidden">
-        @include('master.skala-predikat.partials.predikat')
+        @include('master.skala-predikat.partials.predikat', ['predikatNilai' => $predikatNilai])
     </div>
 
     <script>
-        function switchTab(tab) {
-            const contentSkala = document.getElementById('content-skala');
-            const contentPredikat = document.getElementById('content-predikat');
-            const btnSkala = document.getElementById('btn-skala');
-            const btnPredikat = document.getElementById('btn-predikat');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Cek apakah ada session active_tab dari controller
+        const activeTab = "{{ session('active_tab') }}";
 
-            if (tab === 'skala') {
-                // Tampilkan Skala, Sembunyikan Predikat
-                contentSkala.classList.remove('hidden');
-                contentPredikat.classList.add('hidden');
-
-                // Ubah gaya tombol aktif
-                btnSkala.className = "px-4 py-2 font-semibold text-blue-600 border-b-2 border-blue-600";
-                btnPredikat.className = "px-4 py-2 font-semibold text-gray-500 hover:text-gray-700";
-            } else {
-                // Tampilkan Predikat, Sembunyikan Skala
-                contentSkala.classList.add('hidden');
-                contentPredikat.classList.remove('hidden');
-
-                // Ubah gaya tombol aktif
-                btnPredikat.className = "px-4 py-2 font-semibold text-blue-600 border-b-2 border-blue-600";
-                btnSkala.className = "px-4 py-2 font-semibold text-gray-500 hover:text-gray-700";
-            }
+        if (activeTab === 'predikat') {
+            switchTab('predikat');
         }
-    </script>
+    });
+
+    function switchTab(tabName) {
+        const contentSkala = document.getElementById('content-skala');
+        const contentPredikat = document.getElementById('content-predikat');
+        const tabSkalaBtn = document.getElementById('tab-skala-btn');
+        const tabPredikatBtn = document.getElementById('tab-predikat-btn');
+
+        if (tabName === 'predikat') {
+            contentSkala.classList.add('hidden');
+            contentPredikat.classList.remove('hidden');
+            
+            // Aktifkan styling tab predikat
+            tabPredikatBtn.classList.add('border-blue-600', 'text-blue-600');
+            tabSkalaBtn.classList.remove('border-blue-600', 'text-blue-600');
+        } else {
+            contentPredikat.classList.add('hidden');
+            contentSkala.classList.remove('hidden');
+
+            // Aktifkan styling tab skala
+            tabSkalaBtn.classList.add('border-blue-600', 'text-blue-600');
+            tabPredikatBtn.classList.remove('border-blue-600', 'text-blue-600');
+        }
+    }
+</script>
 
 </body>
 </html>
