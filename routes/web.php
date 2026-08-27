@@ -15,13 +15,17 @@ use App\Http\Controllers\LaporanRekapNilaiController;
 use App\Http\Controllers\LaporanIndexKompetensiController;
 
 Route::get('/', [DashboardController::class, 'index']);
-
 // SKALA NILAI
 Route::post('/master/skala-nilai', [MasterSkalaController::class, 'store'])->name('skala-nilai.store');
 Route::put('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala-nilai.update');
 Route::delete('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'destroy'])->name('skala-nilai.destroy');
 
 // PREDIKAT NILAI
+Route::get('/master/skala-predikat', [MasterSkalaController::class, 'index'])->name('skala-predikat.index');
+Route::post('/master/skala-nilai', [MasterSkalaController::class, 'store'])->name('skala-nilai.store');
+Route::put('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala-nilai.update');
+Route::delete('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'destroy'])->name('skala-nilai.destroy');
+
 Route::get('/master/skala-predikat', [MasterPredikatController::class, 'index'])->name('skala-predikat.index');
 Route::post('/master/predikat/store', [MasterPredikatController::class, 'store'])->name('predikat.store');
 Route::delete('/master/predikat/{id}', [MasterPredikatController::class, 'destroy'])->name('predikat.destroy');
@@ -52,3 +56,4 @@ Route::get('/laporan/laporan-rekap-nilai', [LaporanRekapNilaiController::class, 
 
 //LAPORAN INDEX KOMPETENSI
 Route::get('/laporan/laporan-index-kompetensi', [LaporanIndexKompetensiController::class, 'index'])->name('laporan-index-kompetensi.index');
+
