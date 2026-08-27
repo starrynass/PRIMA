@@ -1,63 +1,126 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skala & Predikat Nilai</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="p-6 bg-gray-50">
+<style>
+    /* --- Global & Container --- */
+    * {
+        box-sizing: border-box;
+    }
 
-    <div class="flex gap-2 border-b border-gray-200 pb-2 mb-6">
-        <button type="button" 
-                id="btn-skala" 
-                onclick="switchTab('skala')" 
-                class="px-4 py-2 font-semibold text-blue-600 border-b-2 border-blue-600">
-            Skala Nilai
-        </button>
-        
-        <button type="button" 
-                id="btn-predikat" 
-                onclick="switchTab('predikat')" 
-                class="px-4 py-2 font-semibold text-gray-500 hover:text-gray-700">
-            Predikat Nilai
-        </button>
+    .main-wrapper {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        padding: 1.25rem;
+        background-color: #f8fafc;
+        min-height: 100vh;
+        color: #334155;
+    }
+
+    /* --- Tab Navigation Styles --- */
+    .tab-header {
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+    }
+
+    .tab-nav {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: -1px; /* Menempelkan border tab ke border container */
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        outline: none;
+        transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .tab-btn:hover {
+        color: #1e293b;
+        border-bottom-color: #cbd5e1;
+    }
+
+    .tab-btn.active {
+        color: #2563eb;
+        border-bottom-color: #2563eb;
+    }
+
+    /* --- Tab Content Visibility --- */
+    .tab-content {
+        display: block;
+    }
+
+    .tab-content.hidden {
+        display: none !important;
+    }
+</style>
+
+@extends('layout.app')
+
+@section('content')
+<div class="main-wrapper">
+
+    <!-- Tab Navigation Header -->
+    <div class="tab-header">
+        <nav class="tab-nav" aria-label="Tabs">
+            <button type="button" 
+                    id="btn-skala" 
+                    onclick="switchTab('skala')" 
+                    class="tab-btn active">
+                Skala Nilai
+            </button>
+            
+            <button type="button" 
+                    id="btn-predikat" 
+                    onclick="switchTab('predikat')" 
+                    class="tab-btn">
+                Predikat Nilai
+            </button>
+        </nav>
     </div>
 
-    <div id="content-skala">
-        @include('master.skala-predikat.partials.skala')
+    <!-- Content Sections -->
+    <div id="content-skala" class="tab-content">
+        @include('master.skala-predikat.partials.skala', ['skalaNilai' => $skalaNilai ?? []])
     </div>
 
-    <div id="content-predikat" class="hidden">
-        @include('master.skala-predikat.partials.predikat')
+    <div id="content-predikat" class="tab-content hidden">
+        @include('master.skala-predikat.partials.predikat', ['predikatNilai' => $predikatNilai ?? []])
     </div>
 
-    <script>
-        function switchTab(tab) {
-            const contentSkala = document.getElementById('content-skala');
-            const contentPredikat = document.getElementById('content-predikat');
-            const btnSkala = document.getElementById('btn-skala');
-            const btnPredikat = document.getElementById('btn-predikat');
+</div>
 
-            if (tab === 'skala') {
-                // Tampilkan Skala, Sembunyikan Predikat
-                contentSkala.classList.remove('hidden');
-                contentPredikat.classList.add('hidden');
-
-                // Ubah gaya tombol aktif
-                btnSkala.className = "px-4 py-2 font-semibold text-blue-600 border-b-2 border-blue-600";
-                btnPredikat.className = "px-4 py-2 font-semibold text-gray-500 hover:text-gray-700";
-            } else {
-                // Tampilkan Predikat, Sembunyikan Skala
-                contentSkala.classList.add('hidden');
-                contentPredikat.classList.remove('hidden');
-
-                // Ubah gaya tombol aktif
-                btnPredikat.className = "px-4 py-2 font-semibold text-blue-600 border-b-2 border-blue-600";
-                btnSkala.className = "px-4 py-2 font-semibold text-gray-500 hover:text-gray-700";
-            }
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Switch tab otomatis dari session controller (jika ada)
+        const activeTab = "{{ session('active_tab') }}";
+        if (activeTab === 'predikat') {
+            switchTab('predikat');
         }
-    </script>
+    });
 
-</body>
-</html>
+    function switchTab(tabName) {
+        const contentSkala = document.getElementById('content-skala');
+        const contentPredikat = document.getElementById('content-predikat');
+        const btnSkala = document.getElementById('btn-skala');
+        const btnPredikat = document.getElementById('btn-predikat');
+
+        if (tabName === 'predikat') {
+            contentSkala.classList.add('hidden');
+            contentPredikat.classList.remove('hidden');
+
+            btnPredikat.classList.add('active');
+            btnSkala.classList.remove('active');
+        } else {
+            contentPredikat.classList.add('hidden');
+            contentSkala.classList.remove('hidden');
+
+            btnSkala.classList.add('active');
+            btnPredikat.classList.remove('active');
+        }
+    }
+</script>
+@endsection
