@@ -7,213 +7,242 @@
     <!-- FontAwesome CDN untuk Ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
+        :root{/* Crimson Maroon Palette */
+        --maroon-primary: #7A1C38;
+        --maroon-hover: #5C1329;
+        --maroon-soft: #FBF0F3;
+        --maroon-border: #F3D5DD;
+        --maroon-gradient: linear-gradient(135deg, #7A1C38 0%, #9E2A4B 100%);
+        --maroon-glow: rgba(122, 28, 56, 0.2);}
+       * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: sans-serif;
         }
 
+
         body {
             display: flex;
             background-color: #f4f6f9;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* 1. Sidebar Mode Ringkas (Mini Mode - Default) */
+
+        /* SIDEBAR */
         .sidebar {
             width: 65px;
             background-color: #f8f9fa;
             border-right: 1px solid #e0e0e0;
-            height: 100vh;
             position: fixed;
-            top: 0;
-            left: 0;
-            transition: width 0.3s ease;
-            z-index: 99;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
+            top:56px;
+            left:0;
+            height: calc(100vh - 56px);
+            transition: width .3s ease;
+            z-index:99;
+            overflow:hidden;
+            display:flex;
+            flex-direction:column;
         }
 
-        /* 2. Sidebar Mode Terbuka ke Kanan (Expanded) */
+
         .sidebar.expanded {
-            width: 250px;
+            width:250px;
+
         }
 
-        /* Header Sidebar dengan Tombol Garis 3 & Judul */
+        /* HEADER SIDEBAR */
         .sidebar-header-bar {
-            height: 60px;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid #e0e0e0;
-            white-space: nowrap;
+            height:60px;
+            display:flex;
+            align-items:center;
+            padding:0 20px;
+            border-bottom:1px solid #e0e0e0;
+            white-space:nowrap;
+
         }
 
         .hamburger-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            color: #444;
-            cursor: pointer;
-            outline: none;
-            min-width: 25px;
+            background:none;
+            border:none;
+            font-size:18px;
+            color:#444;
+            cursor:pointer;
+            min-width:25px;
+
         }
 
+        /* BRAND */
         .brand-title {
-            margin-left: 15px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #333;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
+            margin-left:15px;
+            font-size:13px;
+            font-weight:bold;
+            color:#333;
+            opacity:0;
+            transition:.2s;
         }
 
         .sidebar.expanded .brand-title {
-            opacity: 1;
-            pointer-events: auto;
+            opacity:1;
+
         }
 
-        /* Menu List */
+        /* MENU */
         .nav-menu {
-            list-style: none;
-            padding: 10px 0;
-            flex-grow: 1;
-            overflow-y: auto;
+            list-style:none;
+            padding:10px 0;
+            flex-grow:1;
         }
 
         .nav-item {
-            width: 100%;
+            width:100%;
         }
 
-        .nav-link, .submenu-link {
-            display: flex;
-            align-items: center;
-            height: 48px;
-            padding: 0 20px;
-            color: #444444;
-            text-decoration: none;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background 0.2s;
+        .nav-link,
+        .submenu-link {
+            display:flex;
+            align-items:center;
+            height:48px;
+            padding:0 20px;
+            color:#444;
+            text-decoration:none;
+            cursor:pointer;
+            white-space:nowrap;
         }
 
-        .nav-link:hover, .submenu-link:hover {
-            background-color: #f5f5f5;
-            color: #0066cc;
-        }
-
-        /* Icon Styling */
         .nav-icon {
-            font-size: 16px;
-            min-width: 25px;
-            text-align: center;
-            color: #666;
+            min-width:25px;
+            text-align:center;
+            font-size:16px;
         }
 
-        /* Text Menu Hide/Show */
+        /* TEXT */
         .menu-text {
-            margin-left: 15px;
-            font-size: 11px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            white-space: nowrap;
+            margin-left:15px;
+            font-size:11px;
+            opacity:0;
+            transition:.2s;
         }
 
         .sidebar.expanded .menu-text {
-            opacity: 1;
+            opacity:1;
         }
 
-        /* Panah Dropdown */
+        /* ARROW */
         .arrow {
-            margin-left: auto;
-            font-size: 11px;
-            color: #888;
-            opacity: 0;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            margin-left:auto;
+            opacity:0;
+            transition:.2s;
+            font-size: 10px !important;
         }
-
+        
         .sidebar.expanded .arrow {
-            opacity: 1;
+            opacity:1;
         }
 
         .arrow.rotate {
-            transform: rotate(-90deg);
+            transform:rotate(-90deg);
         }
 
-        /* Status Aktif */
+        /* ACTIVE */
         .selected-active {
-            background-color: #e8f3ff !important;
-            color: #0066cc !important;
-            font-weight: bold;
+            background:#e8f3ff !important;
+            color:#0066cc !important;
         }
 
-        .selected-active .nav-icon {
-            color: #0066cc;
-        }
 
-        /* Indikator titik biru untuk menu tunggal aktif */
+
+        /* DOT */
+
         .dot {
-            width: 6px;
-            height: 6px;
-            background-color: #0066cc;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
+            width:6px;
+            height:6px;
+            background:#0066cc;
+            border-radius:50%;
+            display:inline-block;
+            margin-right:8px;
         }
 
-        /* Submenu Styling */
+        /* SUBMENU */
         .submenu {
-            list-style: none;
-            background-color: #f1f3f5;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
+            list-style:none;
+            background:#f1f3f5;
+            max-height:0;
+            overflow:hidden;
+            transition:max-height .3s ease;
         }
 
         .submenu.open {
-            max-height: 300px;
+            max-height:300px;
         }
 
         .submenu-link {
-            padding-left: 60px;
-            height: 40px;
-        }
-
-        .submenu-link .menu-text {
-            margin-left: 0;
-        }
-
-        /* Area Main Content */
-        .main-content {
-            flex-grow: 1;
-            margin-left: 65px;
-            padding: 30px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .sidebar.expanded ~ .main-content {
-            margin-left: 250px;
+            height:40px;
+            padding-left:60px;
         }
 
         .sidebar:not(.expanded) .submenu {
-            max-height: 0 !important;
+            max-height:0;
+
         }
+
+        /* PAGE HEADER (modern flat style, compact) */
+        .page-header {
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            height:56px;
+            background:var(--maroon-gradient);
+            color:#fff;
+            display:flex;
+            align-items:center;
+            padding:0 14px;
+            z-index:200;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+        }
+
+        .header-inner { z-index:2; display:flex; align-items:center; gap:8px; }
+
+        .header-title { font-size:14px; font-weight:700; color:#fff; }
+
+        .page-header .hamburger-btn {
+            background:rgba(255,255,255,0.08);
+            border:none;
+            color: #fff;
+            font-size:15px;
+            padding:5px;
+            border-radius:8px;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            box-shadow: none;
+        }
+
+        /* CONTENT */
+        .main-content {
+            flex:1;
+            margin-left:65px;
+            padding:20px;
+            margin-top:56px;
+            min-width:0;
+            overflow-x:hidden;
+            transition:.3s;
+        }
+
+        .sidebar.expanded ~ .main-content {
+            margin-left:250px;
+        }
+
     </style>
 </head>
 <body>
-
+    </div>
+    
     <!-- Sidebar Navigation -->
     <div class="sidebar" id="sidebar">
-        <!-- Header Sidebar -->
-        <div class="sidebar-header-bar">
-            <button class="hamburger-btn" id="toggleSidebar">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="brand-title">(DP3) Penilaian Kinerja</span>
-        </div>
 
         <ul class="nav-menu">
             <!-- 1. Dashboard -->
@@ -309,11 +338,21 @@
         </ul>
     </div>
 
-    <!-- Area Konten Utama -->
+
+    <header class="page-header" role="banner">
+        <div class="header-inner">
+            <button class="hamburger-btn" id="toggleSidebar">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="header-title">(DP3) Penilaian Kinerja</div>
+        </div>
+    </header>
+
+    
     <main class="main-content">
         @yield('content')
     </main>
-
+  
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toggleSidebarBtn = document.getElementById('toggleSidebar');
@@ -403,4 +442,4 @@
         });
     </script>
 </body>
-</html>
+</html> 
