@@ -58,6 +58,7 @@
             color: #444;
             cursor: pointer;
             outline: none;
+            min-width: 25px;
         }
 
         .brand-title {
@@ -115,7 +116,7 @@
         /* Text Menu Hide/Show */
         .menu-text {
             margin-left: 15px;
-            font-size: 13px;
+            font-size: 11px;
             opacity: 0;
             transition: opacity 0.2s ease;
             white-space: nowrap;
@@ -196,6 +197,10 @@
         .sidebar.expanded ~ .main-content {
             margin-left: 250px;
         }
+
+        .sidebar:not(.expanded) .submenu {
+            max-height: 0 !important;
+        }
     </style>
 </head>
 <body>
@@ -213,9 +218,9 @@
         <ul class="nav-menu">
             <!-- 1. Dashboard -->
             <li class="nav-item">
-                <a href="#" class="nav-link menu-item selected-active">
+                <a href="{{ route('dashboard-penilaian.index') }}" class="nav-link menu-item">
                     <i class="fa-solid fa-house nav-icon"></i>
-                    <span class="menu-text"><span class="dot"></span>Dashboard</span>
+                    <span class="menu-text">Dashboard</span>
                 </a>
             </li>
 
@@ -224,7 +229,7 @@
                 <div class="nav-link dropdown-toggle">
                     <i class="fa-solid fa-pen-to-square nav-icon"></i>
                     <span class="menu-text">Master</span>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
+                    <i class="fa-solid fa-chevron-left arrow"></i>
                 </div>
                 <ul class="submenu">
                     <li class="submenu-item">
@@ -245,7 +250,7 @@
                 <div class="nav-link dropdown-toggle">
                     <i class="fa-solid fa-users nav-icon"></i>
                     <span class="menu-text">Penilaian</span>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
+                    <i class="fa-solid fa-chevron-left arrow"></i>
                 </div>
                 <ul class="submenu">
                     <li class="submenu-item">
@@ -276,7 +281,7 @@
                 <div class="nav-link dropdown-toggle">
                     <i class="fa-solid fa-file-lines nav-icon"></i>
                     <span class="menu-text">Laporan</span>
-                    <i class="fa-solid fa-chevron-down arrow"></i>
+                    <i class="fa-solid fa-chevron-left arrow"></i>
                 </div>
                 <ul class="submenu">
                     <li class="submenu-item">
@@ -314,12 +319,23 @@
             const toggleSidebarBtn = document.getElementById('toggleSidebar');
             const sidebar = document.getElementById('sidebar');
 
+             let activeSubmenu = null;
+
             // 1. Toggle Buka/Tutup Sidebar ke Kanan
             toggleSidebarBtn.addEventListener('click', function () {
                 sidebar.classList.toggle('expanded');
-                
-                if (!sidebar.classList.contains('expanded')) {
-                    closeAllSubmenus();
+                if (sidebar.classList.contains('expanded')) {
+
+                    if (activeSubmenu) {
+                        activeSubmenu.classList.add('open');
+
+                        const arrow = activeSubmenu.previousElementSibling.querySelector('.arrow');
+
+                        if (arrow) {
+                            arrow.classList.add('rotate');
+                        }
+                    }
+
                 }
             });
 
@@ -335,36 +351,54 @@
                     const arrow = this.querySelector('.arrow');
                     const isOpen = submenu.classList.contains('open');
 
-                    closeAllSubmenus(submenu);
+                    closeAllSubmenus();
 
                     if (!isOpen) {
-                        submenu.classList.add('open');
-                        if (arrow) arrow.classList.add('rotate');
+                    submenu.classList.add('open');
+
+                    if (arrow) {
+                        arrow.classList.add('rotate');
                     }
+
+                    activeSubmenu = submenu;
+                    } else {
+                    activeSubmenu = null;
+                }
                 });
             });
 
             // 3. Close Submenus Helper
-            function closeAllSubmenus(exceptSubmenu = null) {
+            function closeAllSubmenus() {
                 document.querySelectorAll('.submenu').forEach(submenu => {
-                    if (submenu !== exceptSubmenu) {
+                    
                         submenu.classList.remove('open');
                         const parentToggle = submenu.previousElementSibling;
                         if (parentToggle) {
                             const arrow = parentToggle.querySelector('.arrow');
                             if (arrow) arrow.classList.remove('rotate');
-                        }
+                        
                     }
                 });
             }
 
-            // 4. Menu Selection Event
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(function(item) {
-                item.addEventListener('click', function() {
-                    document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('selected-active'));
-                    this.classList.add('selected-active');
-                });
+           // Aktifkan menu berdasarkan URL sekarang
+            const currentUrl = window.location.href;
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+
+                if (item.href === currentUrl) {
+                    item.classList.add('selected-active');
+
+                    // Tambahkan dot hanya pada menu aktif
+                    let text = item.querySelector('.menu-text');
+
+                    if (text && !text.querySelector('.dot')) {
+                        let dot = document.createElement('span');
+                        dot.classList.add('dot');
+                        text.prepend(dot);
+                    }
+                }
+
             });
         });
     </script>

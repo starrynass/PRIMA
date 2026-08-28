@@ -14,7 +14,7 @@ use App\Http\Controllers\LaporanIndexUnitKerjaController;
 use App\Http\Controllers\LaporanRekapNilaiController;
 use App\Http\Controllers\LaporanIndexKompetensiController;
 
-Route::get('/', [DashboardController::class, 'index']);
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard-penilaian.index');
 // SKALA NILAI
 Route::post('/master/skala-nilai', [MasterSkalaController::class, 'store'])->name('skala-nilai.store');
 Route::put('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala-nilai.update');
