@@ -44,7 +44,15 @@ class MasterSkalaController extends Controller
 
     private function newId(): string
     {
-        do { $id = Str::upper(Str::random(16)); } while (MasterSkalaNilai::whereKey($id)->exists());
-        return $id;
+        $latest = MasterSkalaNilai::max('skala_id');
+        
+        if (!$latest) {
+            return 'SKALA001';
+        }
+
+        // Mengambil angka di akhir ID lalu ditambah 1
+        $number = (int) filter_var($latest, FILTER_SANITIZE_NUMBER_INT) + 1;
+        
+        return 'SKALA' . str_pad($number, 3, '0', STR_PAD_LEFT);
     }
 }

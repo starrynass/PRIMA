@@ -15,23 +15,24 @@ use App\Http\Controllers\LaporanRekapNilaiController;
 use App\Http\Controllers\LaporanIndexKompetensiController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard-penilaian.index');
+
 // SKALA NILAI
-Route::post('/master/skala-nilai', [MasterSkalaController::class, 'store'])->name('skala-nilai.store');
-Route::put('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala-nilai.update');
-Route::delete('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'destroy'])->name('skala-nilai.destroy');
+Route::post('/master/skala', [MasterSkalaController::class, 'store'])->name('skala.store');
+Route::put('/master/skala/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala.update');
+Route::delete('/master/skala/{skalaNilai}', [MasterSkalaController::class, 'destroy'])->name('skala.destroy');
 
 // PREDIKAT NILAI
-Route::get('/master/skala-predikat', [MasterSkalaController::class, 'index'])->name('skala-predikat.index');
-Route::post('/master/skala-nilai', [MasterSkalaController::class, 'store'])->name('skala-nilai.store');
-Route::put('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala-nilai.update');
-Route::delete('/master/skala-nilai/{skalaNilai}', [MasterSkalaController::class, 'destroy'])->name('skala-nilai.destroy');
 
 Route::get('/master/skala-predikat', [MasterPredikatController::class, 'index'])->name('skala-predikat.index');
 Route::post('/master/predikat/store', [MasterPredikatController::class, 'store'])->name('predikat.store');
+Route::put('/master/predikat/{id}', [MasterPredikatController::class, 'update'])->name('predikat.update');
 Route::delete('/master/predikat/{id}', [MasterPredikatController::class, 'destroy'])->name('predikat.destroy');
 
 // TEMPLATE PENILAIAN
 Route::get('/master/template-penilaian', [TemplatePenilaianController::class, 'index'])->name('template-penilaian.index');
+Route::post('master/template-penilaian/store', [TemplatePenilaianController::class, 'store'])->name('template-penilaian.store');
+Route::put('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'update'])->name('template-penilaian.update');
+Route::delete('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'destroy'])->name('template-penilaian.destroy');
 
 // PERIODE PENILAIAN
 Route::get('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'index'])->name('periode-penilaian.index');
