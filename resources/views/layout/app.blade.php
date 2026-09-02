@@ -235,7 +235,7 @@
         .sidebar.expanded ~ .main-content {
             margin-left:250px;
         }
-
+        
     </style>
 </head>
 <body>

@@ -732,6 +732,26 @@ tr.selected-row {
         transform: scale(1);
     }
 }
+
+/* 1. Sekat HANYA untuk isi data tabel (td) */
+.data-table td {
+    border-right: 1px solid #a4a8abab;
+}
+
+/* 2. Header maroon (th) TANPA sekat garis abu-abu */
+.data-table th {
+    border-right: none !important;
+}
+
+/* 3. Hilangkan sekat pada kolom data terakhir */
+.data-table td:last-child {
+    border-right: none;
+}
+
+/* 4. Garis bawah header (Perbaiki nama variabelnya, misal: --maroon-hover atau --maroon-primary) */
+.data-table thead {
+    border-bottom: 2px solid var(--maroon-hover) !important;
+}
 </style>
 
 <div class="page-container mb-6">

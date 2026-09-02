@@ -106,7 +106,7 @@
                     <label class="form-label" for="skala_kode_nilai">Kode Nilai</label>
                     <div class="input-addon-group">
                         <span class="input-addon">Kode</span>
-                        <input type="text" id="skala_kode_nilai" name="kode_nilai" class="form-input" placeholder="contoh: SKALA01 (opsional)">
+                        <input type="text" id="skala_kode_nilai" name="kode_nilai" class="form-input" placeholder="contoh: A / B / C" required>
                     </div>
                 </div>
 
@@ -115,7 +115,7 @@
                         <label class="form-label" for="skala_nama_nilai">Nama Nilai <span class="text-danger">*</span></label>
                         <div class="input-addon-group">
                             <span class="input-addon">Nama</span>
-                            <input type="text" id="skala_nama_nilai" name="nama_nilai" class="form-input" placeholder="contoh: A / B / C" required>
+                            <input type="text" id="skala_nama_nilai" name="nama_nilai" class="form-input" placeholder="contoh: Sangat Baik" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -131,7 +131,7 @@
                     <label class="form-label" for="skala_deskripsi">Deskripsi <span class="text-danger">*</span></label>
                     <div class="input-addon-group">
                         <span class="input-addon">Deskripsi</span>
-                        <input type="text" id="skala_deskripsi" name="deskripsi" class="form-input" placeholder="contoh: Sangat Baik" required>
+                        <input type="text" id="skala_deskripsi" name="deskripsi" class="form-input" placeholder="(opsional) Deskripsi tambahan" required>
                     </div>
                 </div>
             </div>
@@ -312,7 +312,7 @@
 
         const nameEl = document.getElementById('deleteSkalaName');
         if (nameEl) {
-            nameEl.textContent = `"${window.selectedSkalaData.skala}"`; 
+            nameEl.textContent = `"${window.selectedSkalaData.nama_nilai}"`; 
         }
 
         const modal = document.getElementById('modalDeleteSkala');

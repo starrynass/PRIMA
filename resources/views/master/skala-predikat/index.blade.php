@@ -150,7 +150,7 @@
 
     <div class="breadcrumb-title">
         Master Data <span>» Skala & Predikat Nilai</span>
-        <span class="breadcrumb-badge">Sistem KPI</span>
+        <span class="breadcrumb-badge">PRIMA</span>
     </div>
 
     <div class="tab-header-wrapper">
