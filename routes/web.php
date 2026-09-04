@@ -33,7 +33,7 @@ Route::get('/master/template-penilaian', [TemplatePenilaianController::class, 'i
 Route::post('master/template-penilaian/store', [TemplatePenilaianController::class, 'store'])->name('template-penilaian.store');
 Route::put('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'update'])->name('template-penilaian.update');
 Route::delete('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'destroy'])->name('template-penilaian.destroy');
-
+ 
 // PERIODE PENILAIAN
 Route::get('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'index'])->name('periode-penilaian.index');
 Route::post('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'store'])->name('periode.store');

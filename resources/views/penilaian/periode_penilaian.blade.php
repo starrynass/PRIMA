@@ -581,20 +581,9 @@
         border-bottom: none !important;
     }
 
-    /* Styling Overlay Backdrop Modal Konfirmasi */
-    .modal-backdrop-confirm {
-        display: none !important;
-        position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
-        background-color: rgba(0, 0, 0, 0.45);
-        backdrop-filter: blur(2px);
-        z-index: 99999;
-        align-items: center;
-        justify-content: center;
-    }
-
     .modal-backdrop-confirm.active {
         display: flex !important;
+        transform: scale(1) translateY(0);
     }
 
     /* Kartu Konfirmasi Dialog */
@@ -908,7 +897,7 @@
                     <input type="date" name="tanggal_deadline" class="form-control" required>
                 </div>
 
-                <input type="hidden" name="status" value="OPEN">
+                <input type="hidden" name="status" value="LOCKED">
             </div>
 
             <!-- Footer Modal -->
@@ -976,7 +965,7 @@
 </div>
 
 <!-- Modal Konfirmasi Buka/Kunci -->
-<div class="modal-backdrop-confirm" id="modalToggleLock">
+<div class="modal-backdrop" id="modalToggleLock">
     <div class="confirm-card">
         <div class="confirm-icon-wrapper icon-warning-circle">
             <span class="confirm-icon-text">?</span>
@@ -994,14 +983,14 @@
 </div>
 
 <!-- Modal Konfirmasi Hapus (Versi Simpel Tanpa Captcha) -->
-<div class="modal-backdrop-confirm" id="modalDeletePeriode">
+<div class="modal-backdrop" id="modalDeletePeriode">
     <div class="confirm-card">
         <div class="confirm-icon-wrapper icon-danger-circle">
             <span class="confirm-icon-text">!</span>
         </div>
         <h3 class="confirm-title">Konfirmasi Hapus</h3>
         <p class="confirm-message">Yakin akan menghapus periode <strong id="delete_nama_periode">-</strong> beserta SEMUA data penilaian?</p>
-        <p class="confirm-subtext">Tindakan ini tidak bisa dibatalkan.</p>
+    
 
         <form id="formDeletePeriode" method="POST" class="confirm-actions">
             @csrf
@@ -1019,7 +1008,7 @@
 <script>
     let selectedPeriodeData = null;
 
-    // 1. Fungsi Klik Baris Tabel + Fitur UNCLICK
+    // Fungsi Klik Baris Tabel + Fitur UNCLICK
     function selectRow(trElement) {
         const clickedPeriodeId = trElement.dataset.periodeId;
 
@@ -1064,7 +1053,7 @@
         });
     }
 
-    // 2. Modal Tambah
+    // Modal Tambah
     function openModalTambahPeriode() {
         document.getElementById('modalTambahPeriode').classList.add('active');
     }
@@ -1088,6 +1077,10 @@ function openModalEditPeriode() {
     document.getElementById('modalEditPeriode').classList.add('active');
 }
 
+function closeModalEditPeriode() {
+    document.getElementById('modalEditPeriode').classList.remove('active');
+}
+
 // 2. Action Form Toggle Lock (PATCH)
 function toggleLockPeriode() {
     if (!selectedPeriodeData) return;
@@ -1102,6 +1095,9 @@ function toggleLockPeriode() {
     document.getElementById('formToggleLock').action = `${baseUrl}/${selectedPeriodeData.periode_id}/toggle-lock`;
     document.getElementById('modalToggleLock').classList.add('active');
 }
+function closeModalToggleLock() {
+    document.getElementById('modalToggleLock').classList.remove('active');
+}
 
 // 3. Action Form Hapus (DELETE)
 function deletePeriodeRow() {
@@ -1112,6 +1108,9 @@ function deletePeriodeRow() {
     // Menghasilkan URL: /penilaian/periode-penilaian/2026-01
     document.getElementById('formDeletePeriode').action = `${baseUrl}/${selectedPeriodeData.periode_id}`;
     document.getElementById('modalDeletePeriode').classList.add('active');
+}
+function closeModalDeletePeriode() {
+    document.getElementById('modalDeletePeriode').classList.remove('active');
 }
 </script>
 

@@ -80,7 +80,7 @@ class PeriodePenilaianController extends Controller
             'tahun' => 'required|integer|min:2020|max:2099',
             'tanggal_mulai' => 'required|date',
             'tanggal_deadline' => 'required|date|after_or_equal:tanggal_mulai',
-            'status' => 'required|in:OPEN,LOCKED',
+            'status' => 'nullable|in:OPEN,LOCKED',
         ], [
             'tanggal_deadline.after_or_equal' => 'Tanggal deadline tidak boleh sebelum tanggal mulai.',
         ]);
@@ -100,7 +100,7 @@ class PeriodePenilaianController extends Controller
             'tahun' => $request->tahun,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_deadline' => $request->tanggal_deadline,
-            'status' => $request->status,
+            'status' => $request->status ?? 'LOCKED' ,
             'dibuka_oleh_admin' => auth()->user()->name ?? 'Admin',
             'created_by' => auth()->user()->username ?? 'System',
         ]);
