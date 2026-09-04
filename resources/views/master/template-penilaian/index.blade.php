@@ -61,6 +61,7 @@
         background-color: #ffffff;
         min-height: 100vh;
         color: var(--text-dark);
+        width: 100%;
     }
 
     .header-bar {
@@ -107,8 +108,7 @@
     overflow: visible !important; /* Mencegah tombol di paling kanan terpotong */
 }
 
-/* 2. HEADER ATAS & CARD HEADER PARENT */
-/* Container Utam Header Struktur Template */
+/* CARD HEADER STRUKTUR TEMPLATE */
 .card-header-structure {
     display: flex !important;
     justify-content: space-between !important;
@@ -122,7 +122,6 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-/* Sisi Kiri & Sisi Kanan Sejajar Horizontal */
 .header-left-group,
 .header-right-group {
     display: flex !important;
@@ -131,7 +130,6 @@
     flex-wrap: nowrap !important;
 }
 
-/* Judul Struktur Template */
 .structure-title {
     margin: 0 !important;
     font-size: 0.925rem;
@@ -143,7 +141,6 @@
     white-space: nowrap;
 }
 
-/* BADGE KATEGORI MODERN & MENARIK */
 .category-badge-pill {
     display: inline-flex;
     align-items: center;
@@ -176,7 +173,432 @@
     font-size: 0.85rem;
 }
 
-/* 3. STYLE BUTTON BASE (Kombinasi style kamu yang sudah bagus) */
+/* ==========================================
+   CARD KATEGORI & PERTANYAAN (TEMA MAROON)
+   ========================================== */
+.kategori-card-wrapper {
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    background: #ffffff;
+    overflow: hidden;
+    /* Hanya ubah box-shadow untuk cegah blink/flicker */
+    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.kategori-card-wrapper:hover {
+    border-color: #CBD5E1;
+    box-shadow: 0 4px 12px rgba(128, 0, 32, 0.08);
+}
+
+.kategori-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #FAF5F6; /* Soft Maroon background */
+    border-bottom: 1px solid #F3E8EA;
+}
+
+.kategori-header-left, .kategori-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge-urutan-kategori {
+    background: #800020; /* Primary Maroon */
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    padding: 3px 9px;
+    border-radius: 6px;
+}
+
+.kategori-title-text {
+    font-size: 0.9rem;
+    color: #1E293B;
+    font-weight: 700;
+}
+
+.badge-info-pill {
+    background: #F1F5F9;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid #E2E8F0;
+}
+
+.badge-bobot-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+.badge-bobot-pill.valid { background: #DCFCE7; color: #15803D; border: 1px solid #BBF7D0; }
+.badge-bobot-pill.warning { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+
+/* Action Buttons Header Kategori */
+.btn-action-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid #CBD5E1;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-add-q { color: #800020; border-color: #F3E8EA; background: #FFF5F7; }
+.btn-add-q:hover { background: #800020; color: #fff; border-color: #800020; }
+
+.btn-edit-k { color: #D97706; border-color: #FEF3C7; background: #FFFBEB; border: 1px solid #b7babd; }
+.btn-edit-k:hover { background: #D97706; color: #fff; border-color: #D97706; }
+
+.btn-delete-k { color: #DC2626; border-color: #FEE2E2; background: #FEF2F2; border: 1px solid #b7babd }
+.btn-delete-k:hover { background: #DC2626; color: #fff; border-color: #DC2626; }
+
+/* Accordion Pertanyaan */
+.question-accordion-item {
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.question-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background-color: #800020; /* Color fallback */
+    background-image: linear-gradient(135deg, #800020 0%, #a00028 100%);
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    user-select: none;
+    transition: background-color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.question-summary:hover {
+    background-image: none;
+    background-color: #660019;
+}
+
+.q-left { display: flex; align-items: center; gap: 10px; }
+.q-badge-urutan { 
+    background: #ffffff; 
+    color: #800020; 
+    border-radius: 50%; 
+    width: 22px; 
+    height: 22px; 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 0.75rem; 
+    font-weight: 800;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.q-badge-type { 
+    background: rgba(255, 255, 255, 0.2); 
+    padding: 2px 8px; 
+    border-radius: 4px; 
+    font-size: 0.68rem; 
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+.q-badge-bobot { 
+    background: rgba(255, 255, 255, 0.95); 
+    color: #800020; 
+    padding: 3px 10px; 
+    border-radius: 12px; 
+    font-size: 0.75rem; 
+    font-weight: 700;
+}
+
+/* Detail Box Inside Accordion */
+.question-detail-box { 
+    padding: 14px 16px; 
+    background: #FAFAFA; 
+    border-top: 1px solid #E2E8F0; 
+    font-size: 0.825rem; 
+}
+
+/* Teks Jenis tanpa background di detail pertanyaan */
+.q-jenis-text {
+    font-weight: 600;
+    color: #334155;
+    background: none !important;
+    padding: 0 !important;
+}
+
+/* Kerapihan tabel detail agar teks tidak menumpuk */
+.question-detail-table {
+    width: 100%;
+    font-size: 0.85rem;
+    border-collapse: collapse;
+}
+
+.question-detail-table td {
+    padding: 6px 4px; /* Memberi jarak vertikal antar baris */
+    line-height: 1.5;   /* Memberi spasi antar baris teks */
+    vertical-align: top;
+}
+
+.empty-question-notice { 
+    padding: 16px; 
+    text-align: center; 
+    color: #64748B; 
+    font-size: 0.825rem; 
+    background: #F8FAFC; 
+    border: 1px dashed #CBD5E1;
+    border-radius: 8px; 
+}
+
+/* Custom Tombol Edit / Hapus Pertanyaan */
+.btn-q-edit {
+    background-color: #D97706;
+    color: #fff;
+    border: none;
+    padding: 3px 8px;       /* Padding dikecilkan */
+    font-size: 0.725rem;     /* Ukuran teks lebih kecil */
+    line-height: 1.2;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.2s ease;
+}
+.btn-q-edit:hover { background-color: #B45309; color: #fff; }
+
+.btn-q-delete {
+    background-color: #DC2626;
+    color: #fff;
+    border: none;
+    padding: 3px 8px;       /* Padding dikecilkan */
+    font-size: 0.725rem;     /* Ukuran teks lebih kecil */
+    line-height: 1.2;
+    border-radius: 4px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.2s ease;
+}
+.btn-q-delete:hover { background-color: #B91C1C; color: #fff; }
+
+/* CARD SKALA NILAI */
+.card-skala {
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    background: #ffffff;
+}
+
+.card-skala-header {
+    background-color: var(--maroon-primary);
+    border-bottom: 1px solid #FEE2E2;
+    padding: 10px 16px;
+}
+
+.card-skala-title {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.skala-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid #F1F5F9;
+    transition: background 0.2s ease;
+}
+
+.skala-item:last-child { border-bottom: none; }
+.skala-item:hover { background-color: #FAFAFA; }
+
+.badge-skala-code {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.skala-item:nth-child(1) .badge-skala-code { background-color: #10B981; }
+.skala-item:nth-child(2) .badge-skala-code { background-color: #2563EB; }
+.skala-item:nth-child(3) .badge-skala-code { background-color: #0891B2; }
+.skala-item:nth-child(4) .badge-skala-code { background-color: #F59E0B; }
+.skala-item:nth-child(5) .badge-skala-code { background-color: #EF4444; }
+
+.skala-name { color: #334155; font-size: 0.85rem; font-weight: 500; }
+.skala-score { color: #0284C7; font-size: 0.875rem; font-weight: 700; }
+.skala-empty { padding: 16px; text-align: center; color: #94A3B8; font-size: 0.8125rem; }
+
+/* CARD VALIDASI BOBOT SIDEBAR */
+.card-validasi-bobot {
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Header */
+.card-validasi-header {
+    background-color: #7A1C30; /* maroon-primary */
+    padding: 10px 14px;
+    border-bottom: 1px solid #FEE2E2;
+}
+
+.card-validasi-title { 
+    color: #ffffff; 
+    font-size: 0.875rem; 
+    font-weight: 700; 
+    margin: 0; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+/* Body Container (Memberi ruang napas/padding di dalam card) */
+.card-validasi-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.val-section {
+    width: 100%;
+}
+
+.val-label { 
+    font-size: 0.78rem; 
+    font-weight: 600; 
+    color: #475569; 
+    margin-bottom: 6px; 
+    display: block; 
+}
+
+/* Progress Bar */
+.progress-bar-container { 
+    width: 100%; 
+    height: 18px; 
+    background: #E2E8F0; 
+    border-radius: 10px; 
+    overflow: hidden; 
+}
+
+.progress-bar-fill { 
+    height: 100%; 
+    color: #fff; 
+    font-size: 0.7rem; 
+    font-weight: 700; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    transition: width 0.3s ease; 
+}
+
+.bg-success-custom { background-color: #10B981; }
+.bg-danger-custom { background-color: #EF4444; }
+
+.val-status-text { 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+    margin-top: 6px; 
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Garis Pemisah (Divider) */
+.divider-line { 
+    height: 0;
+    border: none;
+    border-top: 1px dashed #CBD5E1; 
+    margin: 2px 0; 
+    width: 100%;
+}
+
+/* List Item Kategori */
+.val-kategori-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 6px; 
+}
+
+.val-kategori-item { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 8px 10px; 
+    background: #F8FAFC; 
+    border: 1px solid #E2E8F0; 
+    border-radius: 6px; 
+    gap: 8px;
+    box-sizing: border-box;
+}
+
+.val-kat-name { 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    font-size: 0.78rem; 
+    font-weight: 500; 
+    color: #334155; 
+    min-width: 0;
+    flex: 1;
+}
+
+.val-kat-name span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.val-kat-name i {
+    flex-shrink: 0;
+}
+
+.badge-val-percent { 
+    font-size: 0.725rem; 
+    font-weight: 700; 
+    padding: 3px 8px; 
+    border-radius: 4px; 
+    flex-shrink: 0; 
+    line-height: 1;
+}
+
+.badge-val-percent.pass { background: #DCFCE7; color: #15803D; }
+.badge-val-percent.fail { background: #FEE2E2; color: #B91C1C; }
+
 .btn-group { 
     display: flex; 
     align-items: center;
@@ -283,12 +705,31 @@
     box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
 }
 
+   .layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.main-content-column {
+    min-width: 0; /* PENTING: Mencegah tabel/accordion di dalamnya membuat layout jebol */
+    width: 100%;
+}
+
+.sidebar-column {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Memberi jarak otomatis antar card di sidebar */
+}
+
+/* Penanganan breakpoint layar kecil agar tidak overflow */
+@media (max-width: 768px) {
     .layout-grid {
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 1.25rem;
-        align-items: start;
+        grid-template-columns: 1fr;
     }
+}
 
     /* --- Card Components --- */
     .card-box {
@@ -299,7 +740,7 @@
         overflow: hidden;
     }
     .card-header-soft {
-        background: var(--bg-light);
+        background: var(--maroon-primary);
         padding: 0.75rem 1rem;
         border-bottom: 2px solid #a4a8abab;
         display: flex;
@@ -309,7 +750,7 @@
     .card-title {
         font-weight: 700;
         font-size: 0.85rem;
-        color: var(--maroon-primary);
+        color: white;
         display: flex;
         align-items: center;
         gap: 0.4rem;
@@ -557,92 +998,6 @@
     z-index: 99999 !important;
 }
 
-/* CARD SKALA KANAN */
-.card-skala {
-    border: 1px solid #E2E8F0;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-    overflow: hidden;
-    background: #ffffff;
-}
-
-/* Header Card dengan Soft Maroon / Cream Light */
-.card-skala-header {
-    background-color: var(--maroon-primary);
-    border-bottom: 1px solid #FEE2E2;
-    padding: 10px 16px;
-}
-
-.card-skala-title {
-    color: #ffffff; /* Maroon khas header kamu */
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-/* Item List */
-.skala-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px;
-    border-bottom: 1px solid #F1F5F9;
-    transition: background 0.2s ease;
-}
-
-.skala-item:last-child {
-    border-bottom: none;
-}
-
-.skala-item:hover {
-    background-color: #FAFAFA;
-}
-
-.badge-skala-code {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 8px;
-    flex-shrink: 0;
-}
-
-/* Variasi Warna Badge yang Soft & Netral */
-.skala-item:nth-child(1) .badge-skala-code { background-color: #10B981; } /* Hijau */
-.skala-item:nth-child(2) .badge-skala-code { background-color: #2563EB; } /* Biru */
-.skala-item:nth-child(3) .badge-skala-code { background-color: #0891B2; } /* Cyan */
-.skala-item:nth-child(4) .badge-skala-code { background-color: #F59E0B; } /* Amber/Oranye */
-.skala-item:nth-child(5) .badge-skala-code { background-color: #EF4444; } /* Merah */
-
-/* Teks & Angka */
-.skala-name {
-    color: #334155;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.skala-score {
-    color: #0284C7; /* Biru soft khas elemen nilai */
-    font-size: 0.875rem;
-    font-weight: 700;
-}
-
-/* Empty State */
-.skala-empty {
-    padding: 16px;
-    text-align: center;
-    color: #94A3B8;
-    font-size: 0.8125rem;
-}
-
 .modal-backdrop-delete {
     position: fixed;
     top: 0;
@@ -811,77 +1166,189 @@
         </div>
     </div>
 
-    <!-- LAYOUT GRID PARENT -->
-    <div class="layout-grid">
-        <!-- KOLOM UTAMA (KIRI) -->
-        <div>
-            <div class="card-box mb-3">
-                <div class="card-header-soft">
-                    <div class="card-title">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
-                        Pilih Template
-                    </div>
-                </div>
-                <div style="padding: 0.85rem 1rem;">
-                    <div class="select-wrapper">
-                        <form method="GET" action="{{ route('template-penilaian.index') }}" id="formSelectTemplate">
-                            <select id="templateSelector" name="template_id" class="custom-select" onchange="this.form.submit()">
-                                <option value="">-- Pilih Template --</option>
-                                @forelse($templates as $template)
-                                    @php
-                                        $isSelected = request('template_id') == $template->template_id;
-                                    @endphp
-                                    <option value="{{ $template->template_id }}" @selected($isSelected)>
-                                        {{ $template->nama_template }}
-                                    </option>
-                                @empty
-                                    <option value="" disabled>Belum ada template tersimpan</option>
-                                @endforelse
-                            </select>
-                        </form>
-                    </div>
+  <div class="layout-grid">
+
+    <div class="main-content-column">
+        
+        <!-- CARD SELECT TEMPLATE -->
+        <div class="card-box mb-3">
+            <div class="card-header-soft">
+                <div class="card-title">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                    </svg>
+                    Pilih Template
                 </div>
             </div>
-
-            <!-- CARD HEADER STRUKTUR TEMPLATE -->
-            <div class="card-header-structure">
-                <div class="header-left-group">
-                    <h6 class="structure-title">
-                        <i class="fas fa-sitemap"></i> Struktur Template
-                    </h6>
-                    <div class="category-badge-pill" id="badge-total-kategori" style="{{ request('template_id') ? '' : 'display: none;' }}">
-                        <span class="badge-icon"><i class="fas fa-layer-group"></i></span>
-                        <span class="badge-text"><strong id="text-total-kategori-num">{{ isset($kategories) ? count($kategories) : 0 }}</strong> Kategori</span>
-                    </div>
-                </div>
-
-                <div class="header-right-group">
-                    <button type="button" class="btn btn-add-template btn-sm" id="btnTambahKategori" onclick="openModalTambahKategori()" {{ request('template_id') ? '' : 'disabled' }}>
-                        <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
-                        Tambah Kategori
-                    </button>
-                    <button type="button" class="btn btn-edit btn-sm" id="btnEditTemplate" onclick="openModalEditTemplate()" {{ request('template_id') ? '' : 'disabled' }}>
-                        <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Ubah Template
-                    </button>
-                    <button type="button" class="btn btn-delete btn-sm" id="btnDeleteTemplate" onclick="deleteTemplate()" {{ request('template_id') ? '' : 'disabled' }}>
-                        <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Hapus Template
-                    </button>
+            <div style="padding: 0.85rem 1rem;">
+                <div class="select-wrapper">
+                    <form method="GET" action="{{ route('template-penilaian.index') }}" id="formSelectTemplate">
+                        <!-- Attributes onchange dihapus agar di-handle penuh oleh JS event listener -->
+                        <select id="templateSelector" name="template_id" class="custom-select">
+                            <option value="" @selected(!request('template_id'))>-- Pilih Template --</option>
+                            @forelse($templates as $template)
+                                <option value="{{ $template->template_id }}" @selected(request('template_id') == $template->template_id)>
+                                    {{ $template->nama_template }}
+                                </option>
+                            @empty
+                                <option value="" disabled>Belum ada template tersimpan</option>
+                            @endforelse
+                        </select>
+                    </form>
                 </div>
             </div>
-
-            @if(!$selectedTemplate)
-                <div id="emptyStateBox" class="card-box empty-state mb-3">
-                    <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                    <p style="margin: 0; font-size: 0.85rem;">Pilih template di atas untuk melihat struktur kategori & pertanyaan</p>
-                </div>
-            @endif
         </div>
 
-        <!-- KOLOM SIDEBAR SKALA NILAI (KANAN) -->
-        <div>
-            <div class="card card-skala">
+        @php
+            // Validasi ketat: Kategori HANYA dimuat jika URL memiliki parameter template_id yang valid
+            $hasTemplateSelected = request()->filled('template_id') && isset($selectedTemplate) && $selectedTemplate;
+            $kategoriList = $hasTemplateSelected ? ($kategories ?? $selectedTemplate->kategoris) : collect();
+        @endphp
+
+        <!-- CARD HEADER STRUKTUR TEMPLATE -->
+        <div class="card-header-structure">
+            <div class="header-left-group">
+                <h6 class="structure-title">
+                    <i class="fas fa-sitemap"></i> Struktur Template
+                </h6>
+                <div class="category-badge-pill" id="badge-total-kategori" style="{{ $hasTemplateSelected ? '' : 'display: none;' }}">
+                    <span class="badge-icon"><i class="fas fa-layer-group"></i></span>
+                    <span class="badge-text"><strong id="text-total-kategori-num">{{ $kategoriList->count() }}</strong> Kategori</span>
+                </div>
+            </div>
+
+            <div class="header-right-group">
+                <button type="button" class="btn btn-add-template btn-sm {{ $hasTemplateSelected ? '' : 'disabled opacity-50' }}" id="btnTambahKategori" onclick="openModalTambahKategori()" {{ $hasTemplateSelected ? '' : 'disabled' }}>
+                    <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah Kategori
+                </button>
+                <button type="button" class="btn btn-edit btn-sm {{ $hasTemplateSelected ? '' : 'disabled opacity-50' }}" id="btnEditTemplate" onclick="openModalEditTemplate()" {{ $hasTemplateSelected ? '' : 'disabled' }}>
+                    <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    Ubah Template
+                </button>
+                <button type="button" class="btn btn-delete btn-sm {{ $hasTemplateSelected ? '' : 'disabled opacity-50' }}" id="btnDeleteTemplate" onclick="deleteTemplate()" {{ $hasTemplateSelected ? '' : 'disabled' }}>
+                    <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Hapus Template
+                </button>
+            </div>
+        </div>
+
+        {{-- JIKA BELUM MEMILIH TEMPLATE, TAMPILKAN EMPTY STATE --}}
+        @if(!$hasTemplateSelected)
+            <div id="emptyStateBox" class="card-box empty-state mb-3">
+                <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                <p style="margin: 0; font-size: 0.85rem;">Pilih template di atas untuk melihat struktur kategori & pertanyaan</p>
+            </div>
+        @else
+            @forelse($kategoriList as $kategori)
+                @php
+                    $totalPertanyaan = $kategori->pertanyans ? $kategori->pertanyans->count() : 0;
+                    $sumBobotPertanyaan = $kategori->pertanyans ? $kategori->pertanyans->sum('bobot_persen') : 0;
+                    $isValidBobotPertanyaan = ($sumBobotPertanyaan == 100);
+                @endphp
+                <div class="kategori-card-wrapper mb-3">
+                    <div class="kategori-card-header">
+                        <div class="kategori-header-left">
+                            <i class="fas fa-chevron-down text-muted icon-toggle me-1"></i>
+                            <span class="badge-urutan-kategori">{{ $kategori->urutan }}</span>
+                            <strong class="kategori-title-text">{{ $kategori->nama }}</strong>
+                            <small class="text-muted">({{ $kategori->kode }})</small>
+                        </div>
+                        <div class="kategori-header-right">
+                            <span class="badge-info-pill">
+                                <i class="fas fa-question-circle text-secondary me-1"></i> {{ $totalPertanyaan }} Pertanyaan
+                            </span>
+                            <span class="badge-bobot-pill {{ $isValidBobotPertanyaan ? 'valid' : 'warning' }}">
+                                <i class="fas {{ $isValidBobotPertanyaan ? 'fa-check-circle' : 'fa-exclamation-triangle' }} me-1"></i> {{ $kategori->bobot_persen }}%
+                            </span>
+                            <button type="button" class="btn-action-icon btn-add-q" onclick="openModalTambahPertanyaan('{{ $kategori->kategori_id }}')" title="Tambah Pertanyaan">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <button type="button" class="btn-action-icon btn-edit-k" onclick="openModalEditKategori('{{ $kategori->kategori_id }}')" title="Edit Kategori">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button type="button" class="btn-action-icon btn-delete-k" onclick="openModalDeleteKategori('{{ $kategori->kategori_id }}')" title="Hapus Kategori">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="kategori-card-body p-3">
+                        @if($kategori->pertanyaans && $kategori->pertanyaans->count() > 0)
+                            @foreach($kategori->pertanyaans as $pertanyaan)
+                                <details class="question-accordion-item mb-2">
+                                    <summary class="question-summary">
+                                        <div class="q-left">
+                                            <span class="q-badge-urutan">{{ $pertanyaan->urutan }}</span>
+                                            <span class="q-name me-2">{{ $pertanyaan->pertanyaan }}</span>
+                                            <span class="q-badge-type">{{ strtoupper(str_replace('_', ' ', $pertanyaan->jenis ?? 'NILAI')) }}</span>
+                                        </div>
+                                        <div class="q-right">
+                                            <span class="q-badge-bobot">{{ $pertanyaan->bobot_persen }}%</span>
+                                        </div>
+                                    </summary>
+                                    <div class="question-detail-box">
+                                        <table class="table-borderless text-secondary mb-3 question-detail-table">
+                                            <tr>
+                                                <td style="width: 110px;" class="fw-bold">Pertanyaan</td>
+                                                <td>: {{ $pertanyaan->pertanyaan }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Deskripsi</td>
+                                                <td>: {{ $pertanyaan->deskripsi ?? '-' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Jenis</td>
+                                                <td>: <span class="q-jenis-text">{{ strtoupper(str_replace('_', ' ', $pertanyaan->jenis ?? 'NILAI')) }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Bobot</td>
+                                                <td>: {{ $pertanyaan->bobot_persen }}%</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="fw-bold">Status</td>
+                                                <td>: 
+                                                    @if($pertanyaan->status_aktif == 1 || $pertanyaan->status_aktif == 'Aktif')
+                                                        <span class="badge bg-success">Aktif</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Non-Aktif</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div class="d-flex gap-2 pt-1">
+                                            <button class="btn btn-edit-k" onclick="openModalEditPertanyaan('{{ $pertanyaan->pertanyaan_id }}')">
+                                                <i class="fas fa-edit me-1"></i> Edit
+                                            </button>
+                                            <button class="btn btn-delete-k" onclick="openModalHapusPertanyaan('{{ $pertanyaan->pertanyaan_id }}')">
+                                                <i class="fas fa-trash me-1"></i> Hapus
+                                            </button>
+                                        </div>
+                                    </div>
+                                </details>
+                            @endforeach
+                        @else
+                            <div class="empty-question-notice">
+                                <i class="fas fa-folder-open me-1"></i> Belum ada pertanyaan. Klik tombol <i class="fas fa-plus text-danger fw-bold"></i> di kanan atas kategori untuk menambah pertanyaan.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="card-box empty-state mb-3">
+                    <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Belum ada kategori pada template ini.</p>
+                </div>
+            @endforelse
+        @endif
+
+    </div>
+
+        <!-- ================= KOLOM SIDEBAR (KANAN) ================= -->
+        <div class="sidebar-column">
+            
+            <!-- CARD SKALA NILAI -->
+            <div class="card card-skala mb-3">
                 <div class="card-skala-header">
                     <h6 class="card-skala-title">
                         <i class="fas fa-star text-warning"></i> Skala Nilai
@@ -902,12 +1369,72 @@
                         </div>
                     @endforelse
                 </div>
-            </div>
-        </div>
-    </div> <!-- Penutup layout-grid -->
-</div> <!-- Penutup main-wrapper --> 
+            </div> <!-- Tag penutup card-skala disisipkan di sini -->
 
-<!-- MODAL FORM PREDIKAT -->
+            <!-- CARD VALIDASI BOBOT -->
+            <div class="card card-validasi-bobot">
+                <div class="card-validasi-header">
+                    <h6 class="card-validasi-title">
+                        <i class="fas fa-balance-scale"></i> Validasi Bobot
+                    </h6>
+                </div>
+
+                <!-- Gunakan class khusus ini agar padding tidak hilang/reset -->
+                <div class="card-validasi-body">
+                    
+                    <!-- TOTAL BOBOT KATEGORI -->
+                    @php 
+                        $totalBobotKat = isset($totalBobotKategori) ? $totalBobotKategori : (isset($selectedTemplate) && $selectedTemplate->kategoris ? $selectedTemplate->kategoris->sum('bobot_persen') : 0);
+                    @endphp
+                    <div class="val-section">
+                        <label class="val-label">Total Bobot Kategori</label>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill {{ $totalBobotKat == 100 ? 'bg-success-custom' : 'bg-danger-custom' }}" 
+                                style="width: {{ min($totalBobotKat, 100) }}%;">
+                                {{ $totalBobotKat }}%
+                            </div>
+                        </div>
+                        <div class="val-status-text {{ $totalBobotKat == 100 ? 'text-success' : 'text-danger' }}">
+                            <i class="fas {{ $totalBobotKat == 100 ? 'fa-check' : 'fa-times' }}"></i>
+                            {{ $totalBobotKat == 100 ? 'Sudah 100%' : 'Total bobot harus 100% (Saat ini: '.$totalBobotKat.'%)' }}
+                        </div>
+                    </div>
+
+                    <div class="divider-line"></div>
+
+                    <!-- VALIDASI PERTANYAAN PER KATEGORI -->
+                    <div class="val-section">
+                        <label class="val-label mb-2">Validasi Pertanyaan per Kategori</label>
+                        @if($selectedTemplate && $selectedTemplate->kategoris->count() > 0)
+                            <div class="val-kategori-list">
+                                @foreach($selectedTemplate->kategoris as $kat)
+                                    @php
+                                        $sumBobotQ = $kat->pertanyans ? $kat->pertanyans->sum('bobot_persen') : 0;
+                                        $isPass = ($sumBobotQ == 100);
+                                    @endphp
+                                    <div class="val-kategori-item">
+                                        <div class="val-kat-name" title="{{ $kat->nama }}">
+                                            <i class="fas {{ $isPass ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-warning' }}"></i>
+                                            <span>{{ $kat->nama }}</span>
+                                        </div>
+                                        <span class="badge-val-percent {{ $isPass ? 'pass' : 'fail' }}">
+                                            {{ $sumBobotQ }}%
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-muted" style="font-size: 0.78rem; margin: 0;">Tidak ada data kategori.</p>
+                        @endif
+                    </div>
+
+                </div>
+            </div> 
+        </div> 
+    </div>
+</div> 
+
+<!-- MODAL FORM TEMPLATE -->
 <div class="modal-backdrop" id="modalTemplate" onclick="closeModalTemplateOnBackdrop(event)">
     <div class="modal-card">
         <div class="modal-header">
@@ -996,6 +1523,201 @@
     </div>
 </div>
 
+<!-- MODAL FORM KATEGORI -->
+<div class="modal-backdrop" id="modalKategori" onclick="closeModalKategoriOnBackdrop(event)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div class="modal-title-wrapper">
+                <div class="modal-icon-badge" id="modalIconBadgeKategori">
+                    <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="modalIconPathKategori" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+                <h3 class="modal-title" id="modalTitleKategori">Tambah Kategori Penilaian</h3>
+            </div>
+            <button type="button" class="btn-close-modal" onclick="closeModalKategori()">
+                <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <form id="formKategori" method="POST" action="{{ route('kategori-penilaian.store') }}">
+            @csrf
+            <input type="hidden" id="formMethodKategori" name="_method" value="POST">
+            <input type="hidden" id="kategori_id" name="kategori_id">
+            
+            <!-- Mengikat Kategori ke Template yang sedang aktif -->
+            <input type="hidden" id="template_id_kategori" name="template_id" value="{{ request('template_id') }}">
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="kode">Kode Kategori</label>
+                    <div class="input-addon-group">
+                        <span class="input-addon">Kode</span>
+                        <input type="text" id="kode" name="kode" class="form-input" placeholder="contoh: KAT001">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="nama">Nama Kategori <span class="text-danger">*</span></label>
+                    <div class="input-addon-group">
+                        <span class="input-addon">Nama</span>
+                        <input type="text" id="nama" name="nama" class="form-input" placeholder="contoh: Sikap & Etika" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bobot_persen">Bobot (%) <span class="text-danger">*</span></label>
+                        <div class="input-addon-group">
+                            <span class="input-addon">Bobot</span>
+                            <input type="number" step="0.01" id="bobot_persen" name="bobot_persen" class="form-input" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="urutan">Urutan <span class="text-danger">*</span></label>
+                        <div class="input-addon-group">
+                            <span class="input-addon">Urutan</span>
+                            <input type="number" step="1" id="urutan" name="urutan" class="form-input" placeholder="1" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info py-2 px-3 mt-3 mb-0" style="background-color: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; font-size: 0.8rem; border-radius: 6px;">
+                    <i class="fas fa-info-circle me-1"></i> Total bobot semua kategori dalam template harus = 100%
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-refresh" onclick="closeModalKategori()">Batal</button>
+                <button type="submit" class="btn btn-add-template" id="btnSubmitModalKategori">
+                    <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span id="btnSubmitTextKategori">Simpan Data</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modalDeleteKategori" class="modal-backdrop-delete" onclick="closeModalDeleteKategoriOnBackdrop(event)" style="display: none;">
+    <div class="delete-card">
+        <div class="delete-accent-bar"></div>
+        <div class="delete-card-body">
+            <div class="delete-icon-wrapper">
+                <svg class="delete-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h3 class="delete-title">Konfirmasi Hapus</h3>
+            <p class="delete-message">
+                Anda yakin akan menghapus kategori <strong id="deleteKategoriName"></strong>?
+            </p>
+            <div class="delete-actions">
+                <button type="button" class="btn-delete-confirm" onclick="confirmDeleteKategori()">HAPUS</button>
+                <button type="button" class="btn-delete-cancel" onclick="closeModalDeleteKategori()">BATAL</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL FORM PERTANYAAN -->
+<div class="modal-backdrop" id="modalPertanyaan" onclick="closeModalPertanyaanOnBackdrop(event)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div class="modal-title-wrapper">
+                <div class="modal-icon-badge" id="modalIconBadgePertanyaan">
+                    <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="modalIconPathPertanyaan" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+                <h3 class="modal-title" id="modalTitlePertanyaan">Tambah Pertanyaan</h3>
+            </div>
+            <button type="button" class="btn-close-modal" onclick="closeModalPertanyaan()">
+                <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <form id="formPertanyaan" method="POST" action="{{ route('pertanyaan-penilaian.store') }}">
+            @csrf
+            <input type="hidden" id="formMethodPertanyaan" name="_method" value="POST">
+            <input type="hidden" id="pertanyaan_id" name="pertanyaan_id">
+            
+            <!-- Mengikat Kategori ke Template yang sedang aktif -->
+            <input type="hidden" id="kategori_id_pertanyaan" name="kategori_id" value="">
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="pertanyaan">Pertanyaan </label>
+                    <div class="input-addon-group">
+                        <span class="input-addon">Pertanyaan</span>
+                        <input type="text" id="pertanyaan" name="pertanyaan" class="form-input" placeholder="contoh: Hasil Kinerja">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="deskripsi">Deskripsi <span class="text-danger">*</span></label>
+                    <div class="input-addon-group">
+                        <span class="input-addon">Deskripsi</span>
+                        <input type="text" id="deskripsi" name="deskripsi" class="form-input" placeholder="contoh: Deskripsi pertanyaan" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bobot_persen">Bobot (%) <span class="text-danger">*</span></label>
+                        <div class="input-addon-group">
+                            <span class="input-addon">Bobot</span>
+                            <input type="number" step="0.01" id="bobot_persen_pertanyaan" name="bobot_persen" class="form-input" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="urutan">Urutan <span class="text-danger">*</span></label>
+                        <div class="input-addon-group">
+                            <span class="input-addon">Urutan</span>
+                            <input type="number" step="1" id="urutan_pertanyaan" name="urutan" class="form-input" placeholder="1" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="jenis">Jenis <span class="text-danger">*</span></label>
+                        <div class="input-addon-group">
+                            <span class="input-addon">Jenis</span>
+                            <select id="jenis_pertanyaan" name="jenis" class="form-input" required>
+                                <option value="Nilai">NILAI</option>
+                                <option value="Nilai Catatan">NILAI CATATAN</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="status_aktif">Status Aktif <span class="text-danger">*</span></label>
+                        <div class="input-addon-group">
+                            <span class="input-addon">Status</span>
+                            <select id="status_aktif_pertanyaan" name="status_aktif" class="form-input" required>
+                                <option value="1">Aktif</option>
+                                <option value="0">Non-Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-info py-2 px-3 mt-3 mb-0" style="background-color: #e0f2fe; border: 1px solid #bae6fd; color: #0369a1; font-size: 0.8rem; border-radius: 6px;">
+                    <i class="fas fa-info-circle me-1"></i> Total bobot semua pertanyaan dalam template harus = 100%
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-refresh" onclick="closeModalPertanyaan()">Batal</button>
+                <button type="submit" class="btn btn-add-template" id="btnSubmitModalPertanyaan">
+                    <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span id="btnSubmitTextPertanyaan">Simpan Data</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -1009,25 +1731,30 @@
         });
     });
 
-    window.selectedTemplateData = null;
+   window.selectedTemplateData = null;
     window.templateList = @json($templates ?? []); 
 
     document.addEventListener('DOMContentLoaded', function() {
         const selectTemplate = document.getElementById('templateSelector');
 
         if (selectTemplate) {
-            // Panggil handler saat pilihan dropdown berubah (Event Listener)
-            if (selectTemplate.value) {
-                onSelectTemplateChange(selectTemplate.value);
-            }
+            // Cukup jalankan sekali berdasarkan state value saat ini (dari request/URL)
+            updateButtonState(selectTemplate.value);
 
             selectTemplate.addEventListener('change', function() {
-                onSelectTemplateChange(this.value);
+                if (this.value) {
+                    // Submit form ke server saat dropdown berubah
+                    this.form.submit();
+                } else {
+                    // Jika user memilih kembali ke "-- Pilih Template --"
+                    updateButtonState('');
+                    this.form.submit();
+                }
             });
         }
     });
 
-    function onSelectTemplateChange(templateId) {
+    function updateButtonState(templateId) {
         const btnEdit = document.getElementById('btnEditTemplate');
         const btnDelete = document.getElementById('btnDeleteTemplate');
         const btnTambahKategori = document.getElementById('btnTambahKategori');
@@ -1107,18 +1834,40 @@
 
         const data = window.selectedTemplateData;
         const form = document.getElementById('formTemplate');
-        
-        // PERBAIKAN 2: Mapping field disesuaikan dengan atribut data template
+
+        // 1. Tampilkan modal terlebih dahulu
+        const modal = document.getElementById('modalTemplate');
+        if (modal) {
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        }
+
+        // 2. Isi input text & status
         document.getElementById('template_id').value = data.template_id;
         document.getElementById('nama_template').value = data.nama_template || '';
         document.getElementById('status_aktif').value = data.status_aktif || 'Aktif';
 
-        // Bind data array jabatan ke Select2 Multi-select
+        // 3. PARSE DATA JABATAN (occ_id)
+        let occSelected = [];
+
         if (data.occ_id) {
-            let occArray = Array.isArray(data.occ_id) ? data.occ_id : data.occ_id.toString().split(',');
-            $('.select2-jabatan').val(occArray).trigger('change');
+            try {
+                // Jika data dari DB berupa string JSON '["4"]' atau '["4","5"]'
+                let parsed = typeof data.occ_id === 'string' ? JSON.parse(data.occ_id) : data.occ_id;
+                occSelected = Array.isArray(parsed) ? parsed : [parsed];
+            } catch (e) {
+                // fallback jika bukan format JSON
+                occSelected = data.occ_id.toString().split(',');
+            }
         }
 
+        // Bersihkan karakter petik/spasi dan konversi ke String ("4")
+        occSelected = occSelected.map(id => id.toString().replace(/[^0-9a-zA-Z_-]/g, '').trim());
+
+        // Inject ke Select2
+        $('.select2-jabatan').val(occSelected).trigger('change');
+
+        // 4. Ubah Action Form & Tampilan Modal
         document.getElementById('formMethodTemplate').value = 'PUT';
         if (form) form.action = `{{ url('/master/template-penilaian') }}/${data.template_id}`;
 
@@ -1137,12 +1886,6 @@
         if (iconBadge) {
             iconBadge.style.background = '#FEF3C7';
             iconBadge.style.color = '#D97706';
-        }
-
-        const modal = document.getElementById('modalTemplate');
-        if (modal) {
-            modal.classList.add('active');
-            modal.style.display = 'flex';
         }
     }
 
@@ -1202,9 +1945,244 @@
         }
     }
 
-    function closeModalDeleteSkalaOnBackdrop(event) {
-        if (event.target.id === 'modalDeleteSkala') {
-            closeModalDeleteSkala();
+    function closeModalDeleteTemplateOnBackdrop(event) {
+        if (event.target.id === 'modalDeleteTemplate') {
+            closeModalDeleteTemplate();
+        }
+    }
+</script>
+
+ 
+<script>
+    
+    window.kategoriList = @json($kategoris ?? $kategoriList ?? []);
+
+    // Function untuk Tambah Kategori Baru
+    function openModalTambahKategori() {
+        const form = document.getElementById('formKategori');
+        if (form) form.reset();
+
+        const inputId = document.getElementById('kategori_id');
+        const inputMethod = document.getElementById('formMethodKategori'); 
+
+        if (inputId) inputId.value = '';
+        if (inputMethod) inputMethod.value = 'POST';
+        if (form) form.action = "{{ route('kategori-penilaian.store') }}";
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedTemplateId = urlParams.get('template_id') || document.getElementById('templateSelector')?.value || '';
+
+        const inputTemplateId = document.getElementById('template_id_kategori');
+        if (inputTemplateId) inputTemplateId.value = selectedTemplateId;
+
+        if (document.getElementById('modalTitleKategori')) {
+            document.getElementById('modalTitleKategori').textContent = 'Tambah Kategori';
+        }
+        if (document.getElementById('btnSubmitTextKategori')) {
+            document.getElementById('btnSubmitTextKategori').textContent = 'Simpan Data';
+        }
+
+        const iconPath = document.getElementById('modalIconPathKategori');
+        const iconBadge = document.getElementById('modalIconBadgeKategori');
+        if (iconPath) iconPath.setAttribute('d', 'M12 4v16m8-8H4');
+        if (iconBadge) {
+            iconBadge.style.background = '';
+            iconBadge.style.color = '';
+        }
+
+        const btnSubmit = document.getElementById('btnSubmitModalKategori');
+        if (btnSubmit) {
+            btnSubmit.classList.remove('btn-amber-template');
+            btnSubmit.classList.add('btn-add-template');
+        }
+
+        const modal = document.getElementById('modalKategori');
+        if (modal) {
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        }
+    }
+
+
+    function openModalEditKategori(kategoriId) {
+        // 1. Cari data kategori di window.kategoriList berdasarkan ID
+        let data = null;
+        if (window.kategoriList && Array.isArray(window.kategoriList)) {
+            data = window.kategoriList.find(k => k.kategori_id == kategoriId);
+        }
+
+        if (!data) {
+            alert('Data Kategori tidak ditemukan!');
+            return;
+        }
+
+        const form = document.getElementById('formKategori');
+        
+        // Set Input Values
+        const inputId = document.getElementById('kategori_id');
+        if (inputId) inputId.value = data.kategori_id;
+
+        if (document.getElementById('kode')) document.getElementById('kode').value = data.kode || '';
+        if (document.getElementById('nama')) document.getElementById('nama').value = data.nama || '';
+        if (document.getElementById('bobot_persen')) document.getElementById('bobot_persen').value = data.bobot_persen || '';
+        if (document.getElementById('urutan')) document.getElementById('urutan').value = data.urutan || '';
+
+        // Set Form Method & Action
+        if (document.getElementById('formMethodKategori')) {
+            document.getElementById('formMethodKategori').value = 'PUT';
+        }
+        if (form) form.action = `{{ url('/master/kategori-penilaian') }}/${data.kategori_id}`;
+
+        // Set UI Modal
+        if (document.getElementById('modalTitleKategori')) {
+            document.getElementById('modalTitleKategori').textContent = 'Ubah Kategori';
+        }
+        if (document.getElementById('btnSubmitTextKategori')) {
+            document.getElementById('btnSubmitTextKategori').textContent = 'Perbarui Data';
+        }
+
+        const btnSubmit = document.getElementById('btnSubmitModalKategori');
+        if (btnSubmit) {
+            btnSubmit.classList.remove('btn-add-template');
+            btnSubmit.classList.add('btn-amber-template');
+        }
+
+        const iconPath = document.getElementById('modalIconPathKategori');
+        const iconBadge = document.getElementById('modalIconBadgeKategori');
+        if (iconPath) iconPath.setAttribute('d', 'M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z');
+        if (iconBadge) {
+            iconBadge.style.background = '#FEF3C7';
+            iconBadge.style.color = '#D97706';
+        }
+
+        // Tampilkan Modal
+        const modal = document.getElementById('modalKategori');
+        if (modal) {
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeModalKategori() {
+        const modal = document.getElementById('modalKategori');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
+    }
+
+    function closeModalKategoriOnBackdrop(event) {
+        if (event.target.id === 'modalKategori') {
+            closeModalKategori();
+        }
+    }
+
+    window.selectedDeleteKategoriId = null;
+
+    function openModalDeleteKategori(kategoriId) {
+        window.selectedDeleteKategoriId = kategoriId;
+        
+        let data = null;
+        if (window.kategoriList && Array.isArray(window.kategoriList)) {
+            data = window.kategoriList.find(k => k.kategori_id == kategoriId);
+        }
+
+        if (!data) {
+            alert('Data Kategori tidak ditemukan!');
+            return;
+        }
+
+        const nameEl = document.getElementById('deleteKategoriName');
+        if (nameEl) {
+            nameEl.textContent = `"${data.nama}"`;
+        }
+
+        const modal = document.getElementById('modalDeleteKategori');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    function confirmDeleteKategori() {
+        const kategoriId = window.selectedDeleteKategoriId;
+
+        if (!kategoriId) {
+            alert('Data Kategori tidak ditemukan!');
+            return;
+        }
+
+        const deleteForm = document.createElement('form');
+        deleteForm.method = 'POST';
+        deleteForm.action = `{{ url('/master/kategori-penilaian') }}/${kategoriId}`;
+
+        const csrfToken = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+
+        deleteForm.innerHTML = `
+            <input type="hidden" name="_token" value="${csrfToken}">
+            <input type="hidden" name="_method" value="DELETE">
+        `;
+
+        document.body.appendChild(deleteForm);
+        deleteForm.submit();
+    }
+
+
+    function closeModalDeleteKategori() {
+        window.selectedDeleteKategoriId = null;
+        const modal = document.getElementById('modalDeleteKategori');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function closeModalDeleteKategoriOnBackdrop(event) {
+        if (event.target.id === 'modalDeleteKategori') {
+            closeModalDeleteKategori();
+        }
+    }
+</script>
+
+<script>
+    function openModalTambahPertanyaan(kategoriId) {
+        document.getElementById('kategori_id_pertanyaan').value = kategoriId; 
+
+        const form = document.getElementById('formPertanyaan');
+        if (form) form.reset();
+
+        const inputId = document.getElementById('pertanyaan_id');
+        const inputMethod = document.getElementById('formMethodPertanyaan'); 
+
+        if (inputId) inputId.value = '';
+        if (inputMethod) inputMethod.value = 'POST';
+        
+        if (form) form.action = "{{ route('pertanyaan-penilaian.store') }}";
+
+        const title = document.getElementById('modalTitlePertanyaan');
+        const btnText = document.getElementById('btnSubmitTextPertanyaan');
+        if (title) title.textContent = 'Tambah Pertanyaan Penilaian';
+        if (btnText) btnText.textContent = 'Simpan Data';
+
+        // Set Icon Modal ke Plus (+)
+        const iconPath = document.getElementById('modalIconPathPertanyaan');
+        const iconBadge = document.getElementById('modalIconBadgePertanyaan');
+        if (iconPath) iconPath.setAttribute('d', 'M12 4v16m8-8H4');
+        if (iconBadge) {
+            iconBadge.style.background = '';
+            iconBadge.style.color = '';
+        }
+
+        // Reset Warna Tombol Submit
+        const btnSubmit = document.getElementById('btnSubmitModalPertanyaan');
+        if (btnSubmit) {
+            btnSubmit.classList.remove('btn-amber-template');
+            btnSubmit.classList.add('btn-add-template');
+        }
+
+        // Tampilkan Modal
+        const modal = document.getElementById('modalPertanyaan');
+        if (modal) {
+            modal.classList.add('active');
+            modal.style.display = 'flex';
         }
     }
 </script>

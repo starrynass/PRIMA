@@ -5,6 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MasterSkalaController;
 use App\Http\Controllers\MasterPredikatController;
 use App\Http\Controllers\TemplatePenilaianController;
+use App\Http\Controllers\KategoriPenilaianController;
+use App\Http\Controllers\PertanyaanPenilaianController;
 use App\Http\Controllers\PeriodePenilaianController;
 use App\Http\Controllers\KelolaPenilaianController;
 use App\Http\Controllers\VerifikasiPenilaianController;
@@ -33,7 +35,17 @@ Route::get('/master/template-penilaian', [TemplatePenilaianController::class, 'i
 Route::post('master/template-penilaian/store', [TemplatePenilaianController::class, 'store'])->name('template-penilaian.store');
 Route::put('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'update'])->name('template-penilaian.update');
 Route::delete('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'destroy'])->name('template-penilaian.destroy');
- 
+
+// KATEGORI TEMPLATE PENILAIAN
+Route::post('master/kategori-penilaian/store', [KategoriPenilaianController::class, 'store'])->name('kategori-penilaian.store');
+Route::put('master/kategori-penilaian/{kategori}', [KategoriPenilaianController::class, 'update'])->name('kategori-penilaian.update');
+Route::delete('master/kategori-penilaian/{kategori}', [KategoriPenilaianController::class, 'destroy'])->name('kategori-penilaian.destroy');
+
+// PERTANYAAN TEMPLATE PENILAIAN
+Route::post('master/pertanyaan-penilaian/store', [PertanyaanPenilaianController::class, 'store'])->name('pertanyaan-penilaian.store');
+Route::put('master/pertanyaan-penilaian/{pertanyaan}', [PertanyaanPenilaianController::class, 'update'])->name('pertanyaan-penilaian.update');
+Route::delete('master/pertanyaan-penilaian/{pertanyaan}', [PertanyaanPenilaianController::class, 'destroy'])->name('pertanyaan-penilaian.destroy');
+
 // PERIODE PENILAIAN
 Route::get('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'index'])->name('periode-penilaian.index');
 Route::post('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'store'])->name('periode.store');

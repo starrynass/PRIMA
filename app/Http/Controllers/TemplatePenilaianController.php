@@ -55,7 +55,9 @@ class TemplatePenilaianController extends Controller
     public function update(Request $request, MasterTemplate $template)
     {
         $template->update($this->validatedData($request));
-        return redirect()->route('template-penilaian.index')->with('success', 'Template penilaian berhasil diperbarui.');
+        return redirect()
+        ->route('template-penilaian.index', ['template_id' => $template->template_id])
+        ->with('success', 'Template penilaian berhasil diperbarui.');
     }
 
     public function destroy(MasterTemplate $template)

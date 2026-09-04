@@ -15,11 +15,16 @@ class MasterTemplate extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-    'template_id', 
-    'nama_template', 
-    'occ_id',
-    'status_aktif',
-    'created_by'
+        'template_id', 
+        'nama_template', 
+        'occ_id',
+        'status_aktif',
+        'created_by'
+    ];
+
+    // Tambahkan casting untuk occ_id di sini
+    protected $casts = [
+        'occ_id' => 'array',
     ];
 
     public function kategoris()
@@ -29,6 +34,9 @@ class MasterTemplate extends Model
 
     public function getOccIdArrayAttribute()
     {
+        if (is_array($this->occ_id)) {
+            return $this->occ_id;
+        }
         return $this->occ_id ? explode(',', $this->occ_id) : [];
     }
 
