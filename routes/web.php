@@ -52,6 +52,8 @@ Route::post('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 
 Route::put('/penilaian/periode-penilaian/{id}', [PeriodePenilaianController::class, 'update'])->name('periode.update');
 Route::delete('/penilaian/periode-penilaian/{id}', [PeriodePenilaianController::class, 'destroy'])->name('periode.destroy');
 Route::patch('/penilaian/periode-penilaian/{id}/toggle-lock', [PeriodePenilaianController::class, 'toggleLock'])->name('periode.toggleLock');
+Route::post('/penilaian/periode-penilaian/{id}/generate', [PeriodePenilaianController::class, 'generate'])->name('periode.generate');
+Route::get('/penilaian/periode-penilaian/{id}/detail', [PeriodePenilaianController::class, 'detail'])->name('periode.detail');
 
 // KELOLA PENILAIAN
 Route::get('/penilaian/kelola-penilaian', [KelolaPenilaianController::class, 'index'])->name('kelola-penilaian.index');

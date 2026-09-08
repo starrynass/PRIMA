@@ -581,10 +581,40 @@
         border-bottom: none !important;
     }
 
+    .modal-backdrop-confirm {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
     .modal-backdrop-confirm.active {
         display: flex !important;
         transform: scale(1) translateY(0);
     }
+
+    /* Animasi Spinner Loading */
+    .spinner-loader {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+@keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
     /* Kartu Konfirmasi Dialog */
     .confirm-card {
@@ -700,6 +730,23 @@
         background-color: #fce8ec !important;
         outline: 1px solid var(--maroon-primary, #800020);
     }
+
+    /* Animasi Loading Spinner */
+    .spinner-loader {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 
 <div class="periode-card">
@@ -745,7 +792,7 @@
             </button>
 
             <!-- 4. Generate Alokasi -->
-            <button type="button" id="btnGenerate" onclick="generateAlokasi()" class="btn btn-generate" disabled>
+            <button type="button" id="btnGenerate" onclick="openModalGeneratePeriode()" class="btn btn-generate" disabled>
                 <svg class="icon-svg-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 Generate
             </button>
@@ -782,6 +829,7 @@
                     </tr>
                 </thead>
                 <tbody>
+
                    @forelse($periodeList as $index => $item)
                         @php
                             $statusUpper = strtoupper($item->status ?? '');
@@ -801,6 +849,8 @@
                             <td class="fw-bold">{{ $item->nama_periode }}</td>
                             <td>{{ $item->tanggal_mulai?->format('d M Y') ?? '-' }}</td>
                             <td>{{ $item->tanggal_deadline?->format('d M Y') ?? '-' }}</td>
+
+
                             <td class="text-center">
                                 <span class="badge-status {{ $statusUpper === 'OPEN' ? 'badge-open' : 'badge-locked' }}">
                                     {{ $statusUpper ?: 'LOCKED' }}
@@ -1005,6 +1055,31 @@
     </div>
 </div>
 
+<!-- Modal Konfirmasi Generate -->
+<div class="modal-backdrop-confirm" id="modalGeneratePeriode">
+    <div class="confirm-card"> 
+        <div class="confirm-icon-wrapper icon-warning-circle">
+            <span class="confirm-icon-text">⚡</span>
+        </div>
+        <h3 class="confirm-title">Konfirmasi Generate</h3>
+        <p class="confirm-message">Yakin ingin meng-generate data penilaian untuk periode <strong id="generate_nama_periode">-</strong>?</p>
+        <p class="confirm-subtext" style="color: #0284c7;">Sistem akan mengolah data awal untuk semua pegawai aktif.</p>
+
+        <form id="formGeneratePeriode" method="POST" class="confirm-actions" onsubmit="submitGenerateWithAnimation(event)">
+            @csrf
+            
+            <!-- Tombol Submit dengan Spinner Animasi -->
+            <button type="submit" id="btnSubmitGenerate" class="btn-confirm-yes" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                <span id="btnGenerateText">Ya, Generate!</span>
+                <span id="btnGenerateSpinner" class="spinner-loader" style="display: none;"></span>
+            </button>
+            <button type="button" id="btnCancelGenerate" class="btn-confirm-cancel" onclick="closeModalGeneratePeriode()">Batal</button>
+        </form>
+    </div>
+</div>
+
+
+
 <script>
     let selectedPeriodeData = null;
 
@@ -1112,6 +1187,63 @@ function deletePeriodeRow() {
 function closeModalDeletePeriode() {
     document.getElementById('modalDeletePeriode').classList.remove('active');
 }
+
+// Membuka Modal Generate
+function openModalGeneratePeriode() {
+    if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
+        alert('Silakan pilih salah satu baris periode terlebih dahulu!');
+        return;
+    }
+
+    // Set nama periode di teks konfirmasi modal
+    document.getElementById('generate_nama_periode').innerText = selectedPeriodeData.nama_periode;
+
+    // Set URL Action Form
+    const form = document.getElementById('formGeneratePeriode');
+    if (form) {
+        form.action = `/penilaian/periode-penilaian/${selectedPeriodeData.periode_id}/generate`;
+    }
+
+    // Tampilkan modal
+    const modal = document.getElementById('modalGeneratePeriode');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+// Menutup Modal Generate
+function closeModalGeneratePeriode() {
+    const modal = document.getElementById('modalGeneratePeriode');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Eksekusi Animasi Spinner saat Form Disubmit
+function submitGenerateWithAnimation(e) {
+    const btnSubmit = document.getElementById('btnSubmitGenerate');
+    const btnCancel = document.getElementById('btnCancelGenerate');
+    const btnText = document.getElementById('btnGenerateText');
+    const spinner = document.getElementById('btnGenerateSpinner');
+
+    if (btnSubmit) btnSubmit.disabled = true;
+    if (btnCancel) btnCancel.style.display = 'none';
+    if (btnText) btnText.innerText = 'Memproses...';
+    if (spinner) spinner.style.display = 'inline-block';
+}
+
+
+
+
+function openDetailPeriode() {
+    if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
+        alert('Silakan pilih salah satu baris periode terlebih dahulu!');
+        return;
+    }
+
+    // Redirect ke halaman detail periode
+    window.location.href = `/penilaian/periode-penilaian/${selectedPeriodeData.periode_id}/detail`;
+}   
 </script>
 
 @endsection
