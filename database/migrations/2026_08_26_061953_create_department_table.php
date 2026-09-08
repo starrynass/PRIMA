@@ -24,7 +24,7 @@ return new class extends Migration
             // Urutan Laporan & Flag Tambahan
             $table->tinyInteger('urut_laporan')->nullable();
             $table->tinyInteger('urut_bulanan_laporan')->nullable();
-            $table->tinyInteger('is_skateholder')->nullable();
+            $table->tinyInteger('is_stakeholder')->nullable();
 
             $table->timestamps();
         });

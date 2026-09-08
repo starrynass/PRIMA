@@ -16,7 +16,7 @@ return new class extends Migration
             $table->smallIncrements('off_id');
 
             // Informasi Kantor
-            $table->char('off_code', 5)->comment('Kode unik kantor');
+            $table->string('off_code')->nullable()->comment('Kode unik kantor');
             $table->string('off_name', 50)->comment('Nama unit kantor / cabang');
             $table->string('off_telp', 25)->nullable()->comment('Nomor telepon kantor');
             $table->string('off_addr', 150)->nullable()->comment('Alamat lengkap kantor');

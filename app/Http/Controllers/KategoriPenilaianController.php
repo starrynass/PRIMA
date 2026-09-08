@@ -67,13 +67,16 @@ class KategoriPenilaianController extends Controller
     public function update(Request $request, MasterKategori $kategori)
     {
         $kategori->update($this->validatedData($request));
-        return redirect()->route('template-penilaian.index')->with('success', 'Kategori penilaian berhasil diperbarui.');
+        return redirect()->route('template-penilaian.index', ['template_id' => $kategori->template_id])
+            ->with('success', 'Kategori penilaian berhasil diperbarui.');
     }
 
     public function destroy(MasterKategori $kategori)
     {
+        $templateId = $kategori ? $kategori->template_id : $request->template_id;
         $kategori->delete();
-        return redirect()->route('template-penilaian.index')->with('success', 'Kategori penilaian berhasil dihapus.');
+        return redirect()->route('template-penilaian.index', ['template_id' => $kategori->template_id])
+            ->with('success', 'Kategori penilaian berhasil dihapus.');
     }
 
      private function newId(): string

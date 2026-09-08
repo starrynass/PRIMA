@@ -16,7 +16,7 @@ return new class extends Migration
         $table->increments('pgw_id'); // INT AUTO_INCREMENT
         $table->string('pin', 10)->nullable();
         $table->string('id_usermachine', 25)->nullable();
-        $table->string('nup', 10)->nullable();
+        $table->string('nup', 20)->nullable();
         $table->string('nama', 50);
 
         // Data Pribadi

@@ -181,7 +181,6 @@
     border-radius: 10px;
     background: #ffffff;
     overflow: hidden;
-    /* Hanya ubah box-shadow untuk cegah blink/flicker */
     transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -199,6 +198,26 @@
     padding: 12px 16px;
     background: #FAF5F6; /* Soft Maroon background */
     border-bottom: 1px solid #F3E8EA;
+    cursor: pointer;
+    list-style: none; /* Hilangkan panah default browser */
+    user-select: none;
+}
+
+.kategori-card-header::-webkit-details-marker {
+    display: none; /* Hilangkan panah default di Chrome/Safari */
+}
+
+/* Toggle animasi panah chevron kategori */
+.icon-toggle {
+    transition: transform 0.2s ease;
+}
+
+.kategori-card-wrapper:not([open]) .icon-toggle {
+    transform: rotate(-90deg);
+}
+
+.kategori-card-wrapper:not([open]) .kategori-card-header {
+    border-bottom: none;
 }
 
 .kategori-header-left, .kategori-header-right {
@@ -705,7 +724,7 @@
     box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
 }
 
-   .layout-grid {
+.layout-grid {
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: 1.25rem;
@@ -1236,7 +1255,9 @@
         {{-- JIKA BELUM MEMILIH TEMPLATE, TAMPILKAN EMPTY STATE --}}
         @if(!$hasTemplateSelected)
             <div id="emptyStateBox" class="card-box empty-state mb-3">
-                <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                </svg>
                 <p style="margin: 0; font-size: 0.85rem;">Pilih template di atas untuk melihat struktur kategori & pertanyaan</p>
             </div>
         @else
@@ -1246,8 +1267,9 @@
                     $sumBobotPertanyaan = $kategori->pertanyans ? $kategori->pertanyans->sum('bobot_persen') : 0;
                     $isValidBobotPertanyaan = ($sumBobotPertanyaan == 100);
                 @endphp
-                <div class="kategori-card-wrapper mb-3">
-                    <div class="kategori-card-header">
+                
+                <details class="kategori-card-wrapper mb-3" open>
+                    <summary class="kategori-card-header">
                         <div class="kategori-header-left">
                             <i class="fas fa-chevron-down text-muted icon-toggle me-1"></i>
                             <span class="badge-urutan-kategori">{{ $kategori->urutan }}</span>
@@ -1261,17 +1283,17 @@
                             <span class="badge-bobot-pill {{ $isValidBobotPertanyaan ? 'valid' : 'warning' }}">
                                 <i class="fas {{ $isValidBobotPertanyaan ? 'fa-check-circle' : 'fa-exclamation-triangle' }} me-1"></i> {{ $kategori->bobot_persen }}%
                             </span>
-                            <button type="button" class="btn-action-icon btn-add-q" onclick="openModalTambahPertanyaan('{{ $kategori->kategori_id }}')" title="Tambah Pertanyaan">
+                            <button type="button" class="btn-action-icon btn-add-q" onclick="event.stopPropagation(); openModalTambahPertanyaan('{{ $kategori->kategori_id }}')" title="Tambah Pertanyaan">
                                 <i class="fas fa-plus"></i>
                             </button>
-                            <button type="button" class="btn-action-icon btn-edit-k" onclick="openModalEditKategori('{{ $kategori->kategori_id }}')" title="Edit Kategori">
+                            <button type="button" class="btn-action-icon btn-edit-k" onclick="event.stopPropagation(); openModalEditKategori('{{ $kategori->kategori_id }}')" title="Edit Kategori">
                                 <i class="fas fa-pen"></i>
                             </button>
-                            <button type="button" class="btn-action-icon btn-delete-k" onclick="openModalDeleteKategori('{{ $kategori->kategori_id }}')" title="Hapus Kategori">
+                            <button type="button" class="btn-action-icon btn-delete-k" onclick="event.stopPropagation(); openModalDeleteKategori('{{ $kategori->kategori_id }}')" title="Hapus Kategori">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
-                    </div>
+                    </summary>
 
                     <div class="kategori-card-body p-3">
                         @if($kategori->pertanyaans && $kategori->pertanyaans->count() > 0)
@@ -1318,10 +1340,10 @@
                                         </table>
 
                                         <div class="d-flex gap-2 pt-1">
-                                            <button class="btn btn-edit-k" onclick="openModalEditPertanyaan('{{ $pertanyaan->pertanyaan_id }}')">
+                                            <button type="button" class="btn btn-q-edit" data-pertanyaan="{{ json_encode($pertanyaan) }}" onclick="openModalEditPertanyaan(this)">
                                                 <i class="fas fa-edit me-1"></i> Edit
                                             </button>
-                                            <button class="btn btn-delete-k" onclick="openModalHapusPertanyaan('{{ $pertanyaan->pertanyaan_id }}')">
+                                            <button type="button" class="btn btn-q-delete" data-pertanyaan="{{ json_encode($pertanyaan) }}" onclick="openModalDeletePertanyaan(this)">
                                                 <i class="fas fa-trash me-1"></i> Hapus
                                             </button>
                                         </div>
@@ -1334,15 +1356,14 @@
                             </div>
                         @endif
                     </div>
-                </div>
+                </details>
             @empty
                 <div class="card-box empty-state mb-3">
                     <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Belum ada kategori pada template ini.</p>
                 </div>
             @endforelse
         @endif
-
-    </div>
+    </div> <!-- Penutup main-content-column -->
 
         <!-- ================= KOLOM SIDEBAR (KANAN) ================= -->
         <div class="sidebar-column">
@@ -1409,9 +1430,10 @@
                             <div class="val-kategori-list">
                                 @foreach($selectedTemplate->kategoris as $kat)
                                     @php
-                                        $sumBobotQ = $kat->pertanyans ? $kat->pertanyans->sum('bobot_persen') : 0;
+                                        $sumBobotQ = $kat->pertanyaans ? $kat->pertanyaans->sum('bobot_persen') : 0;
                                         $isPass = ($sumBobotQ == 100);
                                     @endphp
+                                    
                                     <div class="val-kategori-item">
                                         <div class="val-kat-name" title="{{ $kat->nama }}">
                                             <i class="fas {{ $isPass ? 'fa-check-circle text-success' : 'fa-exclamation-circle text-warning' }}"></i>
@@ -1718,9 +1740,52 @@
     </div>
 </div>
 
+<div id="modalDeletePertanyaan" class="modal-backdrop-delete" onclick="closeModalDeletePertanyaanOnBackdrop(event)" style="display: none;">
+    <div class="delete-card">
+        <div class="delete-accent-bar"></div>
+        <div class="delete-card-body">
+            <div class="delete-icon-wrapper">
+                <svg class="delete-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <h3 class="delete-title">Konfirmasi Hapus</h3>
+            <p class="delete-message">
+                Anda yakin akan menghapus pertanyaan <strong id="deletePertanyaanName"></strong>?
+            </p>
+            <div class="delete-actions">
+                <button type="button" class="btn-delete-confirm" onclick="confirmDeletePertanyaan()">HAPUS</button>
+                <button type="button" class="btn-delete-cancel" onclick="closeModalDeletePertanyaan()">BATAL</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>\
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Menangani semua elemen details (kategori & pertanyaan)
+    document.querySelectorAll('.kategori-card-wrapper, .question-accordion-item').forEach((el, index) => {
+        // Beri ID otomatis jika elemen belum punya atribut ID
+        if (!el.id) {
+            el.id = 'accordion-state-' + index;
+        }
+
+        // Restore status open/close dari sessionStorage saat halaman selesai reload
+        const savedState = sessionStorage.getItem('state_' + el.id);
+        if (savedState !== null) {
+            el.open = (savedState === 'true');
+        }
+
+        // Simpan kondisi terbaru setiap kali user membuka/menutup accordion
+        el.addEventListener('toggle', function () {
+            sessionStorage.setItem('state_' + this.id, this.open);
+        });
+    });
+});
+</script>
 
 <script>
     $(document).ready(function() {
@@ -2143,6 +2208,7 @@
 </script>
 
 <script>
+
     function openModalTambahPertanyaan(kategoriId) {
         document.getElementById('kategori_id_pertanyaan').value = kategoriId; 
 
@@ -2183,6 +2249,138 @@
         if (modal) {
             modal.classList.add('active');
             modal.style.display = 'flex';
+        }
+    }
+
+    function openModalEditPertanyaan(button) {
+        // Read & parse JSON data safely from data attribute
+        let data;
+        try {
+            data = JSON.parse(button.getAttribute('data-pertanyaan'));
+        } catch (e) {
+            console.error("Gagal parse data pertanyaan:", e);
+            alert('Format data pertanyaan tidak valid!');
+            return;
+        }
+
+        if (!data) return;
+
+        const form = document.getElementById('formPertanyaan');
+        
+        // Set Value Inputs
+        if (document.getElementById('pertanyaan_id')) document.getElementById('pertanyaan_id').value = data.pertanyaan_id;
+        if (document.getElementById('kategori_id_pertanyaan')) document.getElementById('kategori_id_pertanyaan').value = data.kategori_id || '';
+        if (document.getElementById('pertanyaan')) document.getElementById('pertanyaan').value = data.pertanyaan || '';
+        if (document.getElementById('deskripsi')) document.getElementById('deskripsi').value = data.deskripsi || '';
+        if (document.getElementById('bobot_persen_pertanyaan')) document.getElementById('bobot_persen_pertanyaan').value = data.bobot_persen || '';
+        if (document.getElementById('urutan_pertanyaan')) document.getElementById('urutan_pertanyaan').value = data.urutan || '';
+        if (document.getElementById('jenis_pertanyaan')) document.getElementById('jenis_pertanyaan').value = data.jenis || 'Nilai';
+        
+        // Set Status Aktif
+        const statusVal = (data.status_aktif == 1 || data.status_aktif == '1' || data.status_aktif == 'Aktif') ? '1' : '0';
+        if (document.getElementById('status_aktif_pertanyaan')) document.getElementById('status_aktif_pertanyaan').value = statusVal;
+
+        // Set Form Action & Method
+        if (document.getElementById('formMethodPertanyaan')) document.getElementById('formMethodPertanyaan').value = 'PUT';
+        if (form) form.action = `{{ url('/master/pertanyaan-penilaian') }}/${data.pertanyaan_id}`;
+
+        // Update UI Modal
+        if (document.getElementById('modalTitlePertanyaan')) document.getElementById('modalTitlePertanyaan').textContent = 'Ubah Pertanyaan Penilaian';
+        if (document.getElementById('btnSubmitTextPertanyaan')) document.getElementById('btnSubmitTextPertanyaan').textContent = 'Perbarui Data';
+
+        const btnSubmit = document.getElementById('btnSubmitModalPertanyaan');
+        if (btnSubmit) {
+            btnSubmit.classList.remove('btn-add-template');
+            btnSubmit.classList.add('btn-amber-template');
+        }
+
+        // Tampilkan Modal
+        const modal = document.getElementById('modalPertanyaan');
+        if (modal) {
+            modal.classList.add('active');
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeModalPertanyaan() {
+        const modal = document.getElementById('modalPertanyaan');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+        }
+    }
+
+    function closeModalPertanyaanOnBackdrop(event) {
+        if (event.target.id === 'modalPertanyaan') {
+            closeModalPertanyaan();
+        }
+    }
+
+    // Variable global untuk menyimpan ID yang akan dihapus
+    window.selectedDeletePertanyaanId = null;
+
+    function openModalDeletePertanyaan(button) {
+        let data;
+        try {
+            data = JSON.parse(button.getAttribute('data-pertanyaan'));
+        } catch (e) {
+            console.error("Gagal parse data pertanyaan:", e);
+            alert('Data Pertanyaan tidak valid!');
+            return;
+        }
+
+        if (!data) return;
+
+        // Simpan HANYA pertanyaan_id (tanpa gabungan kategoriId)
+        window.selectedDeletePertanyaanId = data.pertanyaan_id;
+
+        // Tampilkan teks pertanyaan/nama pada modal konfirmasi
+        const nameEl = document.getElementById('deletePertanyaanName');
+        if (nameEl) {
+            nameEl.textContent = `"${data.pertanyaan || data.nama || ''}"`;
+        }
+
+        const modal = document.getElementById('modalDeletePertanyaan');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    function confirmDeletePertanyaan() {
+        const pertanyaanId = window.selectedDeletePertanyaanId;
+
+        if (!pertanyaanId) {
+            alert('Data Pertanyaan tidak ditemukan!');
+            return;
+        }
+
+        // Buat form dinamis untuk submit DELETE request
+        const deleteForm = document.createElement('form');
+        deleteForm.method = 'POST';
+        deleteForm.action = `{{ url('/master/pertanyaan-penilaian') }}/${pertanyaanId}`;
+
+        const csrfToken = document.querySelector('input[name="_token"]')?.value || '{{ csrf_token() }}';
+
+        deleteForm.innerHTML = `
+            <input type="hidden" name="_token" value="${csrfToken}">
+            <input type="hidden" name="_method" value="DELETE">
+        `;
+
+        document.body.appendChild(deleteForm);
+        deleteForm.submit();
+    }
+
+    function closeModalDeletePertanyaan() {
+        window.selectedDeletePertanyaanId = null;
+        const modal = document.getElementById('modalDeletePertanyaan');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function closeModalDeletePertanyaanOnBackdrop(event) {
+        if (event.target.id === 'modalDeletePertanyaan') {
+            closeModalDeletePertanyaan();
         }
     }
 </script>

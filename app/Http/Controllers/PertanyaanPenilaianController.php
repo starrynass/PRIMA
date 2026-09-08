@@ -63,6 +63,29 @@ class PertanyaanPenilaianController extends Controller
             ->with('success', 'Data Pertanyaan Berhasil Ditambahkan!');
     }
 
+    public function update(Request $request, MasterPertanyaan $pertanyaan)
+    {
+        $validated = $this->validatedData($request);
+
+        $pertanyaan->update($validated);
+
+        $kategori = MasterKategori::find($request->kategori_id);
+        $templateId = $kategori ? $kategori->template_id : $request->template_id;
+
+        return redirect()->route('template-penilaian.index', ['template_id' => $templateId])
+            ->with('success', 'Pertanyaan penilaian berhasil diperbarui.');
+    }
+
+    public function destroy(MasterPertanyaan $pertanyaan)
+    {
+        $templateId = optional($pertanyaan->kategori)->template_id ?? request('template_id');
+
+        $pertanyaan->delete();
+
+        return redirect()->route('template-penilaian.index', ['template_id' => $templateId])
+            ->with('success', 'Pertanyaan penilaian berhasil dihapus.');
+    }
+
     private function newId(): string
     {
         $latest = MasterPertanyaan::max('pertanyaan_id');

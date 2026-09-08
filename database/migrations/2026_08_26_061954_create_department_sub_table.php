@@ -16,7 +16,7 @@ return new class extends Migration
             $table->smallIncrements('subdept_id');
 
             // Informasi Sub Department
-            $table->string('subdept_code', 20)->comment('Kode sub department');
+            $table->string('subdept_code')->nullable()->comment('Kode sub department');
             $table->string('subdept_name', 50)->comment('Nama sub department');
 
             // Foreign Key ke tabel department (INT)
