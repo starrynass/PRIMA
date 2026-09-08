@@ -1267,7 +1267,20 @@ class EmployeeSeeder extends Seeder
             ],
         ];
 
-        // Insert Array Data ke Tabel employee
-        DB::table('employee')->insert($employees);
+        $normalizedEmployees = array_map(function ($employee) {
+            $employee['nup'] = substr((string) ($employee['nup'] ?? ''), -10);
+            $employee['off_id'] = $employee['off_id'] ?? null;
+            $employee['dept_id'] = $employee['dept_id'] ?? null;
+            $employee['subdept_id'] = $employee['subdept_id'] ?? null;
+
+            return $employee;
+        }, $employees);
+
+        foreach ($normalizedEmployees as $employee) {
+            DB::table('employee')->updateOrInsert(
+                ['pgw_id' => $employee['pgw_id']],
+                $employee
+            );
+        }
     }
 }

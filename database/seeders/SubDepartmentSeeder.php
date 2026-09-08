@@ -10,11 +10,11 @@ class SubDepartmentSeeder extends Seeder
     public function run(): void
     {
         $subdepartments = [
-            ['subdept_id' => 1,  'subdept_code' => null, 'subdept_name' => 'Direksi',                    'dept_id' => 1,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
-            ['subdept_id' => 2,  'subdept_code' => null, 'subdept_name' => 'Adm.&Keu.',                   'dept_id' => 2,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
-            ['subdept_id' => 3,  'subdept_code' => null, 'subdept_name' => 'Adm.SDM',                     'dept_id' => 14, 'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
-            ['subdept_id' => 4,  'subdept_code' => null, 'subdept_name' => 'Adm.Umum & Kearsipan',         'dept_id' => 17, 'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
-            ['subdept_id' => 5,  'subdept_code' => null, 'subdept_name' => 'Akuntansi & Perpajakan',       'dept_id' => 5,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
+            ['subdept_id' => 1,  'subdept_code' => '1', 'subdept_name' => 'Direksi',                    'dept_id' => 1,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
+            ['subdept_id' => 2,  'subdept_code' => '2', 'subdept_name' => 'Adm.&Keu.',                   'dept_id' => 2,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
+            ['subdept_id' => 3,  'subdept_code' => '3', 'subdept_name' => 'Adm.SDM',                     'dept_id' => 14, 'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
+            ['subdept_id' => 4,  'subdept_code' => '4', 'subdept_name' => 'Adm.Umum & Kearsipan',         'dept_id' => 17, 'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
+            ['subdept_id' => 5,  'subdept_code' => '5', 'subdept_name' => 'Akuntansi & Perpajakan',       'dept_id' => 5,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
             ['subdept_id' => 6,  'subdept_code' => null, 'subdept_name' => 'Anggaran & Pelaporan',         'dept_id' => 5,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
             ['subdept_id' => 7,  'subdept_code' => null, 'subdept_name' => 'Cab Unit',                    'dept_id' => 2,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
             ['subdept_id' => 8,  'subdept_code' => null, 'subdept_name' => 'Cabang',                      'dept_id' => 2,  'isaktif' => 1, 'dept_name1' => null,   'perkiraan_gaji' => null, 'perkiraan_tunjangan' => null, 'jenis_adm_tek' => 0],
@@ -74,7 +74,17 @@ class SubDepartmentSeeder extends Seeder
             ['subdept_id' => 62, 'subdept_code' => '62',  'subdept_name' => 'Umum',                       'dept_id' => 17, 'isaktif' => 1, 'dept_name1' => 'Umum', 'perkiraan_gaji' => '0',  'perkiraan_tunjangan' => '0',  'jenis_adm_tek' => 0],
         ];
 
-        // Sesuaikan nama tabel 'sub_department' dengan nama tabel di database kamu
-        DB::table('departement_sub')->insert($subdepartments);
+        foreach ($subdepartments as $subdepartment) {
+            $subdepartment['subdept_code'] = trim((string) ($subdepartment['subdept_code'] ?? '')) !== ''
+                ? substr((string) $subdepartment['subdept_code'], 0, 20)
+                : 'SD-' . str_pad((string) $subdepartment['subdept_id'], 3, '0', STR_PAD_LEFT);
+
+            $subdepartment['dept_name1'] = $subdepartment['dept_name1'] ?? null;
+
+            DB::table('department_sub')->updateOrInsert(
+                ['subdept_id' => $subdepartment['subdept_id']],
+                $subdepartment
+            );
+        }
     }
 }

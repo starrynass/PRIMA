@@ -834,15 +834,17 @@
                         @php
                             $statusUpper = strtoupper($item->status ?? '');
                             $isOverdue = ($statusUpper === 'OPEN' && $item->tanggal_deadline?->isPast());
+                            $isGenerated = (int) ($item->total_pegawai ?? 0) > 0;
                         @endphp
 
-                        <!-- TAG TR YANG SUDAH DILENGKAPI EVENT ONCLICK & PAYLOAD JSON -->
+                        <!-- Catatan: data-is-generated dipakai JS untuk mengaktifkan tombol Generate / Detail sesuai kondisi lock dan status generate. -->
                         <tr class="{{ $isOverdue ? 'tr-overdue' : '' }} cursor-pointer" 
                             data-periode-id="{{ $item->periode_id }}"
                             data-nama-periode="{{ $item->nama_periode }}"
                             data-tanggal-mulai="{{ $item->tanggal_mulai?->format('Y-m-d') }}"
                             data-tanggal-deadline="{{ $item->tanggal_deadline?->format('Y-m-d') }}"
                             data-status="{{ $statusUpper }}"
+                            data-is-generated="{{ $isGenerated ? '1' : '0' }}"
                             onclick="selectRow(this)">
                             
                             <td class="text-center font-monospace">{{ $periodeList->firstItem() + $index }}</td>
@@ -1081,7 +1083,18 @@
 
 
 <script>
+    const baseUrl = "{{ url('/penilaian/periode-penilaian') }}";
     let selectedPeriodeData = null;
+
+    function disableAllToolbarButtons() {
+        ['btnDetailPeriode', 'btnToggleLock', 'btnGenerate', 'btnEditPeriode', 'btnDeletePeriode']
+            .forEach((buttonId) => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.disabled = true;
+                }
+            });
+    }
 
     // Fungsi Klik Baris Tabel + Fitur UNCLICK
     function selectRow(trElement) {
@@ -1108,142 +1121,165 @@
             nama_periode: trElement.dataset.namaPeriode,
             tanggal_mulai: trElement.dataset.tanggalMulai,
             tanggal_deadline: trElement.dataset.tanggalDeadline,
-            status: trElement.dataset.status
+            status: trElement.dataset.status,
+            is_generated: trElement.dataset.isGenerated === '1'
         };
 
-        // Aktifkan semua tombol toolbar
-        const btnIds = ['btnDetailPeriode', 'btnToggleLock', 'btnGenerate', 'btnEditPeriode', 'btnDeletePeriode'];
-        btnIds.forEach(id => {
-            const btn = document.getElementById(id);
-            if (btn) btn.disabled = false;
-        });
+        // Catatan: tombol Generate hanya aktif saat periode OPEN dan belum generate.
+        // Tombol Detail hanya aktif saat periode OPEN dan sudah generate.
+        // Periode LOCKED tidak bisa generate dan juga tidak bisa membuka detail.
+        const isLocked = (selectedPeriodeData.status || '').toUpperCase() === 'LOCKED';
+        const canGenerate = !isLocked && !selectedPeriodeData.is_generated;
+        const canDetail = !isLocked && selectedPeriodeData.is_generated;
+
+        document.getElementById('btnDetailPeriode').disabled = !canDetail;
+        document.getElementById('btnToggleLock').disabled = false;
+        document.getElementById('btnGenerate').disabled = !canGenerate;
+        document.getElementById('btnEditPeriode').disabled = false;
+        document.getElementById('btnDeletePeriode').disabled = false;
+
+        const editNamaPeriode = document.getElementById('edit_nama_periode');
+        if (editNamaPeriode) {
+            editNamaPeriode.value = selectedPeriodeData.nama_periode || '';
+        }
+
+        const editTanggalMulai = document.getElementById('edit_tanggal_mulai');
+        if (editTanggalMulai) {
+            editTanggalMulai.value = selectedPeriodeData.tanggal_mulai || '';
+        }
+
+        const editTanggalDeadline = document.getElementById('edit_tanggal_deadline');
+        if (editTanggalDeadline) {
+            editTanggalDeadline.value = selectedPeriodeData.tanggal_deadline || '';
+        }
     }
 
-    // Reset tombol toolbar ke mode disabled
-    function disableAllToolbarButtons() {
-        const btnIds = ['btnDetailPeriode', 'btnToggleLock', 'btnGenerate', 'btnEditPeriode', 'btnDeletePeriode'];
-        btnIds.forEach(id => {
-            const btn = document.getElementById(id);
-            if (btn) btn.disabled = true;
-        });
+    function openModalEditPeriode() {
+        if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
+            alert('Silakan pilih salah satu baris periode terlebih dahulu!');
+            return;
+        }
+
+        const editNamaPeriode = document.getElementById('edit_nama_periode');
+        if (editNamaPeriode) {
+            editNamaPeriode.value = selectedPeriodeData.nama_periode || '';
+        }
+
+        const editTanggalMulai = document.getElementById('edit_tanggal_mulai');
+        if (editTanggalMulai) {
+            editTanggalMulai.value = selectedPeriodeData.tanggal_mulai || '';
+        }
+
+        const editTanggalDeadline = document.getElementById('edit_tanggal_deadline');
+        if (editTanggalDeadline) {
+            editTanggalDeadline.value = selectedPeriodeData.tanggal_deadline || '';
+        }
+
+        const form = document.getElementById('formEditPeriode');
+        if (form) {
+            form.action = `${baseUrl}/${selectedPeriodeData.periode_id}`;
+        }
+
+        const modal = document.getElementById('modalEditPeriode');
+        if (modal) {
+            modal.classList.add('active');
+        }
     }
 
-    // Modal Tambah
-    function openModalTambahPeriode() {
-        document.getElementById('modalTambahPeriode').classList.add('active');
-    }
-    function closeModalTambahPeriode() {
-        document.getElementById('modalTambahPeriode').classList.remove('active');
-    }
-
- // Sesuaikan baseUrl dengan prefix route kamu: /penilaian/periode-penilaian
-const baseUrl = "{{ url('/penilaian/periode-penilaian') }}";
-
-// 1. Action Form Edit (PUT)
-function openModalEditPeriode() {
-    if (!selectedPeriodeData) return;
-
-    document.getElementById('edit_nama_periode').value = selectedPeriodeData.nama_periode;
-    document.getElementById('edit_tanggal_mulai').value = selectedPeriodeData.tanggal_mulai;
-    document.getElementById('edit_tanggal_deadline').value = selectedPeriodeData.tanggal_deadline;
-
-    // Menghasilkan URL: /penilaian/periode-penilaian/2026-01
-    document.getElementById('formEditPeriode').action = `${baseUrl}/${selectedPeriodeData.periode_id}`;
-    document.getElementById('modalEditPeriode').classList.add('active');
-}
-
-function closeModalEditPeriode() {
-    document.getElementById('modalEditPeriode').classList.remove('active');
-}
-
-// 2. Action Form Toggle Lock (PATCH)
-function toggleLockPeriode() {
-    if (!selectedPeriodeData) return;
-
-    const currentStatus = (selectedPeriodeData.status || '').toUpperCase();
-    const targetStatus = (currentStatus === 'OPEN') ? 'DIKUNCI (LOCKED)' : 'DIBUKA (OPEN)';
-
-    document.getElementById('lock_nama_periode').innerText = selectedPeriodeData.nama_periode;
-    document.getElementById('lock_target_status').innerText = targetStatus;
-
-    // Menghasilkan URL: /penilaian/periode-penilaian/2026-01/toggle-lock
-    document.getElementById('formToggleLock').action = `${baseUrl}/${selectedPeriodeData.periode_id}/toggle-lock`;
-    document.getElementById('modalToggleLock').classList.add('active');
-}
-function closeModalToggleLock() {
-    document.getElementById('modalToggleLock').classList.remove('active');
-}
-
-// 3. Action Form Hapus (DELETE)
-function deletePeriodeRow() {
-    if (!selectedPeriodeData) return;
-
-    document.getElementById('delete_nama_periode').innerText = selectedPeriodeData.nama_periode;
-
-    // Menghasilkan URL: /penilaian/periode-penilaian/2026-01
-    document.getElementById('formDeletePeriode').action = `${baseUrl}/${selectedPeriodeData.periode_id}`;
-    document.getElementById('modalDeletePeriode').classList.add('active');
-}
-function closeModalDeletePeriode() {
-    document.getElementById('modalDeletePeriode').classList.remove('active');
-}
-
-// Membuka Modal Generate
-function openModalGeneratePeriode() {
-    if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
-        alert('Silakan pilih salah satu baris periode terlebih dahulu!');
-        return;
+    function closeModalEditPeriode() {
+        const modal = document.getElementById('modalEditPeriode');
+        if (modal) {
+            modal.classList.remove('active');
+        }
     }
 
-    // Set nama periode di teks konfirmasi modal
-    document.getElementById('generate_nama_periode').innerText = selectedPeriodeData.nama_periode;
+    // 2. Action Form Toggle Lock (PATCH)
+    function toggleLockPeriode() {
+        if (!selectedPeriodeData) return;
 
-    // Set URL Action Form
-    const form = document.getElementById('formGeneratePeriode');
-    if (form) {
-        form.action = `/penilaian/periode-penilaian/${selectedPeriodeData.periode_id}/generate`;
+        const currentStatus = (selectedPeriodeData.status || '').toUpperCase();
+        const targetStatus = (currentStatus === 'OPEN') ? 'DIKUNCI (LOCKED)' : 'DIBUKA (OPEN)';
+
+        document.getElementById('lock_nama_periode').innerText = selectedPeriodeData.nama_periode;
+        document.getElementById('lock_target_status').innerText = targetStatus;
+
+        // Menghasilkan URL: /penilaian/periode-penilaian/2026-01/toggle-lock
+        document.getElementById('formToggleLock').action = `${baseUrl}/${selectedPeriodeData.periode_id}/toggle-lock`;
+        document.getElementById('modalToggleLock').classList.add('active');
     }
 
-    // Tampilkan modal
-    const modal = document.getElementById('modalGeneratePeriode');
-    if (modal) {
-        modal.classList.add('active');
-    }
-}
-
-// Menutup Modal Generate
-function closeModalGeneratePeriode() {
-    const modal = document.getElementById('modalGeneratePeriode');
-    if (modal) {
-        modal.classList.remove('active');
-    }
-}
-
-// Eksekusi Animasi Spinner saat Form Disubmit
-function submitGenerateWithAnimation(e) {
-    const btnSubmit = document.getElementById('btnSubmitGenerate');
-    const btnCancel = document.getElementById('btnCancelGenerate');
-    const btnText = document.getElementById('btnGenerateText');
-    const spinner = document.getElementById('btnGenerateSpinner');
-
-    if (btnSubmit) btnSubmit.disabled = true;
-    if (btnCancel) btnCancel.style.display = 'none';
-    if (btnText) btnText.innerText = 'Memproses...';
-    if (spinner) spinner.style.display = 'inline-block';
-}
-
-
-
-
-function openDetailPeriode() {
-    if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
-        alert('Silakan pilih salah satu baris periode terlebih dahulu!');
-        return;
+    function closeModalToggleLock() {
+        document.getElementById('modalToggleLock').classList.remove('active');
     }
 
-    // Redirect ke halaman detail periode
-    window.location.href = `/penilaian/periode-penilaian/${selectedPeriodeData.periode_id}/detail`;
-}   
+    // 3. Action Form Hapus (DELETE)
+    function deletePeriodeRow() {
+        if (!selectedPeriodeData) return;
+
+        document.getElementById('delete_nama_periode').innerText = selectedPeriodeData.nama_periode;
+
+        // Menghasilkan URL: /penilaian/periode-penilaian/2026-01
+        document.getElementById('formDeletePeriode').action = `${baseUrl}/${selectedPeriodeData.periode_id}`;
+        document.getElementById('modalDeletePeriode').classList.add('active');
+    }
+
+    function closeModalDeletePeriode() {
+        document.getElementById('modalDeletePeriode').classList.remove('active');
+    }
+
+    // Membuka Modal Generate
+    function openModalGeneratePeriode() {
+        if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
+            alert('Silakan pilih salah satu baris periode terlebih dahulu!');
+            return;
+        }
+
+        // Set nama periode di teks konfirmasi modal
+        document.getElementById('generate_nama_periode').innerText = selectedPeriodeData.nama_periode;
+
+        // Set URL Action Form
+        const form = document.getElementById('formGeneratePeriode');
+        if (form) {
+            form.action = `${baseUrl}/${selectedPeriodeData.periode_id}/generate`;
+        }
+
+        // Tampilkan modal
+        const modal = document.getElementById('modalGeneratePeriode');
+        if (modal) {
+            modal.classList.add('active');
+        }
+    }
+
+    // Menutup Modal Generate
+    function closeModalGeneratePeriode() {
+        const modal = document.getElementById('modalGeneratePeriode');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+
+    // Eksekusi Animasi Spinner saat Form Disubmit
+    function submitGenerateWithAnimation(e) {
+        const btnSubmit = document.getElementById('btnSubmitGenerate');
+        const btnCancel = document.getElementById('btnCancelGenerate');
+        const btnText = document.getElementById('btnGenerateText');
+        const spinner = document.getElementById('btnGenerateSpinner');
+
+        if (btnSubmit) btnSubmit.disabled = true;
+        if (btnCancel) btnCancel.style.display = 'none';
+        if (btnText) btnText.innerText = 'Memproses...';
+        if (spinner) spinner.style.display = 'inline-block';
+    }
+
+    function openDetailPeriode() {
+        if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
+            alert('Silakan pilih salah satu baris periode terlebih dahulu!');
+            return;
+        }
+
+        // Redirect ke halaman detail periode
+        window.location.href = `${baseUrl}/${selectedPeriodeData.periode_id}/detail`;
+    }
 </script>
 
 @endsection

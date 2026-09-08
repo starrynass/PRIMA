@@ -80,7 +80,19 @@ class OfficeSeeder extends Seeder
             ['off_id' => 73, 'off_code' => 'CBM',  'off_name' => 'BP Spring City',                        'off_telp' => '-',             'off_addr' => 'CV5V+VMW Bojong Koneng, Kabupaten Bogor',       'off_cp' => null, 'of_type' => null, 'online' => 1, 'of_lat' => '-6.590132614910208',     'of_long' => '106.89403507683416',   'radius' => 100],
         ];
 
-        // Sesuaikan nama tabel 'office' dengan nama tabel di database kamu
-        DB::table('office')->insert($offices);
+        $normalizedOffices = array_map(function ($office) {
+            $code = trim((string) ($office['off_code'] ?? ''));
+            $code = $code === '' || $code === '-' ? 'OFF' . str_pad((string) $office['off_id'], 3, '0', STR_PAD_LEFT) : $code;
+            $office['off_code'] = substr($code, 0, 5);
+
+            return $office;
+        }, $offices);
+
+        foreach ($normalizedOffices as $office) {
+            DB::table('office')->updateOrInsert(
+                ['off_id' => $office['off_id']],
+                $office
+            );
+        }
     }
 }

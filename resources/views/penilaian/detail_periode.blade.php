@@ -7,7 +7,7 @@
         <div>
             <h5 class="mb-0 text-muted">Generate Penilaian &raquo; <span class="text-primary fw-bold">Detail Periode {{ $periode->periode_id }}</span></h5>
         </div>
-        <a href="{{ route('periode.index') }}" class="btn btn-danger btn-sm">
+        <a href="{{ route('periode-penilaian.index') }}" class="btn btn-danger btn-sm">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
     </div>
