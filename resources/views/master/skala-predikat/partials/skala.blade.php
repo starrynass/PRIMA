@@ -131,7 +131,7 @@
                     <label class="form-label" for="skala_deskripsi">Deskripsi <span class="text-danger">*</span></label>
                     <div class="input-addon-group">
                         <span class="input-addon">Deskripsi</span>
-                        <input type="text" id="skala_deskripsi" name="deskripsi" class="form-input" placeholder="(opsional) Deskripsi tambahan" required>
+                        <input type="text" id="skala_deskripsi" name="deskripsi" class="form-input" placeholder="Deskripsi tambahan" required>
                     </div>
                 </div>
             </div>

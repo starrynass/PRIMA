@@ -166,11 +166,7 @@ class PeriodePenilaianController extends Controller
             return redirect()->route('periode-penilaian.index')->with('error', 'Periode tidak ditemukan atau sudah dihapus.');
         }
         
-        // Opsional: Cek jika sudah ada transaksi penilaian terkait sebelum dihapus
-        if ($periode->transPenilaian()->exists()) {
-            return redirect()->back()->with('error', 'Periode tidak dapat dihapus karena sudah memiliki data transaksi penilaian!');
-        }
-
+        // Penghapusan diperbolehkan tanpa pengecualian apapun.
         $periode->delete();
 
         return redirect()->back()->with('success', 'Periode penilaian berhasil dihapus!');
@@ -259,8 +255,8 @@ class PeriodePenilaianController extends Controller
 
         // 2. Hindari generate ganda: periode yang sudah punya data pegawai tidak boleh generate ulang.
         if ($this->isPeriodGenerated($periode->periode_id)) {
-            return redirect()->route('periode.detail', $periode->periode_id)
-                ->with('warning', 'Periode ini sudah di-generate. Detail bisa dibuka untuk melihat daftar pegawai.');
+            return redirect()->route('periode-penilaian.index')
+                ->with('warning', 'Periode ini sudah di-generate. Anda dapat membuka detail dari daftar periode.');
         }
 
         // 3. Notifikasi & Penolakan jika periode berstatus LOCKED
@@ -271,13 +267,12 @@ class PeriodePenilaianController extends Controller
         try {
             DB::beginTransaction();
 
-            // 4. Ambil seluruh pegawai aktif (is_pensiun = 0).
-            // Data asal dipakai dari tabel employee yang sudah di-seed; ini sesuai kebutuhan
-            // sementara agar generate hanya mengisi snapshot pegawai tanpa mengubah skema database.
-            $pegawaiAktif = DB::table('employee')->where('is_pensiun', 0)->get();
+            // 4. Ambil seluruh pegawai untuk snapshot periode.
+            // Semua pegawai tetap masuk ke periode agar data penilaian konsisten dengan total pegawai yang dikelola.
+            $pegawaiAktif = DB::table('employee')->get();
 
             if ($pegawaiAktif->isEmpty()) {
-                return redirect()->back()->with('warning', 'Tidak ada data pegawai aktif untuk di-generate.');
+                return redirect()->back()->with('warning', 'Tidak ada data pegawai untuk di-generate.');
             }
 
             // 5. Insert / Snapshot pegawai ke tabel dp3_trans_penilaian.
@@ -324,8 +319,8 @@ class PeriodePenilaianController extends Controller
 
             DB::commit();
 
-            // 7. Setelah generate sukses, langsung buka detail periode untuk melihat daftar pegawai.
-            return redirect()->route('periode.detail', $periode->periode_id)
+            // 7. Setelah generate sukses, tetap di halaman periode penilaian.
+            return redirect()->route('periode-penilaian.index')
                          ->with('success', 'Berhasil meng-generate data penilaian untuk ' . $pegawaiAktif->count() . ' pegawai.');
 
         } catch (\Exception $e) {
@@ -334,9 +329,8 @@ class PeriodePenilaianController extends Controller
         }
     }
 
-    public function detail($id)
+    public function detail($id, Request $request)
     {
-        // 1. Ambil data periode
         $periode = Dp3TransPeriodePenilaian::where('periode_id', $id)->first();
 
         if (! $periode) {
@@ -344,52 +338,111 @@ class PeriodePenilaianController extends Controller
                 ->with('error', 'Periode tidak ditemukan atau sudah dihapus.');
         }
 
-        // 2. Detail hanya bisa dibuka jika periode sudah di-generate dan tidak terkunci.
         if (strtoupper($periode->status ?? '') === 'LOCKED' || ! $this->isPeriodGenerated($periode->periode_id)) {
             return redirect()->route('periode-penilaian.index')
                 ->with('error', 'Detail periode tidak bisa dibuka karena periode sedang terkunci atau belum di-generate.');
         }
 
-        // 3. Ambil data transaksi pegawai periode ini bergabung dengan master employee, office, occupation, dept, subdept.
-        // Tabel yang ada di migrasi memang bernama department_sub, bukan sub_department, jadi join di sini harus sesuai struktur DB yang benar.
-        $penilaianList = DB::table('dp3_trans_penilaian as tp')
-        ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
-        ->leftJoin('office as o', 'e.off_id', '=', 'o.off_id')
-        ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
-        ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
-        ->leftJoin('department_sub as sd', 'e.subdept_id', '=', 'sd.subdept_id')
-        ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
-        ->leftJoin('employee as verifikator', 'tp.verifikator_id', '=', 'verifikator.pgw_id')
-        ->where('tp.periode_id', $id)
-        ->select(
-            'tp.*',
-            'e.nup',
-            'e.nama',
-            'o.off_name as penempatan',
-            'occ.occ_name as jabatan',
-            'd.dept_name as departemen',
-            'sd.subdept_name as sub_departemen',
-            'tp.status_nilai as status_penilaian',
-            'tp.total_nilai as nilai_akhir',
-            'penilai.nama as nama_penilai',
-            'verifikator.nama as nama_verifikator'
-        )
-        ->paginate(25);
+        $query = DB::table('dp3_trans_penilaian as tp')
+            ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
+            ->leftJoin('office as o', 'e.off_id', '=', 'o.off_id')
+            ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
+            ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
+            ->leftJoin('department_sub as sd', 'e.subdept_id', '=', 'sd.subdept_id')
+            ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
+            ->leftJoin('employee as verifikator', 'tp.verifikator_id', '=', 'verifikator.pgw_id')
+            ->where('tp.periode_id', $id)
+            ->select(
+                'tp.*',
+                'e.nup',
+                'e.nama',
+                'o.off_name as penempatan',
+                'occ.occ_name as jabatan',
+                'd.dept_name as departemen',
+                'sd.subdept_name as sub_departemen',
+                'tp.status_nilai as status_penilaian',
+                'tp.total_nilai as nilai_akhir',
+                'penilai.nama as nama_penilai',
+                'verifikator.nama as nama_verifikator'
+            );
 
-    // 3. Hitung ringkasan statistik (Kategori Kartu Atas sesuai gambar)
-    // Catatan: kolom yang ada di DB aktual adalah `status_nilai` dan `penilai_manual`.
-    // Jadi query berikut disesuaikan dengan struktur tabel yang benar, bukan dengan nama field yang belum ada.
-    $stats = [
-        'total_pegawai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->count(),
-        'belum_diisi'    => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Belum Diisi')->count(),
-        'draft'          => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Draft')->count(),
-        'submit'         => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Submit')->count(),
-        'verifikasi'     => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Verifikasi')->count(),
-        'tanpa_penilai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->whereNull('penilai_id')->count(),
-        'penilai_manual' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('penilai_manual', 1)->count(),
-        'perlu_ditinjau' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Perlu Ditinjau')->count(),
-    ];
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('e.nama', 'like', "%{$search}%")
+                    ->orWhere('e.nup', 'like', "%{$search}%")
+                    ->orWhere('tp.pgw_nama', 'like', "%{$search}%")
+                    ->orWhere('tp.pgw_nup', 'like', "%{$search}%");
+            });
+        }
 
-    return view('penilaian.detail_periode', compact('periode', 'penilaianList', 'stats'));
-}
+        if ($request->filled('status')) {
+            $status = strtoupper((string) $request->status);
+            $query->whereRaw('UPPER(COALESCE(tp.status_nilai, "BELUM DIISI")) = ?', [$status]);
+        }
+
+        if ($request->filled('dept_id')) {
+            $deptId = (string) $request->dept_id;
+            $query->where(function ($q) use ($deptId) {
+                $q->where('d.dept_id', $deptId)
+                    ->orWhere('e.dept_id', $deptId)
+                    ->orWhere('tp.pgw_id_dept', $deptId);
+            });
+        }
+
+        if ($request->filled('subdept_id')) {
+            $subDeptId = (string) $request->subdept_id;
+            $query->where(function ($q) use ($subDeptId) {
+                $q->where('sd.subdept_id', $subDeptId)
+                    ->orWhere('e.subdept_id', $subDeptId)
+                    ->orWhere('tp.pgw_id_subdept', $subDeptId);
+            });
+        }
+
+        $sort = $request->get('sort', 'nama_asc');
+        switch ($sort) {
+            case 'nama_desc':
+                $query->orderBy('e.nama', 'desc');
+                break;
+            case 'nilai_desc':
+                $query->orderBy('tp.total_nilai', 'desc');
+                break;
+            case 'nilai_asc':
+                $query->orderBy('tp.total_nilai', 'asc');
+                break;
+            case 'status':
+                $query->orderBy('tp.status_nilai', 'asc');
+                break;
+            case 'nama_asc':
+            default:
+                $query->orderBy('e.nama', 'asc');
+                break;
+        }
+
+        $penilaianList = $query->paginate(25)->appends($request->query());
+
+        $penilaianList->getCollection()->transform(function ($row) {
+            $data = is_object($row) ? (array) $row : $row;
+            $data['status_penilaian'] = strtoupper((string) ($data['status_penilaian'] ?? $data['status_nilai'] ?? 'BELUM DIISI'));
+            $data['nilai_akhir'] = is_numeric($data['nilai_akhir'] ?? null) ? (float) $data['nilai_akhir'] : 0.0;
+            $data['predikat'] = ! empty($data['predikat']) ? $data['predikat'] : 'Mengecewakan';
+            return (object) $data;
+        });
+
+        $departments = DB::table('department')->select('dept_id', 'dept_name')->orderBy('dept_name')->get();
+        $subDepartments = DB::table('department_sub')->select('subdept_id', 'subdept_name')->orderBy('subdept_name')->get();
+
+        $stats = [
+            'total_pegawai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->count(),
+            'belum_diisi'    => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Belum Diisi')->count(),
+            'draft'          => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Draft')->count(),
+            'submit'         => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Submit')->count(),
+            'verifikasi'     => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Verifikasi')->count(),
+            'tanpa_penilai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->whereNull('penilai_id')->count(),
+            'penilai_manual' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('penilai_manual', 1)->count(),
+            'perlu_ditinjau' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Perlu Ditinjau')->count(),
+        ];
+
+        return view('penilaian.detail_periode', compact('periode', 'penilaianList', 'stats', 'departments', 'subDepartments'));
+    }
 }

@@ -21,6 +21,7 @@
             font-family: sans-serif;
         }
 
+        
 
         body {
             display: flex;
@@ -29,6 +30,7 @@
             overflow-x: hidden;
         }
 
+        
 
         /* SIDEBAR */
         .sidebar {
@@ -442,4 +444,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

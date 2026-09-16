@@ -962,7 +962,17 @@
 </div>
 <script>
     function openModalTambahPeriode() {
-        document.getElementById('modalTambahPeriode').classList.add('active');
+        const modal = document.getElementById('modalTambahPeriode');
+        if (modal) {
+            modal.classList.add('active');
+        }
+    }
+
+    function closeModalTambahPeriode() {
+        const modal = document.getElementById('modalTambahPeriode');
+        if (modal) {
+            modal.classList.remove('active');
+        }
     }
 
     function closeModalDeletePeriode() {
@@ -1060,12 +1070,14 @@
 <!-- Modal Konfirmasi Generate -->
 <div class="modal-backdrop-confirm" id="modalGeneratePeriode">
     <div class="confirm-card"> 
-        <div class="confirm-icon-wrapper icon-warning-circle">
-            <span class="confirm-icon-text">⚡</span>
+        <div class="confirm-icon-wrapper icon-warning-circle" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:block;">
+                <path d="M13 2L4 13h6l-1 9 9-11h-6l1-9z"></path>
+            </svg>
         </div>
         <h3 class="confirm-title">Konfirmasi Generate</h3>
         <p class="confirm-message">Yakin ingin meng-generate data penilaian untuk periode <strong id="generate_nama_periode">-</strong>?</p>
-        <p class="confirm-subtext" style="color: #0284c7;">Sistem akan mengolah data awal untuk semua pegawai aktif.</p>
+        <p class="confirm-subtext" style="color: #0284c7;">Sistem akan mengolah data awal untuk semua pegawai.</p>
 
         <form id="formGeneratePeriode" method="POST" class="confirm-actions" onsubmit="submitGenerateWithAnimation(event)">
             @csrf
@@ -1272,11 +1284,6 @@
     }
 
     function openDetailPeriode() {
-        if (!selectedPeriodeData || !selectedPeriodeData.periode_id) {
-            alert('Silakan pilih salah satu baris periode terlebih dahulu!');
-            return;
-        }
-
         // Redirect ke halaman detail periode
         window.location.href = `${baseUrl}/${selectedPeriodeData.periode_id}/detail`;
     }

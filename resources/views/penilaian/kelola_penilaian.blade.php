@@ -357,16 +357,18 @@
    ========================================================================== */
 .filter-card {
     background-color: #ffffff;
-
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
     padding: 1rem;
     margin-bottom: 1rem;
+    box-shadow: var(--shadow-card);
 }
 
 .filter-grid {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 0.75rem;
-    flex-wrap: wrap;
+    align-items: center;
 }
 
 .filter-item {
@@ -436,16 +438,18 @@
     box-shadow: var(--shadow-card);
 }
 
-.table-responsive { 
-    overflow-x: auto; 
+.table-responsive {
+    overflow-x: auto;
 }
 
 .table-custom {
     width: 100%;
+    min-width: 1200px;
     font-size: 0.8125rem;
     text-align: left;
     border-collapse: collapse;
     margin: 0;
+    table-layout: fixed;
 }
 
 .table-custom thead {
@@ -457,42 +461,267 @@
     font-size: 0.725rem;
 }
 
-.table-custom th, 
+.table-custom thead th + th,
+.table-custom tbody td + td {
+    border-left: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.table-custom th,
 .table-custom td {
     padding: 0.875rem 1rem;
     vertical-align: middle;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+}
+
+.table-custom th {
+    white-space: nowrap;
+}
+
+.table-custom td {
+    color: var(--text-primary);
+}
+ 
+.table-custom thead th:nth-child(7),
+.table-custom tbody td:nth-child(7) {
+    min-width: 180px;
+    width: 180px;
 }
 
 .table-custom tbody tr {
+    background: #ffffff;
     border-bottom: 1px solid var(--border-color);
-    transition: all 0.15s ease-in-out;
+    transition: background-color 0.15s ease-in-out;
 }
 
-.table-custom tbody tr:hover { 
-    background-color: var(--maroon-soft) !important; 
+.table-custom tbody tr:nth-child(even) {
+    background: #fff;
 }
 
-.table-custom tbody tr.selected-row { 
-    background-color: #F1F5F9 !important; 
+.table-custom tbody tr:hover {
+    background-color: #FDF7F9 !important;
 }
 
-/* Badge Status Custom */
-.badge-status-gray {
-    background-color: #F1F5F9;
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
+.table-custom tbody tr.selected-row {
+    background-color: #F1F5F9 !important;
 }
 
-.btn-outline-maroon {
-    color: var(--maroon-primary);
-    border-color: var(--maroon-border);
-    background-color: var(--maroon-soft);
+.table-action-cell {
+    width: 110px;
+    min-width: 110px;
 }
 
-.btn-outline-maroon:hover {
+.employee-filter-item {
+    width: 100%;
+}
+
+.employee-filter-button {
+    background: var(--maroon-gradient);
     color: #ffffff;
-    background-color: var(--maroon-primary);
+    border: none;
+    border-radius: 0.75rem;
+    min-height: 44px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 8px 18px rgba(122, 28, 56, 0.18);
+}
+
+.employee-filter-button:hover {
+    color: #ffffff;
+    opacity: 0.96;
+}
+
+.detail-action-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid var(--maroon-border);
+    background: var(--maroon-soft);
+    color: var(--maroon-primary);
+    border-radius: 0.65rem;
+    font-size: 0.8rem;
+    transition: all 0.18s ease;
+    padding: 0;
+}
+
+.btn-action-icon svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    stroke: currentColor;
+    fill: none;
+}
+
+.btn-action-icon:hover {
+    background: var(--maroon-primary);
+    color: #ffffff;
     border-color: var(--maroon-primary);
+    transform: translateY(-1px);
+}
+
+    .detail-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        border-top: 1px solid #dfe4ea;
+        padding: 0.8rem 0 0;
+        margin-top: 0.75rem;
+        background: transparent;
+    }
+
+    .detail-pagination-label {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        white-space: nowrap;
+    }
+
+    .detail-pagination-nav {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.35rem;
+        margin-left: auto;
+    }
+
+    .page-arrow,
+    .page-number,
+    .page-ellipsis {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        user-select: none;
+        text-decoration: none;
+    }
+
+    .page-arrow {
+        width: 2.6rem;
+        height: 2.5rem;
+        border: 1px solid #dfe4ea;
+        border-radius: 0.35rem;
+        background: #ffffff;
+        color: #7a838f;
+        font-size: 2rem;
+        font-weight: 400;
+        padding: 0;
+    }
+
+    .page-arrow.disabled {
+        color: #a9b3c0;
+        background: #f8fafc;
+        pointer-events: none;
+    }
+
+    .page-number {
+        width: 2.45rem;
+        height: 2.5rem;
+        border: 1px solid #dfe4ea;
+        border-radius: 0.35rem;
+        background: #ffffff;
+        color: #2f3746;
+        font-size: 1rem;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 0;
+    }
+
+    .page-number.active {
+        background: #edf2ff;
+        border-color: #2d6cdf;
+        color: #1d4ed8;
+    }
+
+    .page-ellipsis {
+        width: 1.3rem;
+        height: 2.5rem;
+        color: #67748a;
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .null-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.3rem;
+        padding: 0.22rem 0.55rem;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+    }
+
+    .badge-status-gray {
+        background-color: #F1F5F9;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .badge-status-success {
+        background-color: var(--badge-emerald-bg);
+        color: var(--badge-emerald-text);
+        border: 1px solid #10B981;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .badge-status-warning {
+        background-color: var(--badge-amber-bg);
+        color: var(--badge-amber-text);
+        border: 1px solid #F59E0B;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .badge-status-danger {
+        background-color: var(--badge-rose-bg);
+        color: var(--badge-rose-text);
+        border: 1px solid #F43F5E;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+@media (max-width: 1200px) {
+    .filter-grid {
+        grid-template-columns: repeat(3, minmax(160px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 
@@ -614,124 +843,202 @@
                 </div>
             </div>
 
-            <!-- TABEL DAFTAR PEGAWAI & FILTER -->
             <div class="card-box">
                 <div class="card-header-daftarpegawai">
                     <div class="card-title-daftarpegawai">
                         <i class="fas fa-list me-2"></i> Daftar Pegawai Penilaian
                     </div>
                 </div>
+
                 <div class="p-3">
-                    
-                    <!-- FORM FILTER SEJAJAR KE SAMPING -->
-                    <div class="filter-card">
+                    <div class="filter-card" style="margin-bottom: 0;">
                         <form method="GET" action="{{ route('kelola-penilaian.index') }}" class="filter-grid">
                             <input type="hidden" name="periode_id" value="{{ request('periode_id') }}">
-                            
-                            <div class="filter-item-search">
-                                <input type="text" name="search" class="form-control-custom" placeholder="Cari nama/NUP..." value="{{ request('search') }}">
+
+                            <div>
+                                <input type="text" name="search" class="form-control-custom" placeholder="Cari nama / NUP..." value="{{ request('search') }}">
                             </div>
-                            
-                            <div class="filter-item">
+
+                            <div>
                                 <select name="penempatan" class="form-select-custom">
                                     <option value="">- Semua Penempatan -</option>
                                 </select>
                             </div>
-                            
-                            <div class="filter-item">
+
+                            <div>
                                 <select name="departemen" class="form-select-custom">
                                     <option value="">- Semua Departemen -</option>
                                 </select>
                             </div>
-                            
-                            <div class="filter-item">
+
+                            <div>
                                 <select name="status" class="form-select-custom">
                                     <option value="">- Semua Status -</option>
                                 </select>
                             </div>
-                            
-                            <div class="filter-item-btn">
-                                <button type="submit" class="btn-maroon-custom">
+
+                            <div>
+                                <button type="submit" class="btn-maroon-custom" style="width: 100%; justify-content: center;">
                                     <i class="fas fa-search"></i> Tampilkan
                                 </button>
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
-            
-        <div class="table-container">
-            <div class="table-responsive">
-                <table class="table-custom">
-                    <thead>
-                            <tr>
-                                <th width="40">NO</th>
-                                <th>NUP</th>
-                                <th>NAMA</th>
-                                <th>PENEMPATAN</th>
-                                <th>JABATAN</th>
-                                <th>DEPARTEMEN</th>
-                                <th>PENILAI</th>
-                                <th>STATUS</th>
-                                <th>NILAI</th>
-                                <th>PREDIKAT</th>
-                                <th width="90" class="text-center">AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($penilaians as $index => $row)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td><code>{{ $row->pgw_nup ?? '-' }}</code></td>
-                                    <td><strong>{{ $row->pgw_nama ?? '-' }}</strong></td>
-                                    <td>{{ $row->pgw_off_name ?? '-' }}</td>
-                                    <td>{{ $row->pgw_jabatan ?? '-' }}</td>
-                                    <td>{{ $row->pgw_dept_name ?? '-' }}</td>
-                                    <td>
-                                        @if(empty($row->penilai_id) && empty($row->penilai_manual))
-                                            <span class="text-danger fw-bold">NULL</span>
-                                        @else
-                                            {{ $row->penilai_id ?? 'Penilai Manual' }}
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @php
-                                            $status = strtoupper($row->status_nilai ?? 'BELUM DIISI');
-                                        @endphp
 
-                                        @if($status == 'DIAJUKAN')
-                                            <span class="badge bg-success">Terverifikasi</span>
-                                        @elseif($status == 'DIKEMBALIKAN')
-                                            <span class="badge bg-danger">Dikembalikan</span>
-                                        @elseif($status == 'DRAFT')
-                                            <span class="badge bg-warning text-dark">Draft</span>
-                                        @else
-                                            <span class="badge badge-status-gray">Belum Diisi</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ number_format($row->total_nilai ?? 0, 2) }}</td>
-                                    <td>
-                                        @if($row->predikat)
-                                            <span class="badge bg-info text-dark">{{ $row->predikat }}</span>
-                                        @else
-                                            <span class="badge bg-danger">Mengecewakan</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-outline-maroon" title="Detail Penilaian">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="11" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+            <div class="card-box">
+                <div class="card-header-daftarpegawai">
+                    <div class="card-title-daftarpegawai">
+                        <i class="fas fa-table me-2"></i> Data Pegawai
+                    </div>
                 </div>
+
+                <div class="table-container" style="border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none;">
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th width="40">NO</th>
+                                    <th>NUP</th>
+                                    <th>NAMA</th>
+                                    <th>PENEMPATAN</th>
+                                    <th>JABATAN</th>
+                                    <th>DEPARTEMEN</th>
+                                    <th>SUB DEPARTEMEN</th>
+                                    <th>PENILAI</th>
+                                    <th>VERIFIKATOR</th>
+                                    <th>STATUS</th>
+                                    <th>NILAI</th>
+                                    <th>PREDIKAT</th>
+                                    <th width="90" class="text-center">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($penilaians as $index => $row)
+                                    @php
+                                        $statusPenilaian = strtoupper((string) data_get($row, 'status_penilaian', data_get($row, 'status_nilai', 'BELUM DIISI')));
+                                        $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
+                                        $predikat = data_get($row, 'predikat', 'Mengecewakan');
+                                    @endphp
+                                    <tr>
+                                        <td>{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
+                                        <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
+                                        <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
+                                        <td>{{ data_get($row, 'penempatan', '-') }}</td>
+                                        <td>{{ data_get($row, 'jabatan', '-') }}</td>
+                                        <td>{{ data_get($row, 'departemen', '-') }}</td>
+                                        <td>{{ data_get($row, 'sub_departemen', '-') }}</td>
+                                        <td>
+                                            @if(data_get($row, 'nama_penilai'))
+                                                {{ data_get($row, 'nama_penilai') }}
+                                            @else
+                                                <span class="null-pill">NULL</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(data_get($row, 'nama_verifikator'))
+                                                {{ data_get($row, 'nama_verifikator') }}
+                                            @else
+                                                <span class="null-pill">NULL</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($statusPenilaian === 'DIAJUKAN')
+                                                <span class="badge-status-success">Diajukan</span>
+                                            @elseif($statusPenilaian === 'DIKEMBALIKAN')
+                                                <span class="badge-status-danger">Dikembalikan</span>
+                                            @elseif($statusPenilaian === 'DRAFT')
+                                                <span class="badge-status-warning">Draft</span>
+                                            @else
+                                                <span class="badge-status-gray">Belum Diisi</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ number_format($nilaiAkhir, 2) }}</td>
+                                        <td>
+                                            @if(!empty($predikat))
+                                                <span class="badge-status-gray">{{ $predikat }}</span>
+                                            @else
+                                                <span class="badge-status-danger">Mengecewakan</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center table-action-cell">
+                                            <div class="detail-action-group" style="justify-content:center;">
+                                                <button class="btn-action-icon" type="button" title="Lihat Detail" aria-label="Lihat Detail">
+                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                </button>
+                                                <button class="btn-action-icon" type="button" title="Verifikasi Penilaian" aria-label="Verifikasi Penilaian">
+                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                        <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
+                                                        <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="13" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                @if ($penilaians instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $penilaians->hasPages())
+                    @php
+                        $currentPage = $penilaians->currentPage();
+                        $lastPage = $penilaians->lastPage();
+                        $firstItem = $penilaians->firstItem() ?? 0;
+                        $lastItem = $penilaians->lastItem() ?? 0;
+                        $total = $penilaians->total();
+
+                        $pageNumbers = [];
+                        if ($lastPage <= 5) {
+                            $pageNumbers = range(1, $lastPage);
+                        } elseif ($currentPage <= 3) {
+                            $pageNumbers = [1, 2, 3, 4, 5];
+                        } elseif ($currentPage >= $lastPage - 2) {
+                            $pageNumbers = [$lastPage - 4, $lastPage - 3, $lastPage - 2, $lastPage - 1, $lastPage];
+                        } else {
+                            $pageNumbers = [$currentPage - 1, $currentPage, $currentPage + 1, $currentPage + 2, $currentPage + 3];
+                        }
+                    @endphp
+
+                    <div class="detail-pagination">
+                        <p class="detail-pagination-label">Menampilkan {{ $firstItem }} sampai {{ $lastItem }} dari {{ $total }} data</p>
+
+                        <div class="detail-pagination-nav">
+                            @if ($currentPage > 1)
+                                <a href="{{ $penilaians->url($currentPage - 1) }}" class="page-arrow" aria-label="Previous page">&lsaquo;</a>
+                            @else
+                                <span class="page-arrow disabled" aria-hidden="true">&lsaquo;</span>
+                            @endif
+
+                            @foreach ($pageNumbers as $page)
+                                @if ($page == $currentPage)
+                                    <span class="page-number active" aria-current="page">{{ $page }}</span>
+                                @else
+                                    <a href="{{ $penilaians->url($page) }}" class="page-number">{{ $page }}</a>
+                                @endif
+                            @endforeach
+
+                            @if ($lastPage > 5 && $currentPage < $lastPage - 2)
+                                <span class="page-ellipsis">…</span>
+                            @endif
+
+                            @if ($currentPage < $lastPage)
+                                <a href="{{ $penilaians->url($currentPage + 1) }}" class="page-arrow" aria-label="Next page">&rsaquo;</a>
+                            @else
+                                <span class="page-arrow disabled" aria-hidden="true">&rsaquo;</span>
+                            @endif
+                        </div>
+                    </div>
+                @endif
             </div>
         @endif
 
