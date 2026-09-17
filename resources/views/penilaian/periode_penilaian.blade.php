@@ -1284,7 +1284,6 @@
     }
 
     function openDetailPeriode() {
-        // Redirect ke halaman detail periode
         window.location.href = `${baseUrl}/${selectedPeriodeData.periode_id}/detail`;
     }
 </script>

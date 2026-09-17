@@ -746,7 +746,7 @@
             </div>
             <div style="padding: 0.85rem 1rem;">
                 <div class="select-wrapper">
-                    <form method="GET" action="{{ route('kelola-penilaian.index') }}" id="formSelectPeriode">
+                    <form method="GET" action="{{ route('verifikasi-penilaian.index') }}" id="formSelectPeriode">
                         <select id="periodeSelector" name="periode_id" class="custom-select" onchange="document.getElementById('formSelectPeriode').submit();">
                             <option value="" @selected(!request('periode_id'))>-- Pilih Periode --</option>
                             @forelse($periodes as $periode)
@@ -895,11 +895,11 @@
                 </div>
 
                 <div class="table-container" style="border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none;">
-                    <div class="table-responsive">
+                    <!-- <div class="table-responsive"> -->
                         <table class="table-custom">
                             <thead>
                                 <tr>
-                                    <th width="40">NO</th>
+                                    <th width="50">NO</th>
                                     <th>NUP</th>
                                     <th>NAMA</th>
                                     <th>PENEMPATAN</th>
@@ -909,9 +909,9 @@
                                     <th>PENILAI</th>
                                     <th>VERIFIKATOR</th>
                                     <th>STATUS</th>
-                                    <th>NILAI</th>
-                                    <th>PREDIKAT</th>
-                                    <th width="90" class="text-center">AKSI</th>
+                                    <th width="60">NILAI</th>
+                                    <th width="140">PREDIKAT</th>
+                                    <th width="80" class="text-center">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody>

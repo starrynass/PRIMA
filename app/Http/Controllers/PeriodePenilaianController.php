@@ -10,11 +10,6 @@ use App\Models\Employee;
 
 class PeriodePenilaianController extends Controller
 {
-    /**
-     * Catatan: helper ini mencegah 404 yang muncul saat ID periode tidak lagi ada di database,
-     * misalnya karena data sudah dihapus atau request berasal dari state stale di UI.
-     * Alih-alih memunculkan error 404, sistem akan redirect ke daftar periode dengan pesan aman.
-     */
     protected function findPeriodeOrRedirect(string $id): ?Dp3TransPeriodePenilaian
     {
         $periode = Dp3TransPeriodePenilaian::where('periode_id', $id)->first();
@@ -30,9 +25,6 @@ class PeriodePenilaianController extends Controller
         return $periode;
     }
 
-    /**
-     * Menampilkan daftar periode penilaian beserta statistik agregasinya.
-     */
     public function index(): View
     {
         $periodeList = Dp3TransPeriodePenilaian::query()
@@ -275,9 +267,7 @@ class PeriodePenilaianController extends Controller
                 return redirect()->back()->with('warning', 'Tidak ada data pegawai untuk di-generate.');
             }
 
-            // 5. Insert / Snapshot pegawai ke tabel dp3_trans_penilaian.
-            // Catatan: kolom yang benar-benar ada di migrasi adalah nama-nama yang dideklarasikan
-            // pada file migration, jadi kita hanya menulis pada field yang valid agar data tersimpan.
+            // 5. Insert
             foreach ($pegawaiAktif as $pgw) {
                 $kode = 'PEN-' . $periode->periode_id . '-' . $pgw->pgw_id;
 
