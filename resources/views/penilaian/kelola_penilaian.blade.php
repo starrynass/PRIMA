@@ -746,12 +746,12 @@
             </div>
             <div style="padding: 0.85rem 1rem;">
                 <div class="select-wrapper">
-                    <form method="GET" action="{{ route('verifikasi-penilaian.index') }}" id="formSelectPeriode">
+                    <form method="GET" action="{{ route('kelola-penilaian.index') }}" id="formSelectPeriode">
                         <select id="periodeSelector" name="periode_id" class="custom-select" onchange="document.getElementById('formSelectPeriode').submit();">
                             <option value="" @selected(!request('periode_id'))>-- Pilih Periode --</option>
                             @forelse($periodes as $periode)
                                 <option value="{{ $periode->periode_id }}" @selected(request('periode_id') == $periode->periode_id)>
-                                    {{ $periode->nama_periode ?? ($periode->tahun . ' - ' . $periode->bulan) }}
+                                    {{ $periode->periode_id ?? ($periode->tahun . ' - ' . $periode->bulan) }}
                                 </option>
                             @empty
                                 <option value="" disabled>Belum ada periode tersimpan</option>
@@ -774,7 +774,7 @@
                     <h1 class="toolbar-title">Kelola Penilaian</h1>
                     <p class="toolbar-subtitle">
                         @if($hasPeriodeSelected && $selectedPeriode)
-                            Periode Penilaian: <strong>{{ $selectedPeriode->nama_periode ?? $selectedPeriode->periode_id }}</strong>
+                            Periode Penilaian: <strong>{{ $selectedPeriode->periode_id ?? $selectedPeriode->periode_id }}</strong>
                         @else
                             Silakan pilih periode penilaian untuk mengelola data penilaian.
                         @endif
@@ -895,99 +895,90 @@
                 </div>
 
                 <div class="table-container" style="border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none;">
-                    <!-- <div class="table-responsive"> -->
-                        <table class="table-custom">
-                            <thead>
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th width="40" class="text-center">NO</th>
+                                <th>NUP</th>
+                                <th>NAMA</th>
+                                <th>PENEMPATAN</th>
+                                <th>JABATAN</th>
+                                <th>DEPARTEMEN</th>
+                                <th>SUB DEPARTEMEN</th>
+                                <th>PENILAI</th>
+                                <th class="text-center">STATUS</th>
+                                <th width="70" class="text-center">NILAI</th>
+                                <th width="120" class="text-center">PREDIKAT</th>
+                                <th width="90" class="text-center">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($penilaians as $index => $row)
+                                @php
+                                    $statusPenilaian = strtoupper((string) data_get($row, 'status_penilaian', 'BELUM DIISI'));
+                                    $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
+                                    $predikat = data_get($row, 'predikat', 'Mengecewakan');
+                                @endphp
                                 <tr>
-                                    <th width="50">NO</th>
-                                    <th>NUP</th>
-                                    <th>NAMA</th>
-                                    <th>PENEMPATAN</th>
-                                    <th>JABATAN</th>
-                                    <th>DEPARTEMEN</th>
-                                    <th>SUB DEPARTEMEN</th>
-                                    <th>PENILAI</th>
-                                    <th>VERIFIKATOR</th>
-                                    <th>STATUS</th>
-                                    <th width="60">NILAI</th>
-                                    <th width="140">PREDIKAT</th>
-                                    <th width="80" class="text-center">AKSI</th>
+                                    <td class="text-center">{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
+                                    <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
+                                    <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
+                                    <td>{{ data_get($row, 'penempatan', '-') }}</td>
+                                    <td>{{ data_get($row, 'jabatan', '-') }}</td>
+                                    <td>{{ data_get($row, 'departemen', '-') }}</td>
+                                    <td>{{ data_get($row, 'sub_departemen', '-') }}</td>
+                                    <td>
+                                        @if(data_get($row, 'nama_penilai'))
+                                            {{ data_get($row, 'nama_penilai') }}
+                                        @else
+                                            <span class="null-pill text-danger fw-bold">NULL</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if($statusPenilaian === 'DIAJUKAN')
+                                            <span class="badge-status-success">Diajukan</span>
+                                        @elseif($statusPenilaian === 'DIKEMBALIKAN')
+                                            <span class="badge-status-danger">Dikembalikan</span>
+                                        @elseif($statusPenilaian === 'DRAFT')
+                                            <span class="badge-status-warning">Draft</span>
+                                        @else
+                                            <span class="badge-status-gray">Belum Diisi</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{ number_format($nilaiAkhir, 2) }}</td>
+                                    <td class="text-center">
+                                        <span class="badge-status-danger">{{ $predikat }}</span>
+                                    </td>
+                                    <td class="text-center table-action-cell">
+                                        <div class="detail-action-group" style="justify-content:center; gap: 4px;">
+                                            
+                                            {{-- Tombol 1: Form Penilaian (Isi / Edit Penilaian) --}}
+                                            <a href="{{ route('penilaian.form', ['id' => data_get($row, 'penilaian_id')]) }}"
+                                            class="btn-action-icon btn-primary"
+                                            title="Form Penilaian">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            {{-- Tombol 2: Lihat Detail Penilaian --}}
+                                            <a href="{{ route('penilaian.form', ['id' => data_get($row, 'penilaian_id')]) }}"
+                                            class="btn-action-icon btn-info" 
+                                            title="Lihat Detail" 
+                                            aria-label="Lihat Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+
+                                        </div>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($penilaians as $index => $row)
-                                    @php
-                                        $statusPenilaian = strtoupper((string) data_get($row, 'status_penilaian', data_get($row, 'status_nilai', 'BELUM DIISI')));
-                                        $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
-                                        $predikat = data_get($row, 'predikat', 'Mengecewakan');
-                                    @endphp
-                                    <tr>
-                                        <td>{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
-                                        <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
-                                        <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
-                                        <td>{{ data_get($row, 'penempatan', '-') }}</td>
-                                        <td>{{ data_get($row, 'jabatan', '-') }}</td>
-                                        <td>{{ data_get($row, 'departemen', '-') }}</td>
-                                        <td>{{ data_get($row, 'sub_departemen', '-') }}</td>
-                                        <td>
-                                            @if(data_get($row, 'nama_penilai'))
-                                                {{ data_get($row, 'nama_penilai') }}
-                                            @else
-                                                <span class="null-pill">NULL</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if(data_get($row, 'nama_verifikator'))
-                                                {{ data_get($row, 'nama_verifikator') }}
-                                            @else
-                                                <span class="null-pill">NULL</span>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($statusPenilaian === 'DIAJUKAN')
-                                                <span class="badge-status-success">Diajukan</span>
-                                            @elseif($statusPenilaian === 'DIKEMBALIKAN')
-                                                <span class="badge-status-danger">Dikembalikan</span>
-                                            @elseif($statusPenilaian === 'DRAFT')
-                                                <span class="badge-status-warning">Draft</span>
-                                            @else
-                                                <span class="badge-status-gray">Belum Diisi</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ number_format($nilaiAkhir, 2) }}</td>
-                                        <td>
-                                            @if(!empty($predikat))
-                                                <span class="badge-status-gray">{{ $predikat }}</span>
-                                            @else
-                                                <span class="badge-status-danger">Mengecewakan</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center table-action-cell">
-                                            <div class="detail-action-group" style="justify-content:center;">
-                                                <button class="btn-action-icon" type="button" title="Lihat Detail" aria-label="Lihat Detail">
-                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
-                                                        <circle cx="12" cy="12" r="3"></circle>
-                                                    </svg>
-                                                </button>
-                                                <button class="btn-action-icon" type="button" title="Verifikasi Penilaian" aria-label="Verifikasi Penilaian">
-                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                        <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
-                                                        <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="13" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                            @empty
+                                <tr>
+                                    <td colspan="12" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
                 @if ($penilaians instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $penilaians->hasPages())
                     @php

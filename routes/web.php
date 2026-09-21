@@ -15,6 +15,7 @@ use App\Http\Controllers\LaporanTahunanController;
 use App\Http\Controllers\LaporanIndexUnitKerjaController;
 use App\Http\Controllers\LaporanRekapNilaiController;
 use App\Http\Controllers\LaporanIndexKompetensiController;
+use App\Http\Controllers\FormPenilaianController;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard-penilaian.index');
 
@@ -57,6 +58,12 @@ Route::get('/penilaian/periode-penilaian/{id}/detail', [PeriodePenilaianControll
 
 // KELOLA PENILAIAN
 Route::get('/penilaian/kelola-penilaian', [KelolaPenilaianController::class, 'index'])->name('kelola-penilaian.index');
+
+    // Route untuk menampilkan Form Penilaian
+    Route::get('/penilaian/form/{id}', [FormPenilaianController::class, 'show'])->name('penilaian.form');
+
+    // Route untuk menyimpan (Draft / Submit) Penilaian
+    Route::post('/penilaian/form/{id}/store', [FormPenilaianController::class, 'store'])->name('penilaian.store');
 
 // VERIFIKASI PENILAIAN
 Route::get('/penilaian/verifikasi-penilaian', [VerifikasiPenilaianController::class, 'index'])->name('verifikasi-penilaian.index');

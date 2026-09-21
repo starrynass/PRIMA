@@ -49,7 +49,7 @@ class PeriodePenilaianController extends Controller
 
                 // Menghitung pegawai yang status verifikasinya sudah terverifikasi
                 'transPenilaian as verifikasi_selesai_count' => function ($query) {
-                    $query->where('status_verifitor', 'VERIFIED');
+                    $query->where('status_verifikator', 'VERIFIED');
                 },
             ])
             ->orderBy('tahun', 'desc')

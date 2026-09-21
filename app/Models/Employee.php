@@ -58,7 +58,7 @@ class Employee extends Model
     // Optional: Relasi ke tabel SubDepartment
     public function subDepartment()
     {
-        return $this->belongsTo(SubDepartment::class, 'subdept_id', 'subdept_id');
+        return $this->belongsTo(DepartmentSub::class, 'subdept_id', 'subdept_id');
     }
 
     // Optional: Relasi ke tabel Office

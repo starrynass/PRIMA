@@ -26,7 +26,7 @@ class KelolaPenilaianController extends Controller
         $penilaians = collect();
 
         if ($selectedPeriodeId) {
-            $selectedPeriode = Dp3TransPeriodePenilaian::find($selectedPeriodeId);
+            $selectedPeriode = Dp3TransPeriodePenilaian::where('periode_id', $selectedPeriodeId)->first();
 
             if ($selectedPeriode) {
                 $hasPeriodeSelected = true;
@@ -34,27 +34,26 @@ class KelolaPenilaianController extends Controller
                 $totalPegawai = Employee::count();
 
                 $queryPenilaian = DB::table('dp3_trans_penilaian as tp')
-                    ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
-                    ->leftJoin('office as o', 'e.off_id', '=', 'o.off_id')
-                    ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
-                    ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
-                    ->leftJoin('department_sub as sd', 'e.subdept_id', '=', 'sd.subdept_id')
-                    ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
-                    ->leftJoin('employee as verifikator', 'tp.verifikator_id', '=', 'verifikator.pgw_id')
-                    ->where('tp.periode_id', $selectedPeriodeId)
-                    ->select(
-                        'tp.*',
-                        'e.nup',
-                        'e.nama',
-                        'o.off_name as penempatan',
-                        'occ.occ_name as jabatan',
-                        'd.dept_name as departemen',
-                        'sd.subdept_name as sub_departemen',
-                        'tp.status_nilai as status_penilaian',
-                        'tp.total_nilai as nilai_akhir',
-                        'penilai.nama as nama_penilai',
-                        'verifikator.nama as nama_verifikator'
-                    );
+                ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
+                ->leftJoin('office as o', 'e.off_id', '=', 'o.off_id')
+                ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
+                ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
+                ->leftJoin('department_sub as sd', 'e.subdept_id', '=', 'sd.subdept_id')
+                ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
+                ->where('tp.periode_id', $selectedPeriodeId)
+                ->select(
+                    'tp.*',
+                    'e.pgw_id as pegawai_id',
+                    'e.nup',
+                    'e.nama',
+                    'o.off_name as penempatan',
+                    'occ.occ_name as jabatan',
+                    'd.dept_name as departemen',
+                    'sd.subdept_name as sub_departemen',
+                    'tp.status_nilai as status_penilaian',
+                    'tp.total_nilai as nilai_akhir',
+                    'penilai.nama as nama_penilai'
+                );
 
                 if ($request->filled('search')) {
                     $search = trim($request->search);
