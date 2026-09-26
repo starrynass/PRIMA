@@ -17,6 +17,7 @@ use App\Http\Controllers\LaporanRekapNilaiController;
 use App\Http\Controllers\LaporanIndexKompetensiController;
 use App\Http\Controllers\FormPenilaianController;
 
+
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard-penilaian.index');
 
 // SKALA NILAI
@@ -70,6 +71,7 @@ Route::post('/penilaian/verifikasi-penilaian/{penilaian_id}/store', [VerifikasiP
 
 // CATATAN PENILAIAN
 Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');
+Route::get('/penilaian/catatan-penilaian/export', [CatatanPenilaianController::class, 'exportExcel'])->name('catatan-penilaian.export');
 
 // LAPORAN TAHUNAN
 Route::get('/laporan/laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');

@@ -117,7 +117,8 @@ class KelolaPenilaianController extends Controller
                 $penilaians = $queryPenilaian->paginate(25)->appends($request->query());
 
                 $sudahDiajukan = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-                    ->where('status_nilai', 'DIAJUKAN')->count();
+                    ->whereRaw('UPPER(status_nilai) IN (?, ?, ?)', ['SUBMITTED', 'SUBMIT', 'DIAJUKAN'])
+                    ->count();
 
                 $dikembalikan  = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
                     ->where('status_nilai', 'DIKEMBALIKAN')->count();

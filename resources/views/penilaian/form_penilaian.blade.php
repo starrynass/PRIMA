@@ -436,6 +436,13 @@
                 </div>
             @endforeach
 
+                <div class="card-native">
+                    <div class="card-header-burgundy">Catatan Umum</div>
+                    <div class="card-body-native">
+                        <textarea name="catatan_umum" class="native-input-textarea" rows="4" placeholder="Masukkan catatan umum...">{{ old('catatan_umum', $penilaian->catatan) }}</textarea>
+                    </div>
+                </div>
+
                 <!-- Action Footer Buttons -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 40px;">
                     <div style="display: flex; gap: 8px;">

@@ -170,9 +170,17 @@ class VerifikasiPenilaianController extends Controller
         // 2. Pemetaan Nilai dan Catatan (Gunakan Koreksi Verifikator jika ada, jika belum gunakan nilai dari Penilai Awal)
         $existingJawaban = [];
         $existingCatatan = [];
+        $nilaiPenilai = [];
+        $kodeNilaiPenilai = [];
+        $namaNilaiPenilai = [];
+        $catatanPenilai = [];
         foreach ($penilaian->details as $detail) {
-            $existingJawaban[$detail->pertanyaan_id] = $detail->nilai_angka_verifikator ?? $detail->nilai_angka;
-            $existingCatatan[$detail->pertanyaan_id] = $detail->catatan_verifikator ?? $detail->catatan;
+            $existingJawaban[$detail->pertanyaan_id] = $detail->verif_nilai_angka;
+            $existingCatatan[$detail->pertanyaan_id] = $detail->verif_catatan;
+            $nilaiPenilai[$detail->pertanyaan_id] = $detail->nilai_angka;
+            $kodeNilaiPenilai[$detail->pertanyaan_id] = $detail->kode_nilai;
+            $namaNilaiPenilai[$detail->pertanyaan_id] = $detail->nama_nilai;
+            $catatanPenilai[$detail->pertanyaan_id] = $detail->catatan;
         }
 
         // 3. Ambil Master Skala Nilai & Master Predikat Nilai
@@ -200,7 +208,11 @@ class VerifikasiPenilaianController extends Controller
             'skalaNilai', 
             'predikatNilai', 
             'existingJawaban', 
-            'existingCatatan'
+            'existingCatatan',
+            'nilaiPenilai',
+            'kodeNilaiPenilai',
+            'namaNilaiPenilai',
+            'catatanPenilai'
         ));
     }
 
@@ -225,9 +237,12 @@ class VerifikasiPenilaianController extends Controller
                 Dp3TransPenilaianDetail::where('penilaian_id', $penilaian->penilaian_id)
                     ->where('pertanyaan_id', $pertanyaanId)
                     ->update([
-                        'nilai_angka_verifikator' => $skalaVal,
-                        'kode_nilai_verifikator'  => $masterSkala->kode_nilai ?? null,
-                        'catatan_verifikator'     => $catatanVerifikator[$pertanyaanId] ?? null,
+                        'verif_nilai_angka' => $skalaVal,
+                        'verif_kode_nilai'  => $masterSkala->kode_nilai ?? null,
+                        'verif_nama_nilai'  => $masterSkala->nama_nilai ?? null,
+                        'verif_catatan'     => $catatanVerifikator[$pertanyaanId] ?? null,
+                        'verifikator_id'    => auth()->id() ?? $penilaian->verifikator_id,
+                        'verif_tanggal'     => now(),
                         'updated_at'              => now(),
                     ]);
             }

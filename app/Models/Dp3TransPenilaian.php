@@ -78,4 +78,22 @@ class Dp3TransPenilaian extends Model
     {
         return $this->hasMany(Dp3TransPenilaianDetail::class, 'penilaian_id', 'penilaian_id');
     }
+
+    // Relasi ke Verifikator
+public function verifikator()
+{
+    return $this->belongsTo(Employee::class, 'verifikator_id', 'pgw_id');
+}
+
+// Relasi ke Office (Penempatan)
+public function office()
+{
+    return $this->belongsTo(Office::class, 'pgw_off_id', 'off_id');
+}
+
+// Relasi ke Department
+public function department()
+{
+    return $this->belongsTo(Department::class, 'pgw_id_dept', 'dept_id');
+}
 }

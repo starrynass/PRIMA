@@ -43,3 +43,4 @@ class DepartmentSub extends Model
         return $this->hasMany(Employee::class, 'subdept_id', 'subdept_id');
     }
 }
+

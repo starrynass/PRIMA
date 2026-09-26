@@ -59,9 +59,10 @@ class FormPenilaianController extends Controller
         $statusAksi = $request->input('status_aksi', 'draft'); // 'draft' atau 'submitted'
         $jawaban = $request->input('jawaban', []); // Array [pertanyaan_id => nilai_angka]
         $catatan = $request->input('catatan', []); // Array [pertanyaan_id => teks_catatan]
+        $catatanUmum = $request->input('catatan_umum');
 
         // Jalankan Transaction untuk menyimpan detail dan update header
-        DB::transaction(function () use ($penilaian, $statusAksi, $jawaban, $catatan, $request) {
+        DB::transaction(function () use ($penilaian, $statusAksi, $jawaban, $catatan, $catatanUmum, $request) {
             
             foreach ($jawaban as $pertanyaanId => $skalaVal) {
                 
@@ -97,11 +98,12 @@ class FormPenilaianController extends Controller
             // Hitung Grand Total Nilai
             $totalNilai   = $request->input('grand_total', 0);
             $predikatNama = $request->input('predikat_nama', '-');
-
-            // Update Header Penilaian
+            
             $penilaian->total_nilai = $totalNilai;
             $penilaian->predikat    = $predikatNama;
-
+            $penilaian->catatan      = $catatanUmum;
+            $penilaian->status_nilai = ($statusAksi === 'submitted') ? 'SUBMITTED' : 'DRAFT';
+            
             if ($statusAksi === 'submitted') {
                 // DISESUAIKAN: Gunakan 'SUBMIT' agar dibaca oleh VerifikasiPenilaianController
                 $penilaian->status_nilai             = 'SUBMIT';

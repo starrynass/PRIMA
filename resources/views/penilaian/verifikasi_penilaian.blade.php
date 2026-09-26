@@ -821,7 +821,7 @@
                             <option value="" @selected(!request('periode_id'))>-- Pilih Periode --</option>
                             @forelse($periodes as $periode)
                                 <option value="{{ $periode->periode_id }}" @selected(request('periode_id') == $periode->periode_id)>
-                                    {{ $periode->nama_periode ?? ($periode->tahun . ' - ' . $periode->bulan) }}
+                                    {{ $periode->nama_periode ?? ($periode->tahun . ' - ' . $periode->bulan) }} · {{ strtoupper($periode->status ?? 'LOCKED') }}
                                 </option>
                             @empty
                                 <option value="" disabled>Belum ada periode tersimpan</option>
