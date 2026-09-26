@@ -73,4 +73,9 @@ class Dp3TransPenilaian extends Model
     {
         return $this->belongsTo(Employee::class, 'penilai_id', 'id');
     }
+
+    public function details()
+    {
+        return $this->hasMany(Dp3TransPenilaianDetail::class, 'penilaian_id', 'penilaian_id');
+    }
 }

@@ -2,255 +2,111 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Dp3TransPenilaian;
 use App\Models\Dp3TransPenilaianDetail;
 use App\Models\MasterTemplate;
-use App\Models\MasterPertanyaan;
-use App\Models\MasterKategori;
 use App\Models\MasterSkalaNilai;
 use App\Models\MasterPredikatNilai;
-use App\Models\Employee;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FormPenilaianController extends Controller
 {
-    public function show($id)
+    public function index($penilaian_id)
     {
-        // 1. Ambil Header Penilaian beserta data Pegawai & Relasinya
-        $penilaian = Dp3TransPenilaian::with([
-            'pegawai.office',
-            'pegawai.department',
-            'pegawai.subDepartment',
-            'pegawai.occupation'
-        ])->findOrFail($id);
+        // 1. Ambil Data Penilaian Transaksi
+        $penilaian = Dp3TransPenilaian::with(['periode', 'pegawai', 'details'])->where('penilaian_id', $penilaian_id)->firstOrFail();
 
-        // Ambil object employee dari relasi, atau fallback cari via pegawai_id
-        $employee = $penilaian->pegawai ?? Employee::with(['office', 'department', 'subDepartment', 'occupation'])
-            ->where('pgw_id', $penilaian->pegawai_id)
+        $existingJawaban = $penilaian->details->pluck('nilai_angka', 'pertanyaan_id')->toArray();
+        $existingCatatan = $penilaian->details->pluck('catatan', 'pertanyaan_id')->toArray();
+
+        // 2. Ambil Master Skala Nilai & Master Predikat Nilai
+        $skalaNilai = MasterSkalaNilai::orderBy('nilai_angka', 'desc')->get();
+        $predikatNilai = MasterPredikatNilai::orderBy('nilai_min', 'desc')->get();
+
+        // 3. Ambil ID Jabatan Pegawai
+        $jabatanId = (string) $penilaian->pgw_id_jabatan;
+
+        // 4. Cari Template Penilaian Berdasarkan Jabatan Pegawai
+        // PENTING: status_aktif bernilai 'Aktif' di DB, dan pencarian occ_id mengover JSON Array serta String LIKE
+        $template = MasterTemplate::where(function($query) {
+                $query->where('status_aktif', 'Aktif')
+                      ->orWhere('status_aktif', 1);
+            })
+            ->where(function ($query) use ($jabatanId) {
+                $query->whereJsonContains('occ_id', $jabatanId)
+                      ->orWhereJsonContains('occ_id', (int) $jabatanId)
+                      ->orWhere('occ_id', 'LIKE', '%"' . $jabatanId . '"%')
+                      ->orWhere('occ_id', 'LIKE', '%' . $jabatanId . '%');
+            })
+            ->with(['kategoris.pertanyaans'])
             ->first();
 
-        // Dapatkan ID Jabatan pegawai
-        $jabatanId = (string) ($penilaian->pgw_id_jabatan ?? $employee?->occ_id ?? '');
-
-        // 2. Cari Template Aktif berdasarkan Jabatan (Mendukung format string koma "6,14,17" & JSON)
-        $template = MasterTemplate::where(function($q) {
-                $q->where('status_aktif', 'Aktif')
-                  ->orWhere('status_aktif', 1);
-            })
-            ->where(function ($t) use ($jabatanId) {
-                if (!empty($jabatanId)) {
-                    $t->whereRaw("FIND_IN_SET(?, occ_id)", [$jabatanId])
-                      ->orWhere('occ_id', 'LIKE', '%' . $jabatanId . '%')
-                      ->orWhereJsonContains('occ_id', $jabatanId)
-                      ->orWhereJsonContains('occ_id', (int) $jabatanId);
-                }
-            })
-            ->first();
-
-        // Fallback ke template aktif pertama jika tidak ditemukan template spesifik jabatan
-        if (!$template) {
-            $template = MasterTemplate::where(function($q) {
-                $q->where('status_aktif', 'Aktif')
-                  ->orWhere('status_aktif', 1);
-            })->first();
-        }
-
-        // 3. Ambil Kategori & Pertanyaan berdasarkan template
-        $kategoriRaw = MasterKategori::where('template_id', $template->template_id ?? null)
-            ->with(['pertanyaans'])
-            ->orderBy('urutan', 'asc')
-            ->get();
-
-        // Mapping $kategoriList agar kompatibel dengan View Blade
-        $kategoriList = [];
-        foreach ($kategoriRaw as $kat) {
-            $pertanyaanList = [];
-            foreach ($kat->pertanyaans as $q) {
-                $pertanyaanList[] = [
-                    'id'        => $q->pertanyaan_id ?? $q->id,
-                    'judul'     => $q->pertanyaan ?? $q->judul_pertanyaan ?? $q->nama ?? '-',
-                    'deskripsi' => $q->deskripsi ?? $q->keterangan ?? '-',
-                    'bobot'     => $q->bobot_pertanyaan_persen ?? $q->bobot_persen ?? $q->bobot ?? 0,
-                ];
-            }
-
-            $kategoriList[] = [
-                'id'         => $kat->kategori_id ?? $kat->id,
-                'nama'       => $kat->nama_kategori ?? $kat->nama ?? 'Kategori',
-                'bobot'      => $kat->bobot_kategori_persen ?? $kat->bobot_persen ?? $kat->bobot ?? 0,
-                'pertanyaan' => $pertanyaanList,
-            ];
-        }
-
-        // 4. Ambil data Skala Nilai & Mapping untuk View
-        $skalaNilaiRaw = MasterSkalaNilai::orderBy('nilai_angka', 'desc')->get();
-        $skalaNilaiList = $skalaNilaiRaw->map(function ($s) {
-            return [
-                'kode'       => $s->kode_nilai ?? $s->kode_skala ?? $s->kode ?? '-',
-                'nilai'      => $s->nilai_angka ?? $s->nilai ?? 0,
-                'keterangan' => $s->nama_nilai ?? $s->keterangan ?? '-',
-            ];
-        })->toArray();
-
-        // 5. Ambil Predikat Nilai untuk kalkulasi JavaScript di Blade
-        $predikatList = MasterPredikatNilai::all()->map(function ($p) {
-            return [
-                'nama'  => $p->predikat ?? $p->nama_predikat ?? '-',
-                'min'   => $p->nilai_min ?? $p->min_nilai ?? 0,
-                'max'   => $p->nilai_max ?? $p->max_nilai ?? 100,
-                'warna' => $p->warna ?? '#10B981',
-            ];
-        })->toArray();
-
-        // 6. Ambil detail penilaian yang sudah tersimpan
-        $existingDetails = Dp3TransPenilaianDetail::where('penilaian_id', $id)
-            ->get()
-            ->keyBy('pertanyaan_id');
-
-        return view('penilaian.form_penilaian', compact(
-            'penilaian', 
-            'template', 
-            'kategoriList', 
-            'existingDetails', 
-            'skalaNilaiRaw',
-            'skalaNilaiList',
-            'predikatList',
-            'employee'
-        ));
+        return view('penilaian.form_penilaian', compact('penilaian', 'template', 'skalaNilai', 'predikatNilai', 'existingJawaban', 'existingCatatan',));
     }
 
-    public function store(Request $request, $penilaian_id)
-{
-    $request->validate([
-        'nilai' => 'required|array',
-    ]);
-
-    DB::beginTransaction();
-    try {
-        $penilaian = Dp3TransPenilaian::findOrFail($penilaian_id);
-        $templateId = $request->template_id ?? $penilaian->template_id;
-
-        // 1. Ambil data Master Kategori beserta Pertanyaannya
-        $kategoriList = MasterKategori::where('template_id', $templateId)
-            ->with(['pertanyaans'])
-            ->get();
-
-        $masterSkala = MasterSkalaNilai::all()->keyBy('skala_id');
+  public function store(Request $request, $penilaian_id)
+    {
+        $penilaian = Dp3TransPenilaian::where('penilaian_id', $penilaian_id)->firstOrFail();
         
-        // Ambil nilai skala maksimum untuk pembagi (default 4 jika tidak ada)
-        $maxScale = $masterSkala->max('nilai_angka') ?: 4;
+        $statusAksi = $request->input('status_aksi', 'draft'); // 'draft' atau 'submitted'
+        $jawaban = $request->input('jawaban', []); // Array [pertanyaan_id => nilai_angka]
+        $catatan = $request->input('catatan', []); // Array [pertanyaan_id => teks_catatan]
 
-        $totalNilaiPenilaian = 0;
+        // Jalankan Transaction untuk menyimpan detail dan update header
+        DB::transaction(function () use ($penilaian, $statusAksi, $jawaban, $catatan, $request) {
+            
+            foreach ($jawaban as $pertanyaanId => $skalaVal) {
+                
+                // 1. Ambil snapshot data Master Pertanyaan
+                // (Sesuaikan \App\Models\MasterPertanyaan dengan nama model master pertanyaan kamu)
+                $masterPertanyaan = \App\Models\MasterPertanyaan::where('pertanyaan_id', $pertanyaanId)->first();
 
-        foreach ($kategoriList as $kategori) {
-            // Bobot Kategori (misal 60% -> 0.60)
-            $bobotKategoriPersen = $kategori->bobot_kategori_persen ?? $kategori->bobot_persen ?? 100;
-            $bobotKategoriDesimal = $bobotKategoriPersen / 100;
+                // 2. Ambil snapshot data Master Skala Nilai berdasarkan nilai_angka yang dipilih
+                // (Sesuaikan \App\Models\MasterSkalaNilai dengan nama model skala nilai kamu)
+                $masterSkala = \App\Models\MasterSkalaNilai::where('nilai_angka', $skalaVal)->first();
+                
+                \App\Models\Dp3TransPenilaianDetail::updateOrCreate(
+                    [
+                        'penilaian_id'  => $penilaian->penilaian_id,
+                        'pertanyaan_id' => $pertanyaanId,
+                    ],
+                    [
+                        // Snapshot informasi pertanyaan
+                        'pertanyaan'              => $masterPertanyaan->pertanyaan ?? null,
+                        'deskripsi'               => $masterPertanyaan->deskripsi ?? null,
+                        'bobot_pertanyaan_persen' => $masterPertanyaan->bobot_persen ?? null,
 
-            $sumNilaiTerbobotPertanyaan = 0;
-            $sumBobotPertanyaanTerisi = 0;
+                        // Snapshot informasi skala nilai
+                        'skala_id'                => $masterSkala->skala_id ?? null,
+                        'kode_nilai'              => $masterSkala->kode_nilai ?? null,
+                        'nama_nilai'              => $masterSkala->nama_nilai ?? null,
+                        'nilai_angka'             => $skalaVal,
 
-            foreach ($kategori->pertanyaans as $pertanyaanObj) {
-                $pertanyaanId = $pertanyaanObj->pertanyaan_id ?? $pertanyaanObj->id;
-
-                // Cek apakah pertanyaan ini diisi/dipilih oleh user
-                if (isset($request->nilai[$pertanyaanId])) {
-                    $skalaId = $request->nilai[$pertanyaanId];
-                    $skalaObj = $masterSkala->get($skalaId);
-
-                    if (!$skalaObj) {
-                        continue;
-                    }
-
-                    $bobotPertanyaanPersen = $pertanyaanObj->bobot_pertanyaan_persen ?? $pertanyaanObj->bobot_persen ?? 0;
-                    $bobotPertanyaanDesimal = $bobotPertanyaanPersen / 100;
-
-                    $kodeNilai  = $skalaObj->kode_nilai ?? $skalaObj->kode_skala ?? '-';
-                    $namaNilai  = $skalaObj->nama_nilai ?? $skalaObj->keterangan ?? '-';
-                    $nilaiAngka = $skalaObj->nilai_angka ?? 0;
-
-                    // Kalkulasi Nilai Terbobot Pertanyaan
-                    // Jika nilaiAngka berupa skala (misal 1-4), konversi ke persen (nilaiAngka / maxScale) * bobot
-                    if ($nilaiAngka <= $maxScale && $maxScale > 0) {
-                        $nilaiAkhirPertanyaan = ($nilaiAngka / $maxScale) * $bobotPertanyaanPersen;
-                    } else {
-                        $nilaiAkhirPertanyaan = $bobotPertanyaanDesimal > 0 
-                            ? ($nilaiAngka * $bobotPertanyaanDesimal) 
-                            : $nilaiAngka;
-                    }
-
-                    // Akumulasi per kategori
-                    $sumNilaiTerbobotPertanyaan += $nilaiAkhirPertanyaan;
-                    $sumBobotPertanyaanTerisi += $bobotPertanyaanDesimal;
-
-                    // Simpan / Update Detail Penilaian
-                    Dp3TransPenilaianDetail::updateOrCreate(
-                        [
-                            'penilaian_id'  => $penilaian_id,
-                            'pertanyaan_id' => $pertanyaanId,
-                        ],
-                        [
-                            'pertanyaan'              => $pertanyaanObj->pertanyaan ?? $pertanyaanObj->judul_pertanyaan ?? '',
-                            'deskripsi'               => $pertanyaanObj->deskripsi ?? '',
-                            'bobot_pertanyaan_persen' => $bobotPertanyaanPersen,
-                            'skala_id'                => $skalaId,
-                            'kode_nilai'              => $kodeNilai,
-                            'nama_nilai'              => $namaNilai,
-                            'nilai_angka'             => $nilaiAngka,
-                            'nilai_akhir'             => $nilaiAkhirPertanyaan,
-                            'catatan'                 => $request->catatan[$pertanyaanId] ?? null,
-                            'created_by'              => auth()->user()?->name ?? 'System',
-                            'updated_by'              => auth()->user()?->name ?? 'System',
-                        ]
-                    );
-                }
+                        'catatan'                 => $catatan[$pertanyaanId] ?? null,
+                        'updated_at'              => now(),
+                    ]
+                );
             }
 
-            // 2. Hitung Rata-Rata / Total Kategori Terbobot
-            $nilaiKategoriTerbobot = $sumNilaiTerbobotPertanyaan * $bobotKategoriDesimal;
+            // Hitung Grand Total Nilai
+            $totalNilai   = $request->input('grand_total', 0);
+            $predikatNama = $request->input('predikat_nama', '-');
 
-            // 3. Tambahkan ke Total Nilai Keseluruhan
-            $totalNilaiPenilaian += $nilaiKategoriTerbobot;
-        }
+            // Update Header Penilaian
+            $penilaian->total_nilai  = $totalNilai;
+            $penilaian->predikat     = $predikatNama;
+            $penilaian->status_nilai = ($statusAksi === 'submitted') ? 'SUBMITTED' : 'DRAFT';
+            
+            if ($statusAksi === 'submitted') {
+                $penilaian->tanggal_submit = now();
+            }
+            
+            $penilaian->save();
+        });
 
-        // Pembulatan Total Nilai 2 digit desimal
-        $totalNilaiAkhir = round($totalNilaiPenilaian, 2);
-
-        // 4. Tentukan Predikat Nilai
-        $predikatObj = MasterPredikatNilai::where(function($q) use ($totalNilaiAkhir) {
-            $q->where('nilai_min', '<=', $totalNilaiAkhir)
-              ->orWhere('min_nilai', '<=', $totalNilaiAkhir);
-        })->where(function($q) use ($totalNilaiAkhir) {
-            $q->where('nilai_max', '>=', $totalNilaiAkhir)
-              ->orWhere('max_nilai', '>=', $totalNilaiAkhir);
-        })->first();
-
-        $predikatId   = $predikatObj->predikat_id ?? $predikatObj->id ?? null;
-        $predikatText = $predikatObj->predikat ?? $predikatObj->nama_predikat ?? 'Belum Ditentukan';
-
-        // 5. Cek Aksi Submit atau Draft (Mendukung 'status_aksi' dari JS dan 'action')
-        $statusAksi = $request->input('status_aksi', $request->input('action', 'draft'));
-        $isSubmit   = in_array(strtolower($statusAksi), ['submitted', 'submit']);
-
-        // 6. Update Header Penilaian
-        $penilaian->update([
-            'template_id'    => $templateId,
-            'total_nilai'    => $totalNilaiAkhir,
-            'predikat_id'    => $predikatId,
-            'predikat'       => $predikatText,
-            'status_nilai'   => $isSubmit ? 'Disubmit' : 'Draft',
-            'tanggal_submit' => $isSubmit ? now() : null,
-            'updated_by'     => auth()->user()?->name ?? 'System',
-        ]);
-
-        DB::commit();
-
-        return redirect()->back()->with('success', $isSubmit ? 'Penilaian berhasil diajukan!' : 'Draft penilaian berhasil disimpan.');
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return redirect()->back()->with('error', 'Gagal menyimpan penilaian: ' . $e->getMessage());
+        $msg = ($statusAksi === 'submitted') ? 'Penilaian berhasil diajukan!' : 'Draft penilaian berhasil disimpan!';
+        return redirect()->route('kelola-penilaian.index', ['periode_id' => $penilaian->periode_id])
+            ->with('success', $msg);
     }
-}
 }

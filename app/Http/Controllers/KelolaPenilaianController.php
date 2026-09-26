@@ -40,6 +40,11 @@ class KelolaPenilaianController extends Controller
                 ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
                 ->leftJoin('department_sub as sd', 'e.subdept_id', '=', 'sd.subdept_id')
                 ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
+                // Tambahkan LEFT JOIN ke master predikat berdasarkan rentang nilai_min & nilai_max
+                ->leftJoin('dp3_master_predikat_nilai as mp', function ($join) {
+                    $join->on('tp.total_nilai', '>=', 'mp.nilai_min')
+                         ->on('tp.total_nilai', '<=', 'mp.nilai_max');
+                })
                 ->where('tp.periode_id', $selectedPeriodeId)
                 ->select(
                     'tp.*',
@@ -52,7 +57,8 @@ class KelolaPenilaianController extends Controller
                     'sd.subdept_name as sub_departemen',
                     'tp.status_nilai as status_penilaian',
                     'tp.total_nilai as nilai_akhir',
-                    'penilai.nama as nama_penilai'
+                    'penilai.nama as nama_penilai',
+                    'mp.predikat as predikat' // Mengambil teks predikat dinamis dari tabel master
                 );
 
                 if ($request->filled('search')) {

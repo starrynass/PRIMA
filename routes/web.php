@@ -59,11 +59,9 @@ Route::get('/penilaian/periode-penilaian/{id}/detail', [PeriodePenilaianControll
 // KELOLA PENILAIAN
 Route::get('/penilaian/kelola-penilaian', [KelolaPenilaianController::class, 'index'])->name('kelola-penilaian.index');
 
-    // Route untuk menampilkan Form Penilaian
-    Route::get('/penilaian/form/{id}', [FormPenilaianController::class, 'show'])->name('penilaian.form');
-
-    // Route untuk menyimpan (Draft / Submit) Penilaian
-    Route::post('/penilaian/form/{id}/store', [FormPenilaianController::class, 'store'])->name('penilaian.store');
+// FORM PENILAIAN
+Route::get('/penilaian/form/{penilaian_id}', [FormPenilaianController::class, 'index'])->name('penilaian.form');
+Route::post('/penilaian/store/{penilaian_id}', [FormPenilaianController::class, 'store'])->name('penilaian.store');
 
 // VERIFIKASI PENILAIAN
 Route::get('/penilaian/verifikasi-penilaian', [VerifikasiPenilaianController::class, 'index'])->name('verifikasi-penilaian.index');

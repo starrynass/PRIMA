@@ -2,569 +2,512 @@
 
 @section('content')
 <style>
-:root {
-    --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-code: 'JetBrains Mono', monospace;
+    /* ==========================================================================
+       VARIABLES & BASE STYLES
+       ========================================================================== */
+    :root {
+        --primary-burgundy: #80243B;
+        --primary-burgundy-hover: #661c2f;
+        --bg-light: #F4F6F9;
+        --border-color: #E2E8F0;
+        --text-dark: #1E293B;
+        --text-muted: #64748B;
+        --radius: 6px;
+    }
 
-    --bg-page: #f8fafc;
-    --surface: #ffffff;
-    
-    /* Crimson Maroon Palette */
-    --maroon-primary: #7A1C38;
-    --maroon-hover: #5C1329;
-    --maroon-soft: #FBF0F3;
-    --maroon-border: #F3D5DD;
-    --maroon-gradient: linear-gradient(135deg, #7A1C38 0%, #9E2A4B 100%);
-    --maroon-glow: rgba(122, 28, 56, 0.15);
+    .form-penilaian-wrapper {
+        background-color: var(--bg-light);
+        padding: 20px;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--text-dark);
+    }
 
-    /* Neutral System Shades */
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #94A3B8;
-    --border-color: #E2E8F0;
+    /* ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== */
+    .header-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
 
-    /* Badges & Status */
-    --badge-emerald-bg: #D1FAE5;
-    --badge-emerald-text: #065F46;
-    --badge-amber-bg: #FEF3C7;
-    --badge-amber-text: #92400E;
-    --badge-rose-bg: #FFE4E6;
-    --badge-rose-text: #9F1239;
+    .header-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
 
-    --radius-xl: 1rem;
-    --radius-lg: 0.75rem;
-    --radius-md: 0.5rem;
+    .header-title span {
+        color: var(--primary-burgundy);
+    }
 
-    --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
-}
+    .btn-native {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: var(--radius);
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+    }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    .btn-back {
+        background-color: #DC2626;
+        color: #FFFFFF;
+    }
+    .btn-back:hover { background-color: #B91C1C; }
 
-body {
-    background-color: var(--bg-page);
-    font-family: var(--font-main);
-    color: var(--text-primary);
-    -webkit-font-smoothing: antialiased;
-}
+    .btn-draft {
+        background-color: #F59E0B;
+        color: #000000;
+    }
+    .btn-draft:hover { background-color: #D97706; }
 
-.main-wrapper {
-    padding: 1.5rem;
-    max-width: 1600px;
-    margin: 0 auto;
-}
+    .btn-preview {
+        background-color: #0D9488;
+        color: #FFFFFF;
+    }
+    .btn-preview:hover { background-color: #0F766E; }
 
-/* Header Bar */
-.header-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
+    .btn-submit {
+        background-color: var(--primary-burgundy);
+        color: #FFFFFF;
+    }
+    .btn-submit:hover { background-color: var(--primary-burgundy-hover); }
 
-.page-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
+    /* ==========================================================================
+       LAYOUT GRID
+       ========================================================================== */
+    .grid-container {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 20px;
+    }
 
-.page-title span { color: var(--maroon-primary); }
+    @media (max-width: 992px) {
+        .grid-container {
+            grid-template-columns: 1fr;
+        }
+    }
 
-.header-actions {
-    display: flex;
-    gap: 0.75rem;
-}
+    /* ==========================================================================
+       CARD COMPONENTS
+       ========================================================================== */
+    .card-native {
+        background-color: #FFFFFF;
+        border-radius: var(--radius);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
 
-/* Base Buttons */
-.btn-custom {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
+    .card-header-burgundy {
+        background-color: var(--primary-burgundy);
+        color: #FFFFFF;
+        padding: 12px 16px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.btn-danger-custom { background-color: #EF4444; color: #ffffff; }
-.btn-danger-custom:hover { background-color: #DC2626; }
+    .card-body-native {
+        padding: 16px;
+    }
 
-.btn-maroon {
-    background: var(--maroon-gradient);
-    color: #ffffff;
-    box-shadow: 0 2px 8px var(--maroon-glow);
-}
-.btn-maroon:hover { background: var(--maroon-hover); color: #fff; }
+    /* Status Badge */
+    .status-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+    .badge-draft { background-color: #FEF3C7; color: #92400E; }
+    .badge-submitted { background-color: #D1FAE5; color: #065F46; }
 
-.btn-outline-maroon {
-    background-color: transparent;
-    border: 1px solid var(--maroon-primary);
-    color: var(--maroon-primary);
-}
-.btn-outline-maroon:hover { background-color: var(--maroon-soft); }
+    /* ==========================================================================
+       QUESTION LIST & RADIO SCALES
+       ========================================================================== */
+    .legend-box {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 12px;
+        color: var(--text-muted);
+        padding-top: 10px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 10px;
+    }
 
-/* Grid Layout */
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 1.5rem;
-    align-items: start;
-}
-
-@media (max-width: 1024px) {
-    .form-grid { grid-template-columns: 1fr; }
-}
-
-/* Card Panel */
-.card-panel {
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-card);
-    overflow: hidden;
-    margin-bottom: 1.5rem;
-}
-
-.card-panel-header {
-    background: var(--maroon-gradient);
-    color: #ffffff;
-    padding: 0.875rem 1.25rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    font-size: 0.95rem;
-}
-
-.card-panel-body { padding: 1.25rem; }
-
-/* Legend Skala Warna Nilai */
-.legend-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    padding: 0.75rem 1rem;
-    background: #ffffff;
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    margin-bottom: 1.25rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
-}
-
-.legend-item { display: flex; align-items: center; gap: 0.375rem; }
-.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.dot-a { background-color: #10B981; }
-.dot-b { background-color: #3B82F6; }
-.dot-c { background-color: #F59E0B; }
-.dot-d { background-color: #F97316; }
-.dot-e { background-color: #EF4444; }
-
-/* Item Pertanyaan */
-.question-item {
-    display: grid;
-    grid-template-columns: 36px 1fr 80px 220px 260px;
-    gap: 1rem;
-    align-items: start;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border-color);
-}
-.question-item:last-child { border-bottom: none; }
-
-@media (max-width: 1280px) {
     .question-item {
-        grid-template-columns: 36px 1fr;
-        gap: 0.75rem;
+        display: grid;
+        grid-template-columns: 32px 1fr 60px 180px 200px;
+        gap: 12px;
+        align-items: start;
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--border-color);
     }
-    .q-bobot-cell, .options-group, .evidensi-cell {
-        grid-column: 2;
+
+    @media (max-width: 1200px) {
+        .question-item {
+            grid-template-columns: 32px 1fr;
+        }
     }
-}
 
-.q-number {
-    width: 32px;
-    height: 32px;
-    background-color: var(--maroon-primary);
-    color: #ffffff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.875rem;
-}
+    .question-number {
+        width: 28px;
+        height: 28px;
+        background-color: var(--primary-burgundy);
+        color: #FFFFFF;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 12px;
+    }
 
-.q-title { font-weight: 700; font-size: 0.9375rem; color: var(--text-primary); margin-bottom: 0.25rem; }
-.q-desc { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.4; }
-.q-bobot { font-size: 0.8125rem; font-weight: 600; background: #F1F5F9; padding: 0.25rem 0.5rem; border-radius: 4px; text-align: center; display: inline-block; }
+    .question-title {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
 
-/* Options Radio */
-.options-group { display: flex; gap: 0.375rem; }
-.option-btn-wrapper input[type="radio"] { display: none; }
+    .question-desc {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
 
-.option-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 38px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    font-weight: 700;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    background: #ffffff;
-    color: var(--text-secondary);
-}
+    .weight-badge {
+        background-color: #F1F5F9;
+        border: 1px solid var(--border-color);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+    }
 
-.option-label:hover {
-    border-color: var(--maroon-primary);
-    color: var(--maroon-primary);
-    background-color: var(--maroon-soft);
-}
+    /* Radio Custom Scale */
+    .scale-group {
+        display: flex;
+        gap: 4px;
+    }
 
-.option-btn-wrapper input[type="radio"]:checked + .option-label {
-    border-color: var(--maroon-primary);
-    background-color: var(--maroon-primary);
-    color: #ffffff;
-    box-shadow: 0 2px 6px var(--maroon-glow);
-}
+    .scale-item {
+        position: relative;
+    }
 
-.textarea-evidensi {
-    width: 100%;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 0.5rem 0.75rem;
-    font-family: var(--font-main);
-    font-size: 0.8125rem;
-    resize: vertical;
-    min-height: 60px;
-    outline: none;
-}
-.textarea-evidensi:focus {
-    border-color: var(--maroon-primary);
-    box-shadow: 0 0 0 3px var(--maroon-glow);
-}
+    .scale-item input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+    }
 
-/* Sidebar Styles */
-.avatar-circle {
-    width: 64px;
-    height: 64px;
-    background-color: var(--maroon-soft);
-    color: var(--maroon-primary);
-    border: 2px solid var(--maroon-border);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 auto 0.75rem auto;
-}
+    .scale-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        background-color: #FFFFFF;
+        transition: all 0.2s;
+    }
 
-.employee-name { font-weight: 700; font-size: 1rem; text-align: center; margin-bottom: 1rem; }
-.info-list { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem; }
-.info-row { display: flex; justify-content: space-between; align-items: center; }
-.info-label { color: var(--text-secondary); }
-.info-val { font-weight: 600; color: var(--text-primary); text-align: right; }
+    .scale-item input[type="radio"]:checked + .scale-label {
+        background-color: var(--primary-burgundy);
+        border-color: var(--primary-burgundy);
+        color: #FFFFFF;
+    }
 
-.progress-bar-bg {
-    width: 100%;
-    height: 8px;
-    background-color: #E2E8F0;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 0.5rem;
-}
-.progress-bar-fill {
-    height: 100%;
-    background: var(--maroon-gradient);
-    width: 0%;
-    transition: width 0.3s ease;
-}
+    .native-input-textarea {
+        width: 100%;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 6px 8px;
+        font-size: 12px;
+        resize: vertical;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
 
-.table-mini {
-    width: 100%;
-    font-size: 0.8125rem;
-    border-collapse: collapse;
-    margin-top: 0.5rem;
-}
-.table-mini th, .table-mini td {
-    padding: 0.375rem 0.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-.table-mini th { text-align: left; color: var(--text-secondary); font-weight: 600; }
+    /* ==========================================================================
+       SIDEBAR & PROGRESS
+       ========================================================================== */
+    .profile-avatar-circle {
+        width: 50px;
+        height: 50px;
+        background-color: #E2E8F0;
+        color: var(--text-muted);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 18px;
+        margin: 0 auto 8px auto;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+    .info-label { color: var(--text-muted); }
+    .info-value { font-weight: 600; text-align: right; }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background-color: #E2E8F0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 8px 0 16px 0;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background-color: #10B981;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    .native-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+    .native-table th, .native-table td {
+        padding: 6px 4px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .native-table th { text-align: left; color: var(--text-muted); font-weight: 600; }
+
+    /* ==========================================================================
+       MODAL NATIVE
+       ========================================================================== */
+    .modal-backdrop-native {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    .modal-content-native {
+        background: #FFFFFF;
+        width: 100%;
+        max-width: 450px;
+        border-radius: var(--radius);
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 </style>
-<div class="main-wrapper">
-    <div class="header-bar">
-        <div class="page-title">
-            Form Penilaian &raquo; <span>{{ $penilaian->pgw_nama ?? '-' }}</span>
+
+<div class="form-penilaian-wrapper">
+    
+    <!-- Top Header -->
+    <div class="header-nav">
+        <div class="header-title">
+            Form Penilaian » <span>{{ $penilaian->pgw_nama }}</span>
         </div>
-        <div class="header-actions">
-            <a href="{{ route('kelola-penilaian.index') }}" class="btn-custom btn-danger-custom">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
-        </div>
+        <a href="{{ route('kelola-penilaian.index', ['periode_id' => $penilaian->periode_id]) }}" class="btn-native btn-back">
+            &larr; Kembali
+        </a>
     </div>
 
-    <?php
-        $kategoriData = is_iterable($kategoriList ?? null) ? $kategoriList : [];
-        $skalaData = is_iterable($skalaNilaiList ?? null) ? $skalaNilaiList : [];
-        $predikatData = is_iterable($predikatList ?? null) ? $predikatList : [];
+    @if(!$template)
+        <div class="card-native" style="padding: 30px; text-align: center;">
+            <h3 style="color: #DC2626; margin-bottom: 8px;">Belum Ada Template Untuk Jabatan Ini</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">Silakan buat atau atur template penilaian untuk jabatan <strong>{{ $penilaian->pgw_jabatan }}</strong> terlebih dahulu pada Master Template.</p>
+        </div>
+    @else
 
-        // Mencari nilai skala tertinggi sebagai basis pembagi (Max Scale)
-        $maxScale = 0;
-        foreach ($skalaData as $s) {
-            $val = is_object($s) ? $s->nilai : ($s['nilai'] ?? 0);
-            if ($val > $maxScale) {
-                $maxScale = $val;
-            }
-        }
-        $maxScale = $maxScale > 0 ? $maxScale : 4; // Default fallback ke 4 jika tidak terdefinisi
-    ?>
-
-    <form action="{{ route('penilaian.store', ['id' => $penilaian->penilaian_id ?? 1]) }}" method="POST" id="formPenilaian">
+    <form id="formPenilaian" action="{{ route('penilaian.store', $penilaian->penilaian_id) }}" method="POST">
         @csrf
-        <!-- Hidden input untuk membedakan aksi status (Draft vs Submit/Ajukan) -->
         <input type="hidden" name="status_aksi" id="statusAksi" value="draft">
+        <input type="hidden" name="grand_total" id="inputGrandTotal" value="0">
+        <input type="hidden" name="predikat_nama" id="inputPredikatNama" value="-">
 
-        <div class="form-grid">
+        <div class="grid-container">
             
-            <!-- KOLOM KIRI: Daftar Kategori & Pertanyaan -->
-            <div class="left-content">
-                
-                <!-- Bar Status Pengisian -->
-                <div class="card-panel" style="margin-bottom: 1rem;">
-                    <div class="card-panel-body" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.25rem;">
-                        <div style="font-weight: 700; color: var(--maroon-primary); display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fas fa-edit"></i> Isi Penilaian
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 1rem;">
-                            <span style="font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary);">
-                                Status: 
-                                <span id="statusBadge" class="badge" style="background: var(--badge-amber-bg); color: var(--badge-amber-text); padding: 2px 8px; border-radius: 4px;">
-                                    BELUM DIISI
+            <!-- LEFT COLUMN: ASSESSMENT FORM -->
+            <div>
+                <!-- Form Header Card -->
+                <div class="card-native">
+                    <div class="card-body-native">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-weight: 700; font-size: 14px;">📝 Isi Penilaian</div>
+                            <div>
+                                <span style="font-size: 12px; color: var(--text-muted);">Status: </span>
+                                <span class="status-badge {{ strtolower($penilaian->status_nilai) == 'submitted' ? 'badge-submitted' : 'badge-draft' }}">
+                                    {{ strtoupper($penilaian->status_nilai ?? 'BELUM DIISI') }}
                                 </span>
-                            </span>
+                            </div>
+                        </div>
+
+                        <!-- Legend Quick Access -->
+                        <div class="legend-box">
+                            @foreach($skalaNilai as $skala)
+                                <div>
+                                    <span style="color: #10B981; font-weight: bold;">•</span>
+                                    <strong>{{ $skala->kode_nilai }}</strong> — {{ $skala->nama_nilai }} ({{ (int)$skala->nilai_angka }})
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
 
-                <!-- Legend Skala Nilai -->
-                <div class="legend-bar">
-                    <?php if (count($skalaData) > 0): ?>
-                        <?php foreach ($skalaData as $skala): ?>
-                            <?php
-                                $skalaKode = is_object($skala) ? $skala->kode : ($skala['kode'] ?? '-');
-                                $skalaNilai = is_object($skala) ? $skala->nilai : ($skala['nilai'] ?? 0);
-                                $skalaKet = is_object($skala) ? $skala->keterangan : ($skala['keterangan'] ?? '-');
-                            ?>
-                            <span class="legend-item">
-                                <span class="dot dot-{{ strtolower($skalaKode) }}"></span> 
-                                {{ $skalaKode }} — {{ $skalaKet }} ({{ $skalaNilai }})
-                            </span>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <span class="text-muted small">Belum ada data skala nilai</span>
-                    <?php endif; ?>
-                </div>
+                <!-- CATEGORIES AND QUESTIONS -->
+               @foreach($template->kategoris as $catIdx => $kategori)
+                <div class="card-native card-panel" data-kat-id="{{ $kategori->kategori_id }}" data-kat-bobot="{{ $kategori->bobot_persen }}">
+                    <div class="card-header-burgundy">
+                        <div>📋 {{ $catIdx + 1 }}. {{ strtoupper($kategori->nama) }}</div>
+                        <div style="font-size: 12px; opacity: 0.9;">Bobot {{ $kategori->bobot_persen }}%</div>
+                    </div>
+                    
+                    <div class="card-body-native">
+                        @foreach($kategori->pertanyaans as $qIdx => $pertanyaan)
+                            <div class="question-item">
+                                <!-- Number -->
+                                <div class="question-number">{{ $qIdx + 1 }}</div>
+                                
+                                <!-- Text & Desc -->
+                                <div>
+                                    <div class="question-title">{{ $pertanyaan->pertanyaan }}</div>
+                                    <div class="question-desc">{{ $pertanyaan->deskripsi ?? '-' }}</div>
+                                </div>
 
-                <!-- Section Kategori Penilaian -->
-                <?php if (count($kategoriData) > 0): ?>
-                    <?php $katIndex = 1; ?>
-                    <?php foreach ($kategoriData as $kat): ?>
-                        <?php
-                            $katId = data_get($kat, 'id', $katIndex);
-                            $katNama = data_get($kat, 'nama', 'Kategori ' . $katIndex);
-                            $katBobot = data_get($kat, 'bobot', 0);
-                            $pertanyaanInKat = data_get($kat, 'pertanyaan', []);
-                            $pertanyaanArray = is_iterable($pertanyaanInKat) ? $pertanyaanInKat : [];
-                        ?>
-                        <div class="card-panel" style="margin-bottom: 1rem;" data-kat-id="{{ $katId }}" data-kat-bobot="{{ $katBobot }}">
-                            <div class="card-panel-header">
-                                <span><i class="fas fa-briefcase me-2"></i> {{ $katIndex }}. {{ strtoupper($katNama) }}</span>
-                                <div style="display: flex; gap: 1rem; align-items: center; font-size: 0.8125rem;">
-                                    <span>Bobot {{ $katBobot }}%</span>
-                                    <i class="fas fa-chevron-up"></i>
+                                <!-- Weight -->
+                                <div class="weight-badge">
+                                    {{ number_format($pertanyaan->bobot_persen, 2) }}%
+                                </div>
+
+                                <!-- Choice Radio Options -->
+                                <div class="scale-group">
+                                    @foreach($skalaNilai as $skala)
+                                        <div class="scale-item">
+                                            <input type="radio" 
+                                                class="radio-score" 
+                                                name="jawaban[{{ $pertanyaan->pertanyaan_id }}]" 
+                                                id="q_{{ $pertanyaan->pertanyaan_id }}_{{ $skala->skala_id }}" 
+                                                value="{{ $skala->nilai_angka }}"
+                                                data-kat-id="{{ $kategori->kategori_id }}"
+                                                data-score="{{ $skala->nilai_angka }}"
+                                                data-weight="{{ $pertanyaan->bobot_persen }}"
+                                                {{ (isset($existingJawaban[$pertanyaan->pertanyaan_id]) && $existingJawaban[$pertanyaan->pertanyaan_id] == $skala->nilai_angka) ? 'checked' : '' }}
+                                                required>
+                                            
+                                            <label class="scale-label" for="q_{{ $pertanyaan->pertanyaan_id }}_{{ $skala->skala_id }}">
+                                                {{ $skala->kode_nilai }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <!-- Evidensi / Catatan -->
+                                <div>
+                                    <textarea name="catatan[{{ $pertanyaan->pertanyaan_id }}]" 
+                                            class="native-input-textarea" 
+                                            rows="2" 
+                                            placeholder="Tulis catatan atau evidensi (opsional)...">{{ $existingCatatan[$pertanyaan->pertanyaan_id] ?? '' }}</textarea>
                                 </div>
                             </div>
-                            <div class="card-panel-body">
-                                
-                                <?php if (count($pertanyaanArray) > 0): ?>
-                                    <?php $qIndex = 1; ?>
-                                    <?php foreach ($pertanyaanArray as $q): ?>
-                                        <?php
-                                            $qId = data_get($q, 'id');
-                                            $qJudul = data_get($q, 'judul', '-');
-                                            $qDesc = data_get($q, 'deskripsi', '-');
-                                            $qBobot = data_get($q, 'bobot', 0);
-                                        ?>
-                                        <div class="question-item">
-                                            <div class="q-number">{{ $qIndex }}</div>
-                                            <div>
-                                                <div class="q-title">{{ $qJudul }}</div>
-                                                <div class="q-desc">{{ $qDesc }}</div>
-                                            </div>
-                                            <div class="q-bobot-cell">
-                                                <span class="q-bobot">{{ number_format($qBobot, 2) }}%</span>
-                                            </div>
-                                            <div class="options-group">
-                                                <?php if (count($skalaData) > 0): ?>
-                                                    <?php foreach ($skalaData as $opt): ?>
-                                                        <?php
-                                                            $optKode = is_object($opt) ? $opt->kode : ($opt['kode'] ?? '-');
-                                                            $optVal = is_object($opt) ? $opt->nilai : ($opt['nilai'] ?? 0);
-                                                        ?>
-                                                        <div class="option-btn-wrapper">
-                                                            <input type="radio" 
-                                                                   id="q{{ $qId }}_{{ $optKode }}" 
-                                                                   name="nilai[{{ $qId }}]" 
-                                                                   value="{{ $optKode }}" 
-                                                                   data-score="{{ $optVal }}"
-                                                                   data-weight="{{ $qBobot }}"
-                                                                   data-kat-id="{{ $katId }}"
-                                                                   class="radio-score"
-                                                                   {{ old('nilai.' . $qId) == $optKode ? 'checked' : '' }}>
-                                                            <label for="q{{ $qId }}_{{ $optKode }}" class="option-label">{{ $optKode }}</label>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                <?php else: ?>
-                                                    <span class="text-muted small">Belum ada data skala nilai</span>
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="evidensi-cell">
-                                                <textarea name="evidensi[{{ $qId }}]" 
-                                                          class="textarea-evidensi" 
-                                                          placeholder="Tulis catatan atau evidensi (opsional)...">{{ old('evidensi.' . $qId) }}</textarea>
-                                            </div>
-                                        </div>
-                                        <?php $qIndex++; ?>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <div class="p-3 text-center text-muted">Belum ada data pertanyaan pada kategori ini</div>
-                                <?php endif; ?>
-
-                            </div>
-                        </div>
-                        <?php $katIndex++; ?>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="card-panel">
-                        <div class="p-4 text-center text-muted">
-                            <i class="fas fa-folder-open fa-2x mb-2 d-block"></i>
-                            Belum ada data kategori & pertanyaan (Template belum diset/kosong)
-                        </div>
+                        @endforeach
                     </div>
-                <?php endif; ?>
+                </div>
+            @endforeach
 
-                <!-- CONTAINER 3 TOMBOL ACTION SESUAI DENGAN GAMBAR -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; margin-bottom: 2rem;">
-                    <!-- Sisi Kiri: Simpan Draft & Preview Hasil -->
-                    <div style="display: flex; gap: 0.5rem;">
-                        <!-- Tombol Simpan Draft (Kuning / Oranye) -->
-                        <button type="button" class="btn-custom" id="btnDraft" style="background-color: #FFB800; color: black; padding: 0.75rem 1.5rem;">
-                            <i class="fas fa-save me-1"></i> Simpan Draft
+                <!-- Action Footer Buttons -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 40px;">
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" id="btnDraft" class="btn-native btn-draft">
+                            💾 Simpan Draft
                         </button>
-
-                        <!-- Tombol Preview Hasil (Teal / Biru Toska) -->
-                        <button type="button" class="btn-custom" id="btnPreview" style="background-color: #008B8B; color: white; padding: 0.75rem 1.5rem;">
-                            <i class="fas fa-eye me-1"></i> Preview Hasil
+                        <button type="button" id="btnPreview" class="btn-native btn-preview">
+                            👁️ Preview Hasil
                         </button>
                     </div>
-
-                    <!-- Sisi Kanan: Ajukan Penilaian -->
                     <div>
-                        <!-- Tombol Ajukan Penilaian (Hijau) -->
-                        <button type="button" class="btn-custom btn-maroon" id="btnAjukan" style="padding: 0.75rem 1.5rem;">
-                            <i class="fas fa-paper-plane me-1"></i> Ajukan Penilaian
+                        <button type="button" id="btnAjukan" class="btn-native btn-submit">
+                            🚀 Ajukan Penilaian
                         </button>
                     </div>
                 </div>
-
             </div>
 
-            <!-- KOLOM KANAN: Sidebar Ringkasan & Progress -->
-            <div class="right-sidebar">
-                
-                <!-- Card 1: Ringkasan Pegawai -->
-                <div class="card-panel">
-                    <div class="card-panel-header">
-                        <span><i class="fas fa-user me-2"></i> Ringkasan Pegawai</span>
-                    </div>
-                    <div class="card-panel-body">
-                        <div class="employee-avatar">
-                            {{ strtoupper(substr($penilaian->pgw_nama ?? 'A', 0, 1)) }}
+            <!-- RIGHT COLUMN: SIDEBAR -->
+            <div>
+                <!-- 1. Ringkasan Pegawai -->
+                <div class="card-native">
+                    <div class="card-header-burgundy">👤 Ringkasan Pegawai</div>
+                    <div class="card-body-native">
+                        <div class="profile-avatar-circle">
+                            {{ strtoupper(substr($penilaian->pgw_nama, 0, 1)) }}
                         </div>
+                        <div style="text-align: center; font-weight: 700; margin-bottom: 16px;">{{ $penilaian->pgw_nama }}</div>
 
-                        <div class="employee-name">
-                            {{ $penilaian->pgw_nama ?? '-' }}
+                        <div class="info-row">
+                            <span class="info-label">NUP</span>
+                            <span class="info-value">{{ $penilaian->pgw_nup ?? '-' }}</span>
                         </div>
-
-                        <div class="info-list">
-                            <div class="info-row">
-                                <span class="info-label">NUP</span>
-                                <span class="info-val"><code>{{ $penilaian->pgw_nup ?? '-' }}</code></span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Jabatan</span>
-                                <span class="info-val">{{ $penilaian->pgw_jabatan ?? '-' }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Penempatan</span>
-                                <span class="info-val">{{ $penilaian->pgw_off_name ?? '-' }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Dept</span>
-                                <span class="info-val">{{ $penilaian->pgw_dept_name ?? '-' }}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Penilai</span>
-                                <span class="info-val">
-                                    @if(empty($penilaian->penilai_id) && empty($penilaian->penilai_manual))
-                                        <span class="text-danger fw-bold">NULL</span>
-                                    @else
-                                        {{ $penilaian->penilai_id ?? $penilaian->penilai_manual }}
-                                    @endif
-                                </span>
-                            </div>
+                        <div class="info-row">
+                            <span class="info-label">Jabatan</span>
+                            <span class="info-value" style="max-width: 60%;">{{ $penilaian->pgw_jabatan }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Penempatan</span>
+                            <span class="info-value">{{ $penilaian->pgw_off_name ?? '-' }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Dept</span>
+                            <span class="info-value">{{ $penilaian->pgw_dept_name ?? '-' }}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Card 2: Progress Pengisian & Live Score -->
-                <div class="card-panel">
-                    <div class="card-panel-header">
-                        <span><i class="fas fa-chart-line me-2"></i> Progress Pengisian</span>
-                    </div>
-                    <div class="card-panel-body">
-                        <div class="info-row" style="margin-bottom: 0.25rem;">
+                <!-- 2. Progress Pengisian -->
+                <div class="card-native">
+                    <div class="card-header-burgundy">📊 Progress Pengisian</div>
+                    <div class="card-body-native">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px;">
                             <span class="info-label">Pertanyaan terisi</span>
-                            <span class="info-val" id="progressCount">0 / 0</span>
+                            <span id="progressCount" style="font-weight: 700;">0 / 0</span>
                         </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" id="progressBar" style="width: 0%;"></div>
+                        
+                        <div class="progress-bar-container">
+                            <div id="progressBar" class="progress-bar-fill"></div>
                         </div>
 
-                        <hr style="margin: 1rem 0; border: none; border-top: 1px dashed var(--border-color);">
-
-                        <div class="info-row" style="margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                             <span class="info-label">Total Nilai</span>
-                            <span class="info-val" id="totalNilaiDisplay" style="font-size: 1.125rem; color: var(--maroon-primary);">0.00</span>
+                            <span id="totalNilaiDisplay" style="font-weight: 700; font-size: 18px; color: var(--primary-burgundy);">0.00</span>
                         </div>
-                        <div class="info-row">
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                             <span class="info-label">Predikat</span>
-                            <span class="info-val" id="predikatDisplay" style="color: #6B7280;">-</span>
+                            <span id="predikatDisplay" style="font-weight: 700;">-</span>
                         </div>
 
-                        <!-- Tabel Kategori Dinamis -->
-                        <table class="table-mini" style="margin-top: 1rem;">
+                        <table class="native-table">
                             <thead>
                                 <tr>
                                     <th>Kategori</th>
@@ -573,305 +516,244 @@ body {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (count($kategoriData) > 0): ?>
-                                    <?php foreach ($kategoriData as$kat): ?>
-                                        <?php
-                                            $katId = data_get($kat, 'id');
-                                            $katNama = data_get($kat, 'nama', '-');
-                                            $katBobot = data_get($kat, 'bobot', 0);
-                                        ?>
-                                        <tr>
-                                            <td>{{ $katNama }}</td>
-                                            <td style="text-align: center;">{{ $katBobot }}%</td>
-                                            <td style="text-align: right;" id="catScore_{{ $katId }}">0.00</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
+                                @foreach($template->kategoris as $kategori)
                                     <tr>
-                                        <td colspan="3" class="text-center text-muted" style="padding: 0.75rem;">
-                                            Belum ada kategori
-                                        </td>
+                                        <td>{{ $kategori->nama }}</td>
+                                        <td style="text-align: center;">{{ (int)$kategori->bobot_persen }}%</td>
+                                        <td style="text-align: right; font-weight: 700;" id="catScore_{{ $kategori->kategori_id }}">0.00</td>
                                     </tr>
-                                <?php endif; ?>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Card 3: Bantuan Penilaian -->
-                <div class="card-panel">
-                    <div class="card-panel-header">
-                        <span><i class="fas fa-info-circle me-2"></i> Bantuan Penilaian</span>
-                    </div>
-                    <div class="card-panel-body" style="padding: 0.5rem 1rem;">
-                        <table class="table-mini">
+                <!-- 3. Bantuan Penilaian -->
+                <div class="card-native">
+                    <div class="card-header-burgundy">ℹ️ Bantuan Penilaian</div>
+                    <div class="card-body-native">
+                        <table class="native-table">
                             <thead>
                                 <tr>
-                                    <th style="text-align: center;">Kode</th>
-                                    <th style="text-align: center;">Nilai</th>
+                                    <th>Kode</th>
+                                    <th>Nilai</th>
                                     <th>Keterangan</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (count($skalaData) > 0): ?>
-                                    <?php foreach ($skalaData as$s): ?>
-                                        <?php
-                                            $sKode = is_object($s) ? $s->kode : ($s['kode'] ?? '-');
-                                            $sNilai = is_object($s) ? $s->nilai : ($s['nilai'] ?? 0);
-                                            $sKet = is_object($s) ? $s->keterangan : ($s['keterangan'] ?? '-');
-                                        ?>
-                                        <tr>
-                                            <td style="text-align: center;">
-                                                <span class="dot dot-{{ strtolower($sKode) }}"></span> {{ $sKode }}
-                                            </td>
-                                            <td style="text-align: center;">{{ $sNilai }}</td>
-                                            <td>{{ $sKet }}</td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
+                                @foreach($skalaNilai as $skala)
                                     <tr>
-                                        <td colspan="3" class="text-center text-muted" style="padding: 0.75rem;">
-                                            Belum ada data
+                                        <td>
+                                            <span style="color: #10B981;">•</span> <strong>{{ $skala->kode_nilai }}</strong>
                                         </td>
+                                        <td>{{ (int)$skala->nilai_angka }}</td>
+                                        <td>{{ $skala->nama_nilai }}</td>
                                     </tr>
-                                <?php endif; ?>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
 
             </div>
-
         </div>
     </form>
-</div>
 
-<!-- MODAL KONFIRMASI AJUKAN PENILAIAN (Bootstrap 5) -->
-<div class="modal fade" id="modalKonfirmasiAjukan" tabindex="-1" aria-labelledby="modalKonfirmasiLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 8px; border: none; overflow: hidden;">
-            <div class="modal-header" style="background-color: #28A745; color: #fff;">
-                <h5 class="modal-title" id="modalKonfirmasiLabel">
-                    <i class="fas fa-paper-plane me-2"></i> Konfirmasi Pengajuan Penilaian
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" style="padding: 1.5rem; font-size: 0.95rem;">
-                <p class="mb-2">Apakah Anda yakin ingin mengajukan penilaian ini?</p>
-                <div class="p-3 style-box" style="background-color: #F9FAFB; border-radius: 6px; border: 1px solid #E5E7EB;">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted">Pegawai:</span>
-                        <strong>{{ $penilaian->pgw_nama ?? '-' }}</strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="text-muted">Total Nilai:</span>
-                        <strong id="modalTotalNilai" style="color: #28A745;">0.00</strong>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="text-muted">Predikat:</span>
-                        <strong id="modalPredikat">-</strong>
-                    </div>
+    <!-- NATIVE MODAL CONFIRMATION -->
+    <div id="modalKonfirmasi" class="modal-backdrop-native">
+        <div class="modal-content-native">
+            <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px;">Konfirmasi Pengajuan Penilaian</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                Apakah Anda yakin ingin mengajukan penilaian ini? Data yang telah diajukan tidak dapat diubah kembali.
+            </p>
+            <div style="background-color: #F8FAFC; padding: 12px; border-radius: var(--radius); margin-bottom: 20px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>Total Nilai:</span>
+                    <strong id="modalTotalNilai">0.00</strong>
                 </div>
-                <small class="text-danger mt-2 d-block">
-                    <i class="fas fa-exclamation-circle me-1"></i> Penilaian yang telah diajukan tidak dapat diubah kembali.
-                </small>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Predikat:</span>
+                    <strong id="modalPredikat">-</strong>
+                </div>
             </div>
-            <div class="modal-footer" style="background-color: #F9FAFB; border-top: 1px solid #E5E7EB;">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn-custom" id="btnConfirmSubmit" style="background-color: #28A745; color: #fff; font-weight: 600; padding: 0.5rem 1.25rem;">
-                    Ya, Ajukan Penilaian
-                </button>
+            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                <button type="button" id="btnModalCancel" class="btn-native" style="background-color: #E2E8F0; color: #333;">Batal</button>
+                <button type="button" id="btnModalConfirm" class="btn-native btn-submit">Ya, Ajukan Penilaian</button>
             </div>
         </div>
     </div>
+
+    @endif
+
 </div>
 
+<!-- SCRIPT LOGIC REALTIME SCORE & MODAL -->
+<!-- SCRIPT LOGIC REALTIME SCORE & MODAL -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const formPenilaian = document.getElementById('formPenilaian');
-    const radioInputs = document.querySelectorAll('.radio-score');
-    const progressCount = document.getElementById('progressCount');
-    const progressBar = document.getElementById('progressBar');
-    const statusBadge = document.getElementById('statusBadge');
-    const totalNilaiDisplay = document.getElementById('totalNilaiDisplay');
-    const predikatDisplay = document.getElementById('predikatDisplay');
+    const form = document.getElementById('formPenilaian');
     const statusAksiInput = document.getElementById('statusAksi');
-
     const btnDraft = document.getElementById('btnDraft');
-    const btnPreview = document.getElementById('btnPreview');
     const btnAjukan = document.getElementById('btnAjukan');
-    const btnConfirmSubmit = document.getElementById('btnConfirmSubmit');
+    const btnPreview = document.getElementById('btnPreview');
+    const modalEl = document.getElementById('modalKonfirmasi');
+    const btnModalCancel = document.getElementById('btnModalCancel');
+    const btnModalConfirm = document.getElementById('btnModalConfirm');
 
-    const modalKonfirmasiElement = document.getElementById('modalKonfirmasiAjukan');
-    const modalTotalNilai = document.getElementById('modalTotalNilai');
-    const modalPredikat = document.getElementById('modalPredikat');
+    // Load Data Predikat Master dari Database
+    const predikatList = @json($predikatNilai ?? []);
 
-    // Mencegah Syntax Error jika data PHP kosong
-    const predikatRules = @json($predikatData ?? []);
-    const maxScale = Number("{{ $maxScale ?? 4 }}") || 4;
+    // Perhitungan Realtime Progress dan Score
+    function calculateProgressAndScore() {
+        const questionItems = document.querySelectorAll('.question-item');
+        const totalQuestions = questionItems.length;
+        let answeredQuestions = 0;
 
-    function updateCalculation() {
-        const allQuestions = new Set();
-        radioInputs.forEach(r => allQuestions.add(r.name));
-        const totalQuestions = allQuestions.size;
+        const categoryData = {};
 
-        const checkedRadios = document.querySelectorAll('.radio-score:checked');
-        const filledCount = checkedRadios.length;
-        
-        const progressPercent = totalQuestions > 0 ? (filledCount / totalQuestions) * 100 : 0;
-        
-        if (progressCount) progressCount.textContent = `${filledCount} / ${totalQuestions}`;
-        if (progressBar) progressBar.style.width = `${progressPercent}%`;
-
-        if (statusBadge) {
-            if (totalQuestions === 0) {
-                statusBadge.textContent = 'TIDAK ADA SOAL';
-                statusBadge.style.background = '#E5E7EB';
-                statusBadge.style.color = '#374151';
-            } else if (filledCount === 0) {
-                statusBadge.textContent = 'BELUM DIISI';
-                statusBadge.style.background = 'var(--badge-amber-bg)';
-                statusBadge.style.color = 'var(--badge-amber-text)';
-            } else if (filledCount < totalQuestions) {
-                statusBadge.textContent = 'PROSES';
-                statusBadge.style.background = 'var(--badge-amber-bg)';
-                statusBadge.style.color = 'var(--badge-amber-text)';
-            } else {
-                statusBadge.textContent = 'LENGKAP';
-                statusBadge.style.background = 'var(--badge-emerald-bg)';
-                statusBadge.style.color = 'var(--badge-emerald-text)';
-            }
-        }
-
-        let categoryQuestionScores = {};
-
-        checkedRadios.forEach(radio => {
-            const score = parseFloat(radio.dataset.score) || 0;
-            const qWeight = parseFloat(radio.dataset.weight) || 0;
-            const katId = radio.dataset.katId;
-
-            const qWeightedScore = (score / maxScale) * qWeight;
-
+        // 1. Inisialisasi Data Kategori
+        document.querySelectorAll('.card-panel[data-kat-id]').forEach(el => {
+            const katId = el.getAttribute('data-kat-id');
+            const katBobot = parseFloat(el.getAttribute('data-kat-bobot')) || 0;
             if (katId) {
-                categoryQuestionScores[katId] = (categoryQuestionScores[katId] || 0) + qWeightedScore;
+                categoryData[katId] = {
+                    totalScore: 0,
+                    filledCount: 0,
+                    bobot: katBobot
+                };
             }
         });
 
-        let grandTotalScore = 0;
+        // 2. Hitung Jawaban Terisi per Kategori
+        questionItems.forEach(item => {
+            const checkedRadio = item.querySelector('.radio-score:checked');
+            if (checkedRadio) {
+                answeredQuestions++;
+                const score = parseFloat(checkedRadio.getAttribute('data-score')) || 0;
+                const katId = checkedRadio.getAttribute('data-kat-id');
 
-        const categoryPanels = document.querySelectorAll('.left-content .card-panel[data-kat-id]');
-        categoryPanels.forEach(panel => {
-            const katId = panel.dataset.katId;
-            const katBobot = parseFloat(panel.dataset.katBobot) || 0;
-
-            const qScoreSum = categoryQuestionScores[katId] || 0;
-
-            const finalCatScore = qScoreSum * (katBobot / 100);
-            grandTotalScore += finalCatScore;
-
-            const catElement = document.getElementById(`catScore_${katId}`);
-            if (catElement) {
-                catElement.textContent = finalCatScore.toFixed(2);
+                if (katId && categoryData[katId]) {
+                    categoryData[katId].totalScore += score;
+                    categoryData[katId].filledCount += 1;
+                }
             }
         });
 
-        const formattedScore = grandTotalScore.toFixed(2);
-        if (totalNilaiDisplay) totalNilaiDisplay.textContent = formattedScore;
+        // 3. Update UI Progress Bar
+        const percent = totalQuestions > 0 ? (answeredQuestions / totalQuestions) * 100 : 0;
+        document.getElementById('progressCount').textContent = `${answeredQuestions} / ${totalQuestions}`;
+        document.getElementById('progressBar').style.width = `${percent}%`;
 
-        let predikat = 'Belum Lengkap';
-        let predikatColor = '#EF4444';
+        // 4. Hitung Nilai Kategori & Grand Total
+        let grandTotal = 0;
 
-        if (!predikatRules || predikatRules.length === 0) {
-            predikat = 'Belum ada data predikat';
-            predikatColor = '#6B7280';
-        } else if (filledCount === totalQuestions && totalQuestions > 0) {
-            const matchPredikat = predikatRules.find(p => {
-                const min = p.min ?? p.min_nilai ?? 0;
-                const max = p.max ?? p.max_nilai ?? 100;
-                return grandTotalScore >= min && grandTotalScore <= max;
+        Object.keys(categoryData).forEach(katId => {
+            const kat = categoryData[katId];
+            let avgScore = 0;
+            let katContribution = 0;
+
+            if (kat.filledCount > 0) {
+                // Rata-rata Skor Kategori = (Nilai Pertanyaan 1 + Nilai Pertanyaan 2 + ...) / Jumlah Pertanyaan Terisi
+                avgScore = kat.totalScore / kat.filledCount;
+
+                // Kontribusi ke Total = Rata-rata Skor * (Bobot Kategori / 100)
+                katContribution = avgScore * (kat.bobot / 100);
+            }
+
+            grandTotal += katContribution;
+
+            // Tampilkan Rata-rata Skor Kategori di Tabel Ringkasan Sidebar
+            const scoreCell = document.getElementById(`catScore_${katId}`);
+            if (scoreCell) {
+                scoreCell.textContent = avgScore.toFixed(2);
+            }
+        });
+
+        // 5. Update Grand Total Display & Input Form
+        const grandTotalFormatted = grandTotal.toFixed(2);
+        document.getElementById('totalNilaiDisplay').textContent = grandTotalFormatted;
+        document.getElementById('inputGrandTotal').value = grandTotalFormatted;
+
+        // 6. Tentukan Nama Predikat Berdasarkan Rentang Master Predikat
+        let matchedPredikat = 'Belum terdapat data predikat';
+
+        if (Array.isArray(predikatList) && predikatList.length > 0) {
+            // Urutkan atau cari baris yang sesuai dengan range nilai
+            const found = predikatList.find(p => {
+                const min = parseFloat(p.nilai_min);
+                const max = parseFloat(p.nilai_max);
+                
+                // Pengecekan apakah grandTotal berada di dalam range [nilai_min, nilai_max]
+                return grandTotal >= min && grandTotal <= max;
             });
-            
-            if (matchPredikat) {
-                predikat = matchPredikat.nama || matchPredikat.predikat || matchPredikat.nama_predikat;
-                predikatColor = matchPredikat.warna || '#10B981';
-            } else {
-                predikat = 'Tidak Terdefinisi';
+
+            if (found && found.predikat) {
+                matchedPredikat = found.predikat;
             }
         }
 
-        if (predikatDisplay) {
-            predikatDisplay.textContent = predikat;
-            predikatDisplay.style.color = predikatColor;
-        }
-
-        return {
-            totalScore: formattedScore,
-            predikatName: predikat,
-            isComplete: filledCount === totalQuestions && totalQuestions > 0
-        };
+        // Tampilkan ke UI dan simpan ke hidden input
+        document.getElementById('predikatDisplay').textContent = matchedPredikat;
+        document.getElementById('inputPredikatNama').value = matchedPredikat;
     }
 
-    radioInputs.forEach(radio => {
-        radio.addEventListener('change', updateCalculation);
+    // Attach Event Handler Radio Change
+    document.querySelectorAll('.radio-score').forEach(radio => {
+        radio.addEventListener('change', calculateProgressAndScore);
     });
 
-    // 1. AKSI TOMBOL SIMPAN DRAFT
+    // Jalankan kalkulasi awal saat halaman selesai dimuat
+    calculateProgressAndScore();
+
+    // Event Handler Button Draft
     if (btnDraft) {
-        btnDraft.addEventListener('click', function () {
-            if (statusAksiInput) statusAksiInput.value = 'draft';
-            if (formPenilaian) formPenilaian.submit();
+        btnDraft.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelectorAll('.radio-score').forEach(r => r.removeAttribute('required'));
+            statusAksiInput.value = 'draft';
+            form.submit();
         });
     }
 
-    // 2. AKSI TOMBOL PREVIEW HASIL
+    // Event Handler Button Ajukan Penilaian
+    if (btnAjukan) {
+        btnAjukan.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            document.getElementById('modalTotalNilai').textContent = document.getElementById('totalNilaiDisplay').textContent;
+            document.getElementById('modalPredikat').textContent = document.getElementById('predikatDisplay').textContent;
+            
+            modalEl.style.display = 'flex';
+        });
+    }
+
+    // Event Handler Modal Konfirmasi
+    if (btnModalCancel) {
+        btnModalCancel.addEventListener('click', function() {
+            modalEl.style.display = 'none';
+        });
+    }
+
+    if (btnModalConfirm) {
+        btnModalConfirm.addEventListener('click', function() {
+            statusAksiInput.value = 'submitted';
+            form.submit();
+        });
+    }
+
+    // Event Handler Button Preview
     if (btnPreview) {
         btnPreview.addEventListener('click', function () {
-            const calcRes = updateCalculation();
-            alert(`--- PREVIEW HASIL PENILAIAN ---\n\nTotal Nilai : ${calcRes.totalScore}\nPredikat    : ${calcRes.predikatName}`);
+            const total = document.getElementById('totalNilaiDisplay').textContent;
+            const predikat = document.getElementById('predikatDisplay').textContent;
+            alert(`--- PREVIEW HASIL PENILAIAN ---\n\nTotal Nilai : ${total}\nPredikat    : ${predikat}`);
         });
     }
-
-    // Helper Fungsi Buka Modal Safely
-    function showModalKonfirmasi() {
-        if (typeof bootstrap !== 'undefined' && modalKonfirmasiElement) {
-            const modalInstance = bootstrap.Modal.getInstance(modalKonfirmasiElement) || new bootstrap.Modal(modalKonfirmasiElement);
-            modalInstance.show();
-        } else {
-            // Fallback jika bootstrap JS belum ter-load
-            if (confirm("Apakah Anda yakin ingin mengajukan penilaian ini?")) {
-                if (statusAksiInput) statusAksiInput.value = 'submitted';
-                if (formPenilaian) formPenilaian.submit();
-            }
-        }
-    }
-
-    // 3. AKSI TOMBOL AJUKAN PENILAIAN
-    if (btnAjukan) {
-        btnAjukan.addEventListener('click', function () {
-            const calcRes = updateCalculation();
-
-            if (modalTotalNilai) modalTotalNilai.textContent = calcRes.totalScore;
-            if (modalPredikat) modalPredikat.textContent = calcRes.predikatName;
-
-            showModalKonfirmasi();
-        });
-    }
-
-    // AKSI KLIK TOMBOL KONFIRMASI DI MODAL
-    if (btnConfirmSubmit) {
-        btnConfirmSubmit.addEventListener('click', function () {
-            if (statusAksiInput) statusAksiInput.value = 'submitted';
-            
-            if (typeof bootstrap !== 'undefined' && modalKonfirmasiElement) {
-                const modalInstance = bootstrap.Modal.getInstance(modalKonfirmasiElement);
-                if (modalInstance) modalInstance.hide();
-            }
-            
-            if (formPenilaian) formPenilaian.submit();
-        });
-    }
-
-    updateCalculation();
 });
 </script>
 @endsection

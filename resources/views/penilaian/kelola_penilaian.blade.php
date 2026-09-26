@@ -440,11 +440,13 @@
 
 .table-responsive {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .table-custom {
     width: 100%;
-    min-width: 1200px;
+    /* Naikkan min-width agar horizontal scroll aktif secara ideal jika layar sempit */
+    min-width: 1500px; 
     font-size: 0.8125rem;
     text-align: left;
     border-collapse: collapse;
@@ -468,10 +470,10 @@
 
 .table-custom th,
 .table-custom td {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 0.65rem;
     vertical-align: middle;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+    word-break: normal; /* Diubah dari break-word agar teks tidak terpotong acak */
+    overflow-wrap: normal;
     line-height: 1.4;
 }
 
@@ -482,34 +484,66 @@
 .table-custom td {
     color: var(--text-primary);
 }
- 
-.table-custom thead th:nth-child(7),
-.table-custom tbody td:nth-child(7) {
-    min-width: 180px;
-    width: 180px;
-}
 
-.table-custom tbody tr {
-    background: #ffffff;
-    border-bottom: 1px solid var(--border-color);
-    transition: background-color 0.15s ease-in-out;
-}
-
-.table-custom tbody tr:nth-child(even) {
-    background: #fff;
-}
-
-.table-custom tbody tr:hover {
-    background-color: #FDF7F9 !important;
-}
-
-.table-custom tbody tr.selected-row {
-    background-color: #F1F5F9 !important;
+/* Badge Predikat & Status agar tidak pernah ter-wrap ke bawah */
+.badge-status-danger,
+.badge-status-success,
+.badge-status-warning,
+.badge-status-gray {
+    white-space: nowrap;
+    display: inline-block;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .table-action-cell {
-    width: 110px;
-    min-width: 110px;
+    width: 90px;
+    min-width: 90px;
+}
+
+.badge {
+    padding: 0.2rem 0.5rem; /* Padding diperkecil */
+    border-radius: 0.375rem; /* Sudut sedikit lebih tegas/pas */
+    font-size: 0.7rem;       /* Ukuran font diperkecil */
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: 0.01em;
+    border-width: 1px;       /* Ketebalan garis tepi disesuaikan */
+    border-style: solid;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+
+.badge-emerald { 
+    background-color: var(--badge-emerald-bg); 
+    color: var(--badge-emerald-text); 
+    border-color: var(--badge-emerald-border); 
+}
+
+.badge-blue { 
+    background-color: var(--badge-blue-bg); 
+    color: var(--badge-blue-text); 
+    border-color: var(--badge-blue-border); 
+}
+
+.badge-amber { 
+    background-color: var(--badge-amber-bg); 
+    color: var(--badge-amber-text); 
+    border-color: var(--badge-amber-border); 
+}
+
+.badge-orange { 
+    background-color: var(--badge-orange-bg); 
+    color: var(--badge-orange-text); 
+    border-color: var(--badge-orange-border); 
+}
+
+.badge-rose { 
+    background-color: var(--badge-rose-bg); 
+    color: var(--badge-rose-text); 
+    border-color: var(--badge-rose-border); 
 }
 
 .employee-filter-item {
@@ -895,90 +929,107 @@
                 </div>
 
                 <div class="table-container" style="border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none;">
-                    <table class="table-custom">
-                        <thead>
-                            <tr>
-                                <th width="40" class="text-center">NO</th>
-                                <th>NUP</th>
-                                <th>NAMA</th>
-                                <th>PENEMPATAN</th>
-                                <th>JABATAN</th>
-                                <th>DEPARTEMEN</th>
-                                <th>SUB DEPARTEMEN</th>
-                                <th>PENILAI</th>
-                                <th class="text-center">STATUS</th>
-                                <th width="70" class="text-center">NILAI</th>
-                                <th width="120" class="text-center">PREDIKAT</th>
-                                <th width="90" class="text-center">AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($penilaians as $index => $row)
-                                @php
-                                    $statusPenilaian = strtoupper((string) data_get($row, 'status_penilaian', 'BELUM DIISI'));
-                                    $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
-                                    $predikat = data_get($row, 'predikat', 'Mengecewakan');
-                                @endphp
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
                                 <tr>
-                                    <td class="text-center">{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
-                                    <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
-                                    <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
-                                    <td>{{ data_get($row, 'penempatan', '-') }}</td>
-                                    <td>{{ data_get($row, 'jabatan', '-') }}</td>
-                                    <td>{{ data_get($row, 'departemen', '-') }}</td>
-                                    <td>{{ data_get($row, 'sub_departemen', '-') }}</td>
-                                    <td>
-                                        @if(data_get($row, 'nama_penilai'))
-                                            {{ data_get($row, 'nama_penilai') }}
-                                        @else
-                                            <span class="null-pill text-danger fw-bold">NULL</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if($statusPenilaian === 'DIAJUKAN')
-                                            <span class="badge-status-success">Diajukan</span>
-                                        @elseif($statusPenilaian === 'DIKEMBALIKAN')
-                                            <span class="badge-status-danger">Dikembalikan</span>
-                                        @elseif($statusPenilaian === 'DRAFT')
-                                            <span class="badge-status-warning">Draft</span>
-                                        @else
-                                            <span class="badge-status-gray">Belum Diisi</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">{{ number_format($nilaiAkhir, 2) }}</td>
-                                    <td class="text-center">
-                                        <span class="badge-status-danger">{{ $predikat }}</span>
-                                    </td>
-                                    <td class="text-center table-action-cell">
-                                        <div class="detail-action-group" style="justify-content:center; gap: 4px;">
-                                            
-                                            {{-- Tombol 1: Form Penilaian (Isi / Edit Penilaian) --}}
-                                            <a href="{{ route('penilaian.form', ['id' => data_get($row, 'penilaian_id')]) }}"
-                                            class="btn-action-icon btn-primary"
-                                            title="Form Penilaian">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-
-                                            {{-- Tombol 2: Lihat Detail Penilaian --}}
-                                            <a href="{{ route('penilaian.form', ['id' => data_get($row, 'penilaian_id')]) }}"
-                                            class="btn-action-icon btn-info" 
-                                            title="Lihat Detail" 
-                                            aria-label="Lihat Detail">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-
-                                        </div>
-                                    </td>
+                                    <th width="45" class="text-center">NO</th>
+                                    <th width="100">NUP</th>
+                                    <th width="160">NAMA</th>
+                                    <th width="150">PENEMPATAN</th>
+                                    <th width="160">JABATAN</th>
+                                    <th width="150">DEPARTEMEN</th>
+                                    <th width="160">SUB DEPARTEMEN</th>
+                                    <th width="150">PENILAI</th>
+                                    <th width="110" class="text-center">STATUS</th>
+                                    <th width="75" class="text-center">NILAI</th>
+                                    <th width="180" class="text-center">PREDIKAT</th>
+                                    <th width="90" class="text-center">AKSI</th>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="12" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse($penilaians as $index => $row)
+                                    @php
+                                        $statusPenilaian = strtoupper((string) data_get($row, 'status_penilaian', 'BELUM DIISI'));
+                                        $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
+                                        $predikat = data_get($row, 'predikat', 'Belum terdapat data predikat');
+                                    @endphp
+                                    <tr>
+                                        <td class="text-center">{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
+                                        <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
+                                        <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
+                                        <td>{{ data_get($row, 'penempatan', '-') }}</td>
+                                        <td>{{ data_get($row, 'jabatan', '-') }}</td>
+                                        <td>{{ data_get($row, 'departemen', '-') }}</td>
+                                        <td>{{ data_get($row, 'sub_departemen', '-') }}</td>
+                                        <td>
+                                            @if(data_get($row, 'nama_penilai'))
+                                                {{ data_get($row, 'nama_penilai') }}
+                                            @else
+                                                <span class="null-pill text-danger fw-bold">NULL</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            @if($statusPenilaian === 'DIAJUKAN')
+                                                <span class="badge-status-success">Diajukan</span>
+                                            @elseif($statusPenilaian === 'DIKEMBALIKAN')
+                                                <span class="badge-status-danger">Dikembalikan</span>
+                                            @elseif($statusPenilaian === 'DRAFT')
+                                                <span class="badge-status-warning">Draft</span>
+                                            @else
+                                                <span class="badge-status-gray">Belum Diisi</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center fw-bold">{{ number_format($nilaiAkhir, 2) }}</td>
+                                        <td class="text-center">
+                                            @php
+                                                $nilai = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
+                                                $predikatNama = data_get($row, 'predikat', 'Belum terdapat data predikat');
+
+                                                // Penentuan warna badge berdasarkan nilai akhir pegawai
+                                                if ($nilai >= 90) {
+                                                    $badgeStyle = 'badge-emerald';
+                                                } elseif ($nilai >= 80) {
+                                                    $badgeStyle = 'badge-blue';
+                                                } elseif ($nilai >= 70) {
+                                                    $badgeStyle = 'badge-amber';
+                                                } elseif ($nilai >= 60) {
+                                                    $badgeStyle = 'badge-orange';
+                                                } else {
+                                                    $badgeStyle = 'badge-rose';
+                                                }
+                                            @endphp
+
+                                            <span class="badge {{ $badgeStyle }} text-nowrap" style="white-space: nowrap;">
+                                                {{ $predikatNama }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center table-action-cell">
+                                            <div class="detail-action-group" style="justify-content:center; gap: 4px;">
+                                                <a href="{{ route('penilaian.form', ['penilaian_id' => data_get($row, 'penilaian_id')]) }}"
+                                                class="btn-action-icon btn-primary"
+                                                title="Form Penilaian">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+
+                                                <a href="{{ route('penilaian.form', ['penilaian_id' => data_get($row, 'penilaian_id')]) }}"
+                                                class="btn-action-icon btn-info" 
+                                                title="Lihat Detail" 
+                                                aria-label="Lihat Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="12" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
                 @if ($penilaians instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $penilaians->hasPages())
                     @php
