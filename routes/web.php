@@ -65,6 +65,8 @@ Route::post('/penilaian/store/{penilaian_id}', [FormPenilaianController::class, 
 
 // VERIFIKASI PENILAIAN
 Route::get('/penilaian/verifikasi-penilaian', [VerifikasiPenilaianController::class, 'index'])->name('verifikasi-penilaian.index');
+Route::get('/penilaian/verifikasi-penilaian/{penilaian_id}/form', [VerifikasiPenilaianController::class, 'form'])->name('verifikasi-penilaian.form');
+Route::post('/penilaian/verifikasi-penilaian/{penilaian_id}/store', [VerifikasiPenilaianController::class, 'storeForm'])->name('verifikasi-penilaian.store-form');
 
 // CATATAN PENILAIAN
 Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');

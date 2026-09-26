@@ -796,402 +796,385 @@
 </style>
 
     <div class="main-wrapper">
-        <!-- BREADCRUMB HEADER -->
-        <div class="header-bar d-flex justify-content-between align-items-center mb-3">
-            <div class="breadcrumb-title">
-                Verifikasi Penilaian <span>» Penilaian Kinerja Pegawai</span>
+    <!-- BREADCRUMB HEADER -->
+    <div class="header-bar d-flex justify-content-between align-items-center mb-3">
+        <div class="breadcrumb-title">
+            Verifikasi Penilaian <span>» Penilaian Kinerja Pegawai</span>
+        </div>
+    </div>
+    
+    <div class="main-content-column">
+        <!-- SELECTOR PERIODE PENILAIAN -->
+        <div class="card-box mb-3">
+            <div class="card-header-soft">
+                <div class="card-title">
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" class="me-1">
+                        <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm1 2h6v1H7V4zM4 8h12v8H4V8z"></path>
+                    </svg>
+                    Pilih Periode Penilaian
+                </div>
+            </div>
+            <div style="padding: 0.85rem 1rem;">
+                <div class="select-wrapper">
+                    <form method="GET" action="{{ route('verifikasi-penilaian.index') }}" id="formSelectPeriode">
+                        <select id="periodeSelector" name="periode_id" class="custom-select" onchange="document.getElementById('formSelectPeriode').submit();">
+                            <option value="" @selected(!request('periode_id'))>-- Pilih Periode --</option>
+                            @forelse($periodes as $periode)
+                                <option value="{{ $periode->periode_id }}" @selected(request('periode_id') == $periode->periode_id)>
+                                    {{ $periode->nama_periode ?? ($periode->tahun . ' - ' . $periode->bulan) }}
+                                </option>
+                            @empty
+                                <option value="" disabled>Belum ada periode tersimpan</option>
+                            @endforelse
+                        </select>
+                    </form>
+                </div>
             </div>
         </div>
-        
-        <div class="main-content-column">
-            <!-- SELECTOR PERIODE PENILAIAN -->
-            <div class="card-box mb-3">
-                <div class="card-header-soft">
-                    <div class="card-title">
-                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" class="me-1">
-                            <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 00-1-1H6zm1 2h6v1H7V4zM4 8h12v8H4V8z"></path>
-                        </svg>
-                        Pilih Periode Penilaian
+
+        <!-- TOOLBAR HEADER -->
+        <div class="toolbar-card mb-3">
+            <div class="toolbar-header">
+                <div class="toolbar-icon-wrapper">
+                    <svg class="icon-svg" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="toolbar-title">Verifikasi Penilaian</h1>
+                    <p class="toolbar-subtitle">
+                        @if($hasPeriodeSelected && $selectedPeriode)
+                            Periode Penilaian: <strong>{{ $selectedPeriode->nama_periode ?? $selectedPeriode->periode_id }}</strong>
+                        @else
+                            Silakan pilih periode penilaian untuk mengelola data penilaian.
+                        @endif
+                    </p>
+                </div>
+            </div>
+        </div><br>
+
+        @if($hasPeriodeSelected)
+            <!-- CARD RINGKASAN STATISTIK -->
+            <div class="stats-grid">
+                <div class="card-stat">
+                    <div class="stat-body">
+                        <div>
+                            <div class="stat-label">Menunggu Verifikasi</div>
+                            <div class="stat-value text-primary-custom">{{ $menungguVerifikasi }}</div>
+                        </div>
+                        <div class="stat-icon bg-primary-light">
+                            <i class="fas fa-users"></i>
+                        </div>
                     </div>
                 </div>
-                <div style="padding: 0.85rem 1rem;">
-                    <div class="select-wrapper">
-                        <form method="GET" action="{{ route('verifikasi-penilaian.index') }}" id="formSelectPeriode">
-                            <select id="periodeSelector" name="periode_id" class="custom-select" onchange="document.getElementById('formSelectPeriode').submit();">
-                                <option value="" @selected(!request('periode_id'))>-- Pilih Periode --</option>
-                                @forelse($periodes as $periode)
-                                    <option value="{{ $periode->periode_id }}" @selected(request('periode_id') == $periode->periode_id)>
-                                        {{ $periode->nama_periode ?? ($periode->tahun . ' - ' . $periode->bulan) }}
-                                    </option>
-                                @empty
-                                    <option value="" disabled>Belum ada periode tersimpan</option>
-                                @endforelse
-                            </select>
+                <div class="card-stat">
+                    <div class="stat-body">
+                        <div>
+                            <div class="stat-label">Sudah Verified</div>
+                            <div class="stat-value text-success">{{ $sudahVerified }}</div>
+                        </div>
+                        <div class="stat-icon bg-success-light">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-stat">
+                    <div class="stat-body">
+                        <div>
+                            <div class="stat-label">Ada Koreksi</div>
+                            <div class="stat-value text-danger">{{ $adaKoreksi }}</div>
+                        </div>
+                        <div class="stat-icon bg-danger-light">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-stat">
+                    <div class="stat-body">
+                        <div>
+                            <div class="stat-label">Dikembalikan Revisi</div>
+                            <div class="stat-value text-warning">{{ $dikembalikan }}</div>
+                        </div>
+                        <div class="stat-icon bg-warning-light">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTER CARD -->
+            <div class="card-box">
+                <div class="card-header-daftarpegawai">
+                    <div class="card-title-daftarpegawai">
+                        <i class="fas fa-list me-2"></i> Daftar Penilaian Menunggu Verifikasi
+                    </div>
+                </div>
+
+                <div class="p-3">
+                    <div class="filter-card" style="margin-bottom: 0;">
+                        <form method="GET" action="{{ route('verifikasi-penilaian.index') }}" id="formFilterPenilaian">
+                            <input type="hidden" name="periode_id" value="{{ request('periode_id') }}">
+
+                            <div class="filter-grid">
+                                <div>
+                                    <input type="text" name="search" class="form-control-custom" placeholder="Cari nama/NUP/penilai..." value="{{ request('search') }}">
+                                </div>
+                                <div>
+                                    <select name="penempatan" class="form-select-custom">
+                                        <option value="">- Semua Penempatan -</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <select name="departemen" class="form-select-custom">
+                                        <option value="">- Semua Departemen -</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <select name="status_verifikasi" class="form-select-custom">
+                                        <option value="">- Semua Status Verifikasi -</option>
+                                        <option value="VERIFIED" @selected(request('status_verifikasi') == 'VERIFIED')>Verified</option>
+                                        <option value="UNVERIFIED" @selected(request('status_verifikasi') == 'UNVERIFIED')>Belum Verifikasi</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <select name="koreksi" class="form-select-custom">
+                                        <option value="">- Semua Koreksi -</option>
+                                        <option value="ADA_KOREKSI" @selected(request('koreksi') == 'ADA_KOREKSI')>Ada Koreksi</option>
+                                        <option value="TANPA_KOREKSI" @selected(request('koreksi') == 'TANPA_KOREKSI')>Tanpa Koreksi</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="filter-action-row">
+                                <button type="submit" class="btn-maroon-custom">
+                                    <i class="fas fa-search"></i> Tampilkan
+                                </button>
+                                <button type="button" id="btnBulkVerify" class="btn-success-custom" disabled>
+                                    <i class="fas fa-check-circle"></i> Verifikasi Terpilih (<span id="countVerify">0</span>)
+                                </button>
+                                <button type="button" id="btnBulkUnverify" class="btn-warning-custom" disabled>
+                                    <i class="fas fa-undo"></i> Unverifikasi Terpilih (<span id="countUnverify">0</span>)
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
 
-            <!-- TOOLBAR HEADER -->
-            <div class="toolbar-card mb-3">
-                <div class="toolbar-header">
-                    <div class="toolbar-icon-wrapper">
-                        <svg class="icon-svg" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="toolbar-title">Verifikasi Penilaian</h1>
-                        <p class="toolbar-subtitle">
-                            @if($hasPeriodeSelected && $selectedPeriode)
-                                Periode Penilaian: <strong>{{ $selectedPeriode->nama_periode ?? $selectedPeriode->periode_id }}</strong>
-                            @else
-                                Silakan pilih periode penilaian untuk mengelola data penilaian.
-                            @endif
-                        </p>
-                    </div>
-                </div>
-            </div><br>
-
-            @if($hasPeriodeSelected)
-                <!-- CARD RINGKASAN STATISTIK (KE SAMPING) -->
-                <div class="stats-grid">
-                    <div class="card-stat">
-                        <div class="stat-body">
-                            <div>
-                                <div class="stat-label">Menunggu Verifikasi</div>
-                                <div class="stat-value text-primary-custom">{{ $menungguVerifikasi }}</div>
-                            </div>
-                            <div class="stat-icon bg-primary-light">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat-body">
-                            <div>
-                                <div class="stat-label">Sudah Verified</div>
-                                <div class="stat-value text-success">{{ $sudahVerified }}</div>
-                            </div>
-                            <div class="stat-icon bg-success-light">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat-body">
-                            <div>
-                                <div class="stat-label">Ada Koreksi</div>
-                                <div class="stat-value text-danger">{{ $adaKoreksi }}</div>
-                            </div>
-                            <div class="stat-icon bg-danger-light">
-                                <i class="fas fa-edit"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-stat">
-                        <div class="stat-body">
-                            <div>
-                                <div class="stat-label">Dikembalikan Revisi</div>
-                                <div class="stat-value text-warning">{{ $dikembalikan }}</div>
-                            </div>
-                            <div class="stat-icon bg-warning-light">
-                                <i class="fas fa-undo"></i>
-                            </div>
-                        </div>
+            <!-- TABEL DATA PEGAWAI -->
+            <div class="card-box">
+                <div class="card-header-daftarpegawai">
+                    <div class="card-title-daftarpegawai">
+                        <i class="fas fa-table me-2"></i> Data Pegawai
                     </div>
                 </div>
 
-                <div class="card-box">
-                    <div class="card-header-daftarpegawai">
-                        <div class="card-title-daftarpegawai">
-                            <i class="fas fa-list me-2"></i> Daftar Penilaian Menunggu Verifikasi
-                        </div>
-                    </div>
-
-                    <div class="p-3">
-                        <div class="filter-card" style="margin-bottom: 0;">
-                            <form method="GET" action="{{ route('verifikasi-penilaian.index') }}" id="formFilterPenilaian">
-                                <input type="hidden" name="periode_id" value="{{ request('periode_id') }}">
-
-                                <!-- BARIS 1: INPUT FILTER (5 KOLOM KONSISTEN) -->
-                                <div class="filter-grid">
-                                    <div>
-                                        <input type="text" name="search" class="form-control-custom" placeholder="Cari nama/NUP/penilai..." value="{{ request('search') }}">
-                                    </div>
-
-                                    <div>
-                                        <select name="penempatan" class="form-select-custom">
-                                            <option value="">- Semua Penempatan -</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <select name="departemen" class="form-select-custom">
-                                            <option value="">- Semua Departemen -</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <select name="status_verifikasi" class="form-select-custom">
-                                            <option value="">- Semua Status Verifikasi -</option>
-                                            <option value="VERIFIED" @selected(request('status_verifikasi') == 'VERIFIED')>Verified</option>
-                                            <option value="UNVERIFIED" @selected(request('status_verifikasi') == 'UNVERIFIED')>Belum Verifikasi</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <select name="koreksi" class="form-select-custom">
-                                            <option value="">- Semua Koreksi -</option>
-                                            <option value="ADA_KOREKSI" @selected(request('koreksi') == 'ADA_KOREKSI')>Ada Koreksi</option>
-                                            <option value="TANPA_KOREKSI" @selected(request('koreksi') == 'TANPA_KOREKSI')>Tanpa Koreksi</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- BARIS 2: TOMBOL AKSI DISUSUN PAS RATA KANAN -->
-                                <div class="filter-action-row">
-                                    <button type="submit" class="btn-maroon-custom">
-                                        <i class="fas fa-search"></i> Tampilkan
-                                    </button>
-                                    <button type="button" id="btnBulkVerify" class="btn-success-custom" disabled>
-                                        <i class="fas fa-check-circle"></i> Verifikasi Terpilih (<span id="countVerify">0</span>)
-                                    </button>
-                                    <button type="button" id="btnBulkUnverify" class="btn-warning-custom" disabled>
-                                        <i class="fas fa-undo"></i> Unverifikasi Terpilih (<span id="countUnverify">0</span>)
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-box">
-                    <div class="card-header-daftarpegawai">
-                        <div class="card-title-daftarpegawai">
-                            <i class="fas fa-table me-2"></i> Data Pegawai
-                        </div>
-                    </div>
-
-                    <div class="table-container" style="border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none;">
-                        <div class="table-responsive">
-                            <table class="table-custom">
-                                <thead>
+                <div class="table-container" style="border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; box-shadow: none;">
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th width="40" class="text-center">
+                                        <input type="checkbox" id="checkAll" style="cursor: pointer;">
+                                    </th>
+                                    <th width="50">NO</th>
+                                    <th>NUP</th>
+                                    <th>NAMA</th>
+                                    <th>PENEMPATAN</th>
+                                    <th>JABATAN</th>
+                                    <th>DEPARTEMEN</th>
+                                    <th>SUB DEPARTEMEN</th>
+                                    <th>PENILAI</th>
+                                    <th>VERIFIKATOR</th>
+                                    <th>STATUS</th>
+                                    <th width="60">NILAI</th>
+                                    <th width="140">PREDIKAT</th>
+                                    <th class="th-verifikasi">STATUS VERIFIKASI</th>
+                                    <th width="110" class="text-center">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($penilaians as $index => $row)
+                                    @php
+                                        $penilaianId = data_get($row, 'penilaian_id', $row->id ?? '');
+                                        $statusPenilaian = strtoupper((string) data_get($row, 'status_nilai', 'BELUM DIISI'));
+                                        $statusVerifikator = strtoupper((string) data_get($row, 'status_verifikator', ''));
+                                        $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
+                                        $predikat = data_get($row, 'predikat', 'Mengecewakan');
+                                    @endphp
                                     <tr>
-                                        <th width="40" class="text-center">
-                                            <input type="checkbox" id="checkAll" style="cursor: pointer;">
-                                        </th>
-                                        <th width="50">NO</th>
-                                        <th>NUP</th>
-                                        <th>NAMA</th>
-                                        <th>PENEMPATAN</th>
-                                        <th>JABATAN</th>
-                                        <th>DEPARTEMEN</th>
-                                        <th>SUB DEPARTEMEN</th>
-                                        <th>PENILAI</th>
-                                        <th>VERIFIKATOR</th>
-                                        <th>STATUS</th>
-                                        <th width="60">NILAI</th>
-                                        <th width="140">PREDIKAT</th>
-                                        <th class="th-verifikasi">STATUS VERIFIKASI</th>
-                                        <th width="110" class="text-center">AKSI</th>
+                                        <td class="text-center">
+                                            <input type="checkbox" class="row-checkbox" value="{{ $penilaianId }}" style="cursor: pointer;">
+                                        </td>
+                                        <td>{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
+                                        <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
+                                        <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
+                                        <td>{{ data_get($row, 'penempatan', '-') }}</td>
+                                        <td>{{ data_get($row, 'jabatan', '-') }}</td>
+                                        <td>{{ data_get($row, 'departemen', '-') }}</td>
+                                        <td>{{ data_get($row, 'departement_sub', data_get($row, 'sub_departemen', '-')) }}</td>
+                                        <td>
+                                            @if(data_get($row, 'nama_penilai'))
+                                                {{ data_get($row, 'nama_penilai') }}
+                                            @else
+                                                <span class="null-pill">NULL</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(data_get($row, 'nama_verifikator'))
+                                                {{ data_get($row, 'nama_verifikator') }}
+                                            @else
+                                                <span class="null-pill">NULL</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED']))
+                                                <span class="badge-status-success">Diajukan</span>
+                                            @elseif($statusPenilaian === 'DIKEMBALIKAN')
+                                                <span class="badge-status-danger">Dikembalikan</span>
+                                            @elseif($statusPenilaian === 'DRAFT')
+                                                <span class="badge-status-warning">Draft</span>
+                                            @else
+                                                <span class="badge-status-gray">Belum Diisi</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ number_format($nilaiAkhir, 2) }}</td>
+                                        <td>
+                                            @if(!empty($predikat) && $predikat !== 'Mengecewakan')
+                                                <span class="badge-status-gray">{{ $predikat }}</span>
+                                            @else
+                                                <span class="badge-status-danger">Mengecewakan</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if(in_array($statusVerifikator, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']))
+                                                <span class="badge-status-success">Verified</span>
+                                            @elseif(in_array($statusVerifikator, ['KOREKSI', 'PERLU DITINJAU']))
+                                                <span class="badge-status-danger">Ada Koreksi</span>
+                                            @elseif(in_array($statusVerifikator, ['REVISI', 'DIKEMBALIKAN']))
+                                                <span class="badge-status-warning">Revisi</span>
+                                            @else
+                                                <span class="badge-status-gray">{{ $statusVerifikator ?: 'BELUM VERIFIKASI' }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center table-action-cell">
+                                            <div class="detail-action-group">
+                                                <!-- Tombol 1: Preview Form / Detail -->
+                                                <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}" 
+                                                   class="btn-action-icon" 
+                                                   title="Lihat Detail" 
+                                                   aria-label="Lihat Detail">
+                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                </a>
+
+                                                <!-- Tombol 2: Verifikasi Penilaian (Mengarah ke Form Verifikasi) -->
+                                                <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}" 
+                                                   class="btn-action-icon" 
+                                                   title="Verifikasi Penilaian" 
+                                                   aria-label="Verifikasi Penilaian">
+                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
+                                                        <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($penilaians as $index => $row)
-                                        @php
-                                            $statusPenilaian = strtoupper((string) data_get($row, 'status_nilai', 'BELUM DIISI'));
-                                            $statusVerifikator = strtoupper((string) data_get($row, 'status_verifikator', ''));
-                                            $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
-                                            $predikat = data_get($row, 'predikat', 'Mengecewakan');
-                                        @endphp
-                                        <tr>
-                                            <td class="text-center">
-                                                <input type="checkbox" class="row-checkbox" value="{{ data_get($row, 'penilaian_id', $row->id ?? '') }}" style="cursor: pointer;">
-                                            </td>
-                                            <td>{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
-                                            <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
-                                            <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
-                                            <td>{{ data_get($row, 'penempatan', '-') }}</td>
-                                            <td>{{ data_get($row, 'jabatan', '-') }}</td>
-                                            <td>{{ data_get($row, 'departemen', '-') }}</td>
-                                            <td>{{ data_get($row, 'departement_sub', data_get($row, 'sub_departemen', '-')) }}</td>
-                                            <td>
-                                                @if(data_get($row, 'nama_penilai'))
-                                                    {{ data_get($row, 'nama_penilai') }}
-                                                @else
-                                                    <span class="null-pill">NULL</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if(data_get($row, 'nama_verifikator'))
-                                                    {{ data_get($row, 'nama_verifikator') }}
-                                                @else
-                                                    <span class="null-pill">NULL</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT']))
-                                                    <span class="badge-status-success">Diajukan</span>
-                                                @elseif($statusPenilaian === 'DIKEMBALIKAN')
-                                                    <span class="badge-status-danger">Dikembalikan</span>
-                                                @elseif($statusPenilaian === 'DRAFT')
-                                                    <span class="badge-status-warning">Draft</span>
-                                                @else
-                                                    <span class="badge-status-gray">Belum Diisi</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ number_format($nilaiAkhir, 2) }}</td>
-                                            <td>
-                                                @if(!empty($predikat) && $predikat !== 'Mengecewakan')
-                                                    <span class="badge-status-gray">{{ $predikat }}</span>
-                                                @else
-                                                    <span class="badge-status-danger">Mengecewakan</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if(in_array($statusVerifikator, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']))
-                                                    <span class="badge-status-success">Verified</span>
-                                                @elseif(in_array($statusVerifikator, ['KOREKSI', 'PERLU DITINJAU']))
-                                                    <span class="badge-status-danger">Ada Koreksi</span>
-                                                @elseif(in_array($statusVerifikator, ['REVISI', 'DIKEMBALIKAN']))
-                                                    <span class="badge-status-warning">Revisi</span>
-                                                @else
-                                                    <span class="badge-status-gray">{{ $statusVerifikator ?: '-' }}</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-center table-action-cell">
-                                                <div class="detail-action-group" style="justify-content:center;">
-                                                    <button class="btn-action-icon" type="button" title="Lihat Detail" aria-label="Lihat Detail">
-                                                        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                            <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
-                                                            <circle cx="12" cy="12" r="3"></circle>
-                                                        </svg>
-                                                    </button>
-                                                    <button class="btn-action-icon" type="button" title="Verifikasi Penilaian" aria-label="Verifikasi Penilaian">
-                                                        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                            <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
-                                                            <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="15" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                @empty
+                                    <tr>
+                                        <td colspan="15" class="text-center py-4 text-muted">Belum ada data penilaian pada periode ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                @if ($penilaians instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $penilaians->hasPages())
+                    @php
+                        $currentPage = $penilaians->currentPage();
+                        $lastPage = $penilaians->lastPage();
+                        $firstItem = $penilaians->firstItem() ?? 0;
+                        $lastItem = $penilaians->lastItem() ?? 0;
+                        $total = $penilaians->total();
+
+                        $pageNumbers = range(1, min(5, $lastPage));
+                    @endphp
+
+                    <div class="detail-pagination">
+                        <p class="detail-pagination-label">Menampilkan {{ $firstItem }} sampai {{ $lastItem }} dari {{ $total }} data</p>
+
+                        <div class="detail-pagination-nav">
+                            @if ($currentPage > 1)
+                                <a href="{{ $penilaians->url($currentPage - 1) }}" class="page-arrow">&lsaquo;</a>
+                            @else
+                                <span class="page-arrow disabled">&lsaquo;</span>
+                            @endif
+
+                            @foreach ($pageNumbers as $page)
+                                @if ($page == $currentPage)
+                                    <span class="page-number active">{{ $page }}</span>
+                                @else
+                                    <a href="{{ $penilaians->url($page) }}" class="page-number">{{ $page }}</a>
+                                @endif
+                            @endforeach
+
+                            @if ($currentPage < $lastPage)
+                                <a href="{{ $penilaians->url($currentPage + 1) }}" class="page-arrow">&rsaquo;</a>
+                            @else
+                                <span class="page-arrow disabled">&rsaquo;</span>
+                            @endif
                         </div>
                     </div>
+                @endif
+            </div>
+        @endif
 
-                    @if ($penilaians instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator && $penilaians->hasPages())
-                        @php
-                            $currentPage = $penilaians->currentPage();
-                            $lastPage = $penilaians->lastPage();
-                            $firstItem = $penilaians->firstItem() ?? 0;
-                            $lastItem = $penilaians->lastItem() ?? 0;
-                            $total = $penilaians->total();
-
-                            $pageNumbers = [];
-                            if ($lastPage <= 5) {
-                                $pageNumbers = range(1, $lastPage);
-                            } elseif ($currentPage <= 3) {
-                                $pageNumbers = [1, 2, 3, 4, 5];
-                            } elseif ($currentPage >= $lastPage - 2) {
-                                $pageNumbers = [$lastPage - 4, $lastPage - 3, $lastPage - 2, $lastPage - 1, $lastPage];
-                            } else {
-                                $pageNumbers = [$currentPage - 1, $currentPage, $currentPage + 1, $currentPage + 2, $currentPage + 3];
-                            }
-                        @endphp
-
-                        <div class="detail-pagination">
-                            <p class="detail-pagination-label">Menampilkan {{ $firstItem }} sampai {{ $lastItem }} dari {{ $total }} data</p>
-
-                            <div class="detail-pagination-nav">
-                                @if ($currentPage > 1)
-                                    <a href="{{ $penilaians->url($currentPage - 1) }}" class="page-arrow" aria-label="Previous page">&lsaquo;</a>
-                                @else
-                                    <span class="page-arrow disabled" aria-hidden="true">&lsaquo;</span>
-                                @endif
-
-                                @foreach ($pageNumbers as $page)
-                                    @if ($page == $currentPage)
-                                        <span class="page-number active" aria-current="page">{{ $page }}</span>
-                                    @else
-                                        <a href="{{ $penilaians->url($page) }}" class="page-number">{{ $page }}</a>
-                                    @endif
-                                @endforeach
-
-                                @if ($lastPage > 5 && $currentPage < $lastPage - 2)
-                                    <span class="page-ellipsis">…</span>
-                                @endif
-
-                                @if ($currentPage < $lastPage)
-                                    <a href="{{ $penilaians->url($currentPage + 1) }}" class="page-arrow" aria-label="Next page">&rsaquo;</a>
-                                @else
-                                    <span class="page-arrow disabled" aria-hidden="true">&rsaquo;</span>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-                </div>
-            @endif
-
-        </div>
     </div>
+</div>
 
-    <script>
-        window.selectedPeriodeData = null;
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkAll = document.getElementById('checkAll');
+        const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+        const btnVerify = document.getElementById('btnBulkVerify');
+        const btnUnverify = document.getElementById('btnBulkUnverify');
+        const countVerify = document.getElementById('countVerify');
+        const countUnverify = document.getElementById('countUnverify');
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const selectPeriode = document.getElementById('periodeSelector');
-            if (selectPeriode) {
-                selectPeriode.addEventListener('change', function() {
-                    this.form.submit();
-                });
+        function updateCounters() {
+            const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+            if (countVerify) countVerify.textContent = checkedCount;
+            if (countUnverify) countUnverify.textContent = checkedCount;
+
+            if (checkedCount > 0) {
+                if (btnVerify) btnVerify.removeAttribute('disabled');
+                if (btnUnverify) btnUnverify.removeAttribute('disabled');
+            } else {
+                if (btnVerify) btnVerify.setAttribute('disabled', 'true');
+                if (btnUnverify) btnUnverify.setAttribute('disabled', 'true');
             }
+        }
 
-            // Script Checkbox & Mass Actions Counter
-            const checkAll = document.getElementById('checkAll');
-            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
-            const btnVerify = document.getElementById('btnBulkVerify');
-            const btnUnverify = document.getElementById('btnBulkUnverify');
-            const countVerify = document.getElementById('countVerify');
-            const countUnverify = document.getElementById('countUnverify');
+        if (checkAll) {
+            checkAll.addEventListener('change', function() {
+                rowCheckboxes.forEach(cb => cb.checked = this.checked);
+                updateCounters();
+            });
+        }
 
-            function updateCounters() {
-                const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-                if (countVerify) countVerify.textContent = checkedCount;
-                if (countUnverify) countUnverify.textContent = checkedCount;
-
-                if (checkedCount > 0) {
-                    if (btnVerify) btnVerify.removeAttribute('disabled');
-                    if (btnUnverify) btnUnverify.removeAttribute('disabled');
-                } else {
-                    if (btnVerify) btnVerify.setAttribute('disabled', 'true');
-                    if (btnUnverify) btnUnverify.setAttribute('disabled', 'true');
+        rowCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (!this.checked && checkAll) {
+                    checkAll.checked = false;
                 }
-            }
-
-            if (checkAll) {
-                checkAll.addEventListener('change', function() {
-                    rowCheckboxes.forEach(cb => cb.checked = this.checked);
-                    updateCounters();
-                });
-            }
-
-            rowCheckboxes.forEach(cb => {
-                cb.addEventListener('change', function() {
-                    if (!this.checked && checkAll) {
-                        checkAll.checked = false;
-                    }
-                    updateCounters();
-                });
+                updateCounters();
             });
         });
-    </script>
+    });
+</script>
 
-    @endsection
+@endsection

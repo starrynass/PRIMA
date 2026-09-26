@@ -7,6 +7,7 @@ use App\Models\Dp3TransPenilaianDetail;
 use App\Models\MasterTemplate;
 use App\Models\MasterSkalaNilai;
 use App\Models\MasterPredikatNilai;
+use App\Models\MasterPertanyaan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -28,7 +29,6 @@ class FormPenilaianController extends Controller
         $jabatanId = (string) $penilaian->pgw_id_jabatan;
 
         // 4. Cari Template Penilaian Berdasarkan Jabatan Pegawai
-        // PENTING: status_aktif bernilai 'Aktif' di DB, dan pencarian occ_id mengover JSON Array serta String LIKE
         $template = MasterTemplate::where(function($query) {
                 $query->where('status_aktif', 'Aktif')
                       ->orWhere('status_aktif', 1);
@@ -42,10 +42,17 @@ class FormPenilaianController extends Controller
             ->with(['kategoris.pertanyaans'])
             ->first();
 
-        return view('penilaian.form_penilaian', compact('penilaian', 'template', 'skalaNilai', 'predikatNilai', 'existingJawaban', 'existingCatatan',));
+        return view('penilaian.form_penilaian', compact(
+            'penilaian', 
+            'template', 
+            'skalaNilai', 
+            'predikatNilai', 
+            'existingJawaban', 
+            'existingCatatan'
+        ));
     }
 
-  public function store(Request $request, $penilaian_id)
+    public function store(Request $request, $penilaian_id)
     {
         $penilaian = Dp3TransPenilaian::where('penilaian_id', $penilaian_id)->firstOrFail();
         
@@ -59,14 +66,12 @@ class FormPenilaianController extends Controller
             foreach ($jawaban as $pertanyaanId => $skalaVal) {
                 
                 // 1. Ambil snapshot data Master Pertanyaan
-                // (Sesuaikan \App\Models\MasterPertanyaan dengan nama model master pertanyaan kamu)
-                $masterPertanyaan = \App\Models\MasterPertanyaan::where('pertanyaan_id', $pertanyaanId)->first();
+                $masterPertanyaan = MasterPertanyaan::where('pertanyaan_id', $pertanyaanId)->first();
 
                 // 2. Ambil snapshot data Master Skala Nilai berdasarkan nilai_angka yang dipilih
-                // (Sesuaikan \App\Models\MasterSkalaNilai dengan nama model skala nilai kamu)
-                $masterSkala = \App\Models\MasterSkalaNilai::where('nilai_angka', $skalaVal)->first();
+                $masterSkala = MasterSkalaNilai::where('nilai_angka', $skalaVal)->first();
                 
-                \App\Models\Dp3TransPenilaianDetail::updateOrCreate(
+                Dp3TransPenilaianDetail::updateOrCreate(
                     [
                         'penilaian_id'  => $penilaian->penilaian_id,
                         'pertanyaan_id' => $pertanyaanId,
@@ -94,18 +99,24 @@ class FormPenilaianController extends Controller
             $predikatNama = $request->input('predikat_nama', '-');
 
             // Update Header Penilaian
-            $penilaian->total_nilai  = $totalNilai;
-            $penilaian->predikat     = $predikatNama;
-            $penilaian->status_nilai = ($statusAksi === 'submitted') ? 'SUBMITTED' : 'DRAFT';
-            
+            $penilaian->total_nilai = $totalNilai;
+            $penilaian->predikat    = $predikatNama;
+
             if ($statusAksi === 'submitted') {
-                $penilaian->tanggal_submit = now();
+                // DISESUAIKAN: Gunakan 'SUBMIT' agar dibaca oleh VerifikasiPenilaianController
+                $penilaian->status_nilai             = 'SUBMIT';
+                $penilaian->status_verifikator       = 'BELUM VERIFIKASI';
+                // Inisialisasi total_nilai_verifikator awal agar nilai tidak bernilai 0 di tabel verifikasi
+                $penilaian->total_nilai_verifikator = $totalNilai; 
+                $penilaian->tanggal_submit          = now();
+            } else {
+                $penilaian->status_nilai = 'DRAFT';
             }
             
             $penilaian->save();
         });
 
-        $msg = ($statusAksi === 'submitted') ? 'Penilaian berhasil diajukan!' : 'Draft penilaian berhasil disimpan!';
+        $msg = ($statusAksi === 'submitted') ? 'Penilaian berhasil diajukan untuk diverifikasi!' : 'Draft penilaian berhasil disimpan!';
         return redirect()->route('kelola-penilaian.index', ['periode_id' => $penilaian->periode_id])
             ->with('success', $msg);
     }
