@@ -8,6 +8,9 @@ use App\Models\Dp3TransPenilaianDetail;
 use App\Models\MasterTemplate;
 use App\Models\MasterSkalaNilai;
 use App\Models\MasterPredikatNilai;
+use App\Models\Department;
+use App\Models\Office;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -31,6 +34,9 @@ class VerifikasiPenilaianController extends Controller
         $dikembalikan       = 0;
 
         $penilaians = collect();
+
+        $listPenempatan = Office::orderBy('off_name', 'asc')->get();
+        $listDepartemen = Department::where('isaktif', true)->orderBy('dept_name', 'asc')->get();
 
         if ($selectedPeriodeId) {
             $selectedPeriode = Dp3TransPeriodePenilaian::where('periode_id', $selectedPeriodeId)->first();
@@ -73,6 +79,26 @@ class VerifikasiPenilaianController extends Controller
                     $queryPenilaian->where(function ($q) use ($search) {
                         $q->where('e.nama', 'like', "%{$search}%")
                           ->orWhere('e.nup', 'like', "%{$search}%");
+                    });
+                }
+
+                // Filter Penempatan (Office)
+                if ($request->filled('off_id')) {
+                    $offId = (string) $request->off_id;
+                    $queryPenilaian->where(function ($q) use ($offId) {
+                        $q->where('o.off_id', $offId)
+                        ->orWhere('e.off_id', $offId)
+                        ->orWhere('tp.pgw_off_id', $offId);
+                    });
+                }
+
+                // Filter Departemen
+                if ($request->filled('dept_id')) {
+                    $deptId = (string) $request->dept_id;
+                    $queryPenilaian->where(function ($q) use ($deptId) {
+                        $q->where('d.dept_id', $deptId)
+                        ->orWhere('e.dept_id', $deptId)
+                        ->orWhere('tp.pgw_id_dept', $deptId);
                     });
                 }
 
@@ -153,7 +179,9 @@ class VerifikasiPenilaianController extends Controller
             'sudahVerified',
             'adaKoreksi',
             'dikembalikan',
-            'penilaians'
+            'penilaians',
+            'listPenempatan',
+            'listDepartemen'
         ));
     }
 

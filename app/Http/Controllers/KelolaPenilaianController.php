@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Dp3TransPeriodePenilaian;
 use App\Models\Dp3TransPenilaian;
 use App\Models\Employee;
+use App\Models\Department;
+use App\Models\Office;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +27,16 @@ class KelolaPenilaianController extends Controller
         $masihDraft = 0;
         $belumDiisi = 0;
         $penilaians = collect();
+
+        $listPenempatan = Office::orderBy('off_name', 'asc')->get();
+        $listDepartemen = Department::where('isaktif', true)->orderBy('dept_name', 'asc')->get();
+        $listStatus = [
+                        'BELUM DIISI'  => 'Belum Diisi',
+                        'DRAFT'        => 'Draft',
+                        'SUBMIT'       => 'Submit',
+                        'DIKEMBALIKAN' => 'Dikembalikan (Revisi)',
+                        'VERIFIED'     => 'Verified',
+                    ];
 
         if ($selectedPeriodeId) {
             $selectedPeriode = Dp3TransPeriodePenilaian::where('periode_id', $selectedPeriodeId)->first();
@@ -61,37 +74,56 @@ class KelolaPenilaianController extends Controller
                     'mp.predikat as predikat' // Mengambil teks predikat dinamis dari tabel master
                 );
 
+                // Filter Search
                 if ($request->filled('search')) {
                     $search = trim($request->search);
                     $queryPenilaian->where(function ($q) use ($search) {
                         $q->where('e.nama', 'like', "%{$search}%")
-                            ->orWhere('e.nup', 'like', "%{$search}%")
-                            ->orWhere('tp.pgw_nama', 'like', "%{$search}%")
-                            ->orWhere('tp.pgw_nup', 'like', "%{$search}%");
+                        ->orWhere('e.nup', 'like', "%{$search}%")
+                        ->orWhere('tp.pgw_nama', 'like', "%{$search}%")
+                        ->orWhere('tp.pgw_nup', 'like', "%{$search}%");
                     });
                 }
 
-                if ($request->filled('status')) {
-                    $status = strtoupper((string) $request->status);
-                    $queryPenilaian->whereRaw('UPPER(COALESCE(tp.status_nilai, "BELUM DIISI")) = ?', [$status]);
+                // Filter Penempatan (Office)
+                if ($request->filled('off_id')) {
+                    $offId = (string) $request->off_id;
+                    $queryPenilaian->where(function ($q) use ($offId) {
+                        $q->where('o.off_id', $offId)
+                        ->orWhere('e.off_id', $offId)
+                        ->orWhere('tp.pgw_off_id', $offId);
+                    });
                 }
 
+                // Filter Departemen
                 if ($request->filled('dept_id')) {
                     $deptId = (string) $request->dept_id;
                     $queryPenilaian->where(function ($q) use ($deptId) {
                         $q->where('d.dept_id', $deptId)
-                            ->orWhere('e.dept_id', $deptId)
-                            ->orWhere('tp.pgw_id_dept', $deptId);
+                        ->orWhere('e.dept_id', $deptId)
+                        ->orWhere('tp.pgw_id_dept', $deptId);
                     });
                 }
 
-                if ($request->filled('subdept_id')) {
-                    $subDeptId = (string) $request->subdept_id;
-                    $queryPenilaian->where(function ($q) use ($subDeptId) {
-                        $q->where('sd.subdept_id', $subDeptId)
-                            ->orWhere('e.subdept_id', $subDeptId)
-                            ->orWhere('tp.pgw_id_subdept', $subDeptId);
-                    });
+                // Filter Status
+                if ($request->filled('status')) {
+                    $status = strtoupper((string) $request->status);
+
+                    if ($status === 'SUBMIT') {
+                        // Cukup cari nilai 'SUBMIT' (atau 'SUBMITTED' jika ada data lama)
+                        $queryPenilaian->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['SUBMIT', 'SUBMITTED']);
+                    } elseif ($status === 'VERIFIED') {
+                        // Cari status Verified
+                        $queryPenilaian->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['VERIFIED', 'TERVERIFIKASI']);
+                    } elseif ($status === 'BELUM DIISI') {
+                        $queryPenilaian->where(function ($q) {
+                            $q->whereNull('tp.status_nilai')
+                            ->orWhereRaw('UPPER(tp.status_nilai) = ?', ['BELUM DIISI']);
+                        });
+                    } else {
+                        // Untuk status DRAFT dan DIKEMBALIKAN
+                        $queryPenilaian->whereRaw('UPPER(tp.status_nilai) = ?', [$status]);
+                    }
                 }
 
                 $sort = $request->get('sort', 'nama_asc');
@@ -140,7 +172,10 @@ class KelolaPenilaianController extends Controller
             'dikembalikan',
             'masihDraft',
             'belumDiisi',
-            'penilaians'
+            'penilaians',
+            'listPenempatan',
+            'listDepartemen',
+            'listStatus'
         ));
     }
 }

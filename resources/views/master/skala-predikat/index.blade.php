@@ -189,14 +189,8 @@
         window.selectedSkalaData = null;
         window.selectedPredikatData = null;
 
-        // Uncheck semua radio button
-        document.querySelectorAll('input[type="radio"]').forEach(radio => {
-            radio.checked = false;
-        });
-
-        // Hapus highlight baris terpilih
-        document.querySelectorAll('tr.selected-row').forEach(row => {
-            row.classList.remove('selected-row');
+        document.querySelectorAll('#skalaTable tr.table-active-row, #predikatTable tr.table-active-row').forEach(row => {
+            row.classList.remove('table-active-row');
         });
 
         // Disable tombol Ubah & Hapus untuk SKALA

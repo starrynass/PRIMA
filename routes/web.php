@@ -11,14 +11,15 @@ use App\Http\Controllers\PeriodePenilaianController;
 use App\Http\Controllers\KelolaPenilaianController;
 use App\Http\Controllers\VerifikasiPenilaianController;
 use App\Http\Controllers\CatatanPenilaianController;
-use App\Http\Controllers\LaporanTahunanController;
-use App\Http\Controllers\LaporanIndexUnitKerjaController;
-use App\Http\Controllers\LaporanRekapNilaiController;
-use App\Http\Controllers\LaporanIndexKompetensiController;
+use App\Http\Controllers\Laporan\LaporanTahunanController;
+use App\Http\Controllers\Laporan\LaporanIndexUnitKerjaController;
+use App\Http\Controllers\Laporan\LaporanRekapNilaiController;
+use App\Http\Controllers\Laporan\LaporanIndexKompetensiController;
 use App\Http\Controllers\FormPenilaianController;
 
 
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard-penilaian.index');
+Route::get('/dashboard-penilaian', [DashboardController::class, 'index'])->name('dashboard.penilaian');
+Route::get('/dashboard-penilaian/modal-detail', [DashboardController::class, 'getModalDetail'])->name('dashboard.modal-detail');
 
 // SKALA NILAI
 Route::post('/master/skala', [MasterSkalaController::class, 'store'])->name('skala.store');
@@ -73,9 +74,6 @@ Route::post('/penilaian/verifikasi-penilaian/{penilaian_id}/store', [VerifikasiP
 Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');
 Route::get('/penilaian/catatan-penilaian/export', [CatatanPenilaianController::class, 'exportExcel'])->name('catatan-penilaian.export');
 
-// LAPORAN TAHUNAN
-Route::get('/laporan/laporan-tahunan', [LaporanTahunanController::class, 'index'])->name('laporan-tahunan.index');
-
 //LAPORAN INDEX UNIT KERJA
 Route::get('/laporan/laporan-index-unit-kerja', [LaporanIndexUnitKerjaController::class, 'index'])->name('laporan-index-unit-kerja.index');
 
@@ -85,3 +83,22 @@ Route::get('/laporan/laporan-rekap-nilai', [LaporanRekapNilaiController::class, 
 //LAPORAN INDEX KOMPETENSI
 Route::get('/laporan/laporan-index-kompetensi', [LaporanIndexKompetensiController::class, 'index'])->name('laporan-index-kompetensi.index');
 
+Route::prefix('laporan')->name('laporan.')->group(function () {
+    
+    // 1. Laporan Tahunan
+    Route::get('/tahunan', [LaporanTahunanController::class, 'index'])->name('tahunan.index');
+    Route::get('/tahunan/export', [LaporanTahunanController::class, 'export'])->name('tahunan.export');
+
+    // 2. Laporan Index Unit Kerja
+    Route::get('/unit-kerja', [LaporanUnitKerjaController::class, 'index'])->name('unit-kerja.index');
+    Route::get('/unit-kerja/export', [LaporanUnitKerjaController::class, 'export'])->name('unit-kerja.export');
+
+    // 3. Laporan Rekap Nilai
+    Route::get('/rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('rekap-nilai.index');
+    Route::get('/rekap-nilai/export', [LaporanRekapNilaiController::class, 'export'])->name('rekap-nilai.export');
+
+    // 4. Laporan Index Kompetensi
+    Route::get('/kompetensi', [LaporanKompetensiController::class, 'index'])->name('kompetensi.index');
+    Route::get('/kompetensi/export', [LaporanKompetensiController::class, 'export'])->name('kompetensi.export');
+
+});

@@ -1,5 +1,10 @@
 @extends('layout.app')
 
+@push('styles')
+    <!-- CSS Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @section('content')
 
 <style>
@@ -394,7 +399,7 @@
     font-family: var(--font-main);
     color: var(--text-primary);
     background-color: #ffffff;
-    border: 1px solid var(--border-color);
+    border: 1px solid gray;
     border-radius: var(--radius-md);
     outline: none;
     transition: all 0.15s ease-in-out;
@@ -509,7 +514,7 @@
 
 .table-custom {
     width: 100%;
-    min-width: 1550px;
+    min-width: 2000px;
     font-size: 0.8125rem;
     text-align: left;
     border-collapse: collapse;
@@ -533,10 +538,10 @@
 
 .table-custom th,
 .table-custom td {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 0.55rem;
     vertical-align: middle;
-    word-break: break-word;
-    overflow-wrap: anywhere;
+    word-break: normal;
+    overflow-wrap: break-word;
     line-height: 1.4;
 }
 
@@ -544,20 +549,25 @@
     white-space: nowrap !important;
 }
 
-.th-verifikasi {
-    width: 170px;
-    min-width: 170px;
-}
-
 .table-custom td {
     color: var(--text-primary);
 }
  
-.table-custom thead th:nth-child(8),
-.table-custom tbody td:nth-child(8) {
-    min-width: 180px;
-    width: 180px;
-}
+.table-custom th:nth-child(1), .table-custom td:nth-child(1) { width: 42px; }
+.table-custom th:nth-child(2), .table-custom td:nth-child(2) { width: 55px; }
+.table-custom th:nth-child(3), .table-custom td:nth-child(3) { width: 105px; }
+.table-custom th:nth-child(4), .table-custom td:nth-child(4) { width: 180px; }
+.table-custom th:nth-child(5), .table-custom td:nth-child(5) { width: 160px; }
+.table-custom th:nth-child(6), .table-custom td:nth-child(6) { width: 155px; }
+.table-custom th:nth-child(7), .table-custom td:nth-child(7) { width: 170px; }
+.table-custom th:nth-child(8), .table-custom td:nth-child(8) { width: 185px; }
+.table-custom th:nth-child(9), .table-custom td:nth-child(9) { width: 165px; }
+.table-custom th:nth-child(10), .table-custom td:nth-child(10) { width: 165px; }
+.table-custom th:nth-child(11), .table-custom td:nth-child(11) { width: 130px; }
+.table-custom th:nth-child(12), .table-custom td:nth-child(12) { width: 80px; }
+.table-custom th:nth-child(13), .table-custom td:nth-child(13) { width: 160px; }
+.table-custom th:nth-child(14), .table-custom td:nth-child(14) { width: 190px; }
+.table-custom th:nth-child(15), .table-custom td:nth-child(15) { width: 115px; }
 
 .table-custom tbody tr {
     background: #ffffff;
@@ -920,24 +930,35 @@
                                     <input type="text" name="search" class="form-control-custom" placeholder="Cari nama/NUP/penilai..." value="{{ request('search') }}">
                                 </div>
                                 <div>
-                                    <select name="penempatan" class="form-select-custom">
+                                    <select name="off_id" class="select2">
                                         <option value="">- Semua Penempatan -</option>
+                                        @foreach($listPenempatan as $off)
+                                            <option value="{{ $off->off_id }}" {{ request('off_id') == $off->off_id ? 'selected' : '' }}>
+                                                {{ $off->off_name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
+
                                 <div>
-                                    <select name="departemen" class="form-select-custom">
+                                    <select name="dept_id" class="select2">
                                         <option value="">- Semua Departemen -</option>
+                                        @foreach($listDepartemen as $dept)
+                                            <option value="{{ $dept->dept_id }}" {{ request('dept_id') == $dept->dept_id ? 'selected' : '' }}>
+                                                {{ $dept->dept_name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div>
-                                    <select name="status_verifikasi" class="form-select-custom">
+                                    <select name="status_verifikasi" class="select2">
                                         <option value="">- Semua Status Verifikasi -</option>
                                         <option value="VERIFIED" @selected(request('status_verifikasi') == 'VERIFIED')>Verified</option>
                                         <option value="UNVERIFIED" @selected(request('status_verifikasi') == 'UNVERIFIED')>Belum Verifikasi</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <select name="koreksi" class="form-select-custom">
+                                    <select name="koreksi" class="select2">
                                         <option value="">- Semua Koreksi -</option>
                                         <option value="ADA_KOREKSI" @selected(request('koreksi') == 'ADA_KOREKSI')>Ada Koreksi</option>
                                         <option value="TANPA_KOREKSI" @selected(request('koreksi') == 'TANPA_KOREKSI')>Tanpa Koreksi</option>
@@ -1136,8 +1157,14 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+@push('scripts')
+    <!-- Library jQuery & Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Inisialisasi Select2 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
         const checkAll = document.getElementById('checkAll');
         const rowCheckboxes = document.querySelectorAll('.row-checkbox');
         const btnVerify = document.getElementById('btnBulkVerify');
@@ -1175,6 +1202,13 @@
             });
         });
     });
-</script>
+        
+        $(document).ready(function() {
+            $('.select2').select2({
+                width: '100%'
+            });
+        });
+    </script>
+@endpush
 
 @endsection

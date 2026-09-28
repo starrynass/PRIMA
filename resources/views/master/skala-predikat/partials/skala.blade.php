@@ -44,7 +44,6 @@
             <table class="data-table" id="skalaTable">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 2.5rem;">PILIH</th>
                         <th class="text-center" style="width: 3.5rem;">#</th>
                         <th>KODE</th>
                         <th class="text-center">NAMA NILAI</th>
@@ -55,11 +54,6 @@
                 <tbody>
                     @forelse($skalaNilai as $index => $item)
                         <tr onclick="selectRowSkala(this, '{{ $item->skala_id }}', '{{ $item->kode_nilai }}', '{{ $item->nama_nilai }}', '{{ $item->nilai_angka }}', '{{ $item->deskripsi }}')">
-                            <td class="text-center" onclick="event.stopPropagation()">
-                                <input type="radio" name="row_select_skala" value="{{ $item->skala_id }}" 
-                                       onchange="onRadioChangeSkala(this, '{{ $item->skala_id }}', '{{ $item->kode_nilai }}', '{{ $item->nama_nilai }}', '{{ $item->nilai_angka }}', '{{ $item->deskripsi }}')"
-                                       class="radio-input">
-                            </td>
                             <td class="text-center font-mono text-muted">{{ sprintf('%02d', $index + 1) }}</td>
                             <td class="font-bold text-primary">{{ $item->kode_nilai }}</td>
                             <td class="text-center font-mono font-semibold">{{ $item->nama_nilai }}</td>
@@ -68,7 +62,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center" style="padding: 3rem; color: var(--text-muted);">
+                            <td colspan="5" class="text-center" style="padding: 3rem; color: var(--text-muted);">
                                 Belum ada data skala nilai yang tersimpan.
                             </td>
                         </tr>
@@ -173,13 +167,15 @@
 
 <script>
     function selectRowSkala(tr, skala_id, kode_nilai, nama_nilai, nilai_angka, deskripsi) {
-        const radio = tr.querySelector('input[type="radio"]');
-        if (radio) radio.checked = true;
-        onRadioChangeSkala(radio,  skala_id, kode_nilai, nama_nilai, nilai_angka, deskripsi);
-    }
+        if (window.selectedSkalaData?.skala_id === skala_id) {
+            window.selectedSkalaData = null;
+            tr.classList.remove('table-active-row');
+            document.getElementById('btnEditSkala').disabled = true;
+            document.getElementById('btnDeleteSkala').disabled = true;
+            return;
+        }
 
-    function onRadioChangeSkala(radio, skala_id, kode_nilai, nama_nilai, nilai_angka, deskripsi) {
-        // 1. Simpan data ke window.selectedData dengan nama property yang konsisten
+        document.querySelectorAll('#skalaTable tbody tr').forEach(row => row.classList.remove('table-active-row'));
         window.selectedSkalaData = { 
             skala_id: skala_id, 
             kode_nilai: kode_nilai, 
@@ -188,25 +184,11 @@
             deskripsi: deskripsi 
         };
 
-        // 2. Aktifkan tombol Edit & Hapus khusus Skala
+        tr.classList.add('table-active-row');
         const btnEdit = document.getElementById('btnEditSkala');
         const btnDelete = document.getElementById('btnDeleteSkala');
-
-        if (btnEdit) {
-            btnEdit.disabled = false;
-            btnEdit.removeAttribute('disabled');
-        }
-
-        if (btnDelete) {
-            btnDelete.disabled = false;
-            btnDelete.removeAttribute('disabled');
-        }
-
-        const tbody = radio.closest('tbody');
-        if (tbody) {
-            tbody.querySelectorAll('tr').forEach(row => row.classList.remove('selected-row'));
-        }
-        radio.closest('tr').classList.add('selected-row');
+        if (btnEdit) btnEdit.disabled = false;
+        if (btnDelete) btnDelete.disabled = false;
     }
 
     // FUNGSI OPEN MODAL TAMBAH

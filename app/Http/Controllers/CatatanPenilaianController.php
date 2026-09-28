@@ -21,6 +21,9 @@ class CatatanPenilaianController extends Controller
         $hasPeriodeSelected = !empty($selectedPeriodeId);
         $selectedPeriode = $hasPeriodeSelected ? Dp3TransPeriodePenilaian::find($selectedPeriodeId) : null;
 
+        $listPenempatan = Office::orderBy('off_name', 'asc')->get();
+        $listDepartemen = Department::where('isaktif', true)->orderBy('dept_name', 'asc')->get();
+
         // Query Utama Transaksi Penilaian
         $query = Dp3TransPenilaian::with([
             'pegawai', 
@@ -67,13 +70,23 @@ class CatatanPenilaianController extends Controller
         }
 
         // Filter Penempatan (Office)
-        if ($request->filled('penempatan')) {
-            $query->where('pgw_off_id', $request->penempatan);
+        if ($request->filled('off_id')) {
+            $offId = (string) $request->off_id;
+            $queryPenilaian->where(function ($q) use ($offId) {
+                $q->where('o.off_id', $offId)
+                ->orWhere('e.off_id', $offId)
+                ->orWhere('tp.pgw_off_id', $offId);
+            });
         }
 
         // Filter Departemen
-        if ($request->filled('departemen')) {
-            $query->where('pgw_id_dept', $request->departemen);
+        if ($request->filled('dept_id')) {
+            $deptId = (string) $request->dept_id;
+            $queryPenilaian->where(function ($q) use ($deptId) {
+                $q->where('d.dept_id', $deptId)
+                ->orWhere('e.dept_id', $deptId)
+                ->orWhere('tp.pgw_id_dept', $deptId);
+            });
         }
 
         // Hitung Ringkasan Statistik Catatan[cite: 5]
@@ -97,7 +110,9 @@ class CatatanPenilaianController extends Controller
             'belum',
             'penilaians',
             'penempatans',
-            'departemens'
+            'departemens',
+            'listDepartemen',
+            'listPenempatan'
         ));
     }
 }

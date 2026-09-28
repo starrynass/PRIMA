@@ -1,5 +1,10 @@
 @extends('layout.app')
 
+@push('styles')
+    <!-- CSS Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @section('content')
 
 <style>
@@ -283,41 +288,75 @@ body {
 
 /* --- Table Styling --- */
 .table-container {
-    width: 100%;
-    overflow-x: auto;
+    background-color: var(--surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    background: var(--surface);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
 }
 
-.custom-table {
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-custom {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 0.825rem;
+    /* Naikkan min-width agar horizontal scroll aktif secara ideal jika layar sempit */
+    min-width: 1500px; 
+    font-size: 0.8125rem;
     text-align: left;
+    border-collapse: collapse;
+    margin: 0;
+    table-layout: fixed;
 }
 
-.custom-table th {
-    background: var(--maroon-primary);
+.table-custom thead {
+    background: var(--maroon-gradient);
     color: #ffffff;
     font-weight: 700;
-    padding: 0.75rem 0.85rem;
     text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.03em;
-    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    letter-spacing: 0.05em;
+    font-size: 0.725rem;
 }
 
-.custom-table td {
-    padding: 0.75rem 0.85rem;
-    border-bottom: 1px solid var(--border-light);
-    border-right: 1px solid var(--border-light);
-    color: var(--text-primary);
+.table-custom thead th + th,
+.table-custom tbody td + td {
+    border-left: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.table-custom th,
+.table-custom td {
+    padding: 0.75rem 0.65rem;
     vertical-align: middle;
+    word-break: normal; /* Diubah dari break-word agar teks tidak terpotong acak */
+    overflow-wrap: normal;
+    line-height: 1.4;
 }
 
-.custom-table tr:hover {
-    background-color: var(--maroon-soft);
+.table-custom th {
+    white-space: nowrap;
+}
+
+.table-custom td {
+    color: var(--text-primary);
+}
+
+/* Badge Predikat & Status agar tidak pernah ter-wrap ke bawah */
+.badge-status-danger,
+.badge-status-success,
+.badge-status-warning,
+.badge-status-gray {
+    white-space: nowrap;
+    display: inline-block;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.table-action-cell {
+    width: 90px;
+    min-width: 90px;
 }
 
 /* Badges */
@@ -399,24 +438,22 @@ body {
     font-weight: 700;
 }
 
-.custom-select,
-.custom-input,
 .form-control-custom,
 .form-select-custom {
-    min-height: 40px;
-    padding: 0.55rem 0.85rem;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    color: var(--text-primary);
-    background: #ffffff;
-    font-family: var(--font-main);
+    width: 100%;
+    padding: 0.5rem 0.85rem;
     font-size: 0.8125rem;
+    font-family: var(--font-main);
+    color: var(--text-primary);
+    background-color: #ffffff;
+    border: 1px solid gray;
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: all 0.15s ease-in-out;
 }
 
 .form-control-custom:focus,
-.form-select-custom:focus,
-.custom-select:focus,
-.custom-input:focus {
+.form-select-custom:focus {
     border-color: var(--maroon-primary);
     box-shadow: 0 0 0 3px var(--maroon-glow);
 }
@@ -657,6 +694,7 @@ body {
     color: #ffffff;
 }
 
+/* Modal Overlay */
 .assessment-modal {
     position: fixed;
     inset: 0;
@@ -664,108 +702,206 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
-    background: rgba(15, 23, 42, 0.55);
+    padding: 1.5rem;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
 }
 
-.assessment-modal.is-open { display: flex; }
+.assessment-modal.is-open { 
+    display: flex; 
+}
 
+/* Modal Box Container */
 .assessment-modal-panel {
-    width: min(980px, 100%);
-    max-height: min(85vh, 760px);
-    overflow: auto;
+    width: min(920px, 100%);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
     border-radius: 0.75rem;
     background: #ffffff;
-    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    overflow: hidden; /* Mencegah modal luar ter-scroll */
 }
 
-.assessment-modal-header,
-.assessment-modal-footer {
+/* Header & Footer Sticky */
+.assessment-modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1rem 1.25rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    background: #ffffff;
 }
 
-.assessment-modal-header {
-    border-bottom: 1px solid var(--border-light);
+.assessment-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color, #e2e8f0);
+    background: #f8fafc;
 }
 
 .assessment-modal-title {
     margin: 0;
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 800;
+    color: var(--text-primary, #0f172a);
+    font-size: 1.125rem;
+    font-weight: 700;
 }
 
 .assessment-modal-close {
-    width: 2.25rem;
-    height: 2.25rem;
-    border: 1px solid var(--border-light);
-    border-radius: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 0.375rem;
     background: #ffffff;
-    color: var(--text-secondary);
+    color: #64748b;
     font-size: 1.25rem;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
-.assessment-modal-body { padding: 1.25rem; }
+.assessment-modal-close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
 
+/* Body (Scrollable) */
+.assessment-modal-body { 
+    padding: 1.5rem; 
+    overflow-y: auto;
+}
+
+/* Summary Grid Cards */
 .assessment-modal-summary {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
 }
 
-.assessment-modal-summary > div,
-.assessment-general-note {
-    padding: 0.75rem;
-    border: 1px solid var(--border-light);
-    border-radius: 0.4rem;
+.summary-card {
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 0.5rem;
     background: #f8fafc;
 }
 
 .assessment-modal-label {
     display: block;
     margin-bottom: 0.25rem;
-    color: var(--text-muted);
+    color: #64748b;
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.assessment-general-note { margin-bottom: 1rem; }
+.summary-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+}
+
+.text-maroon {
+    color: var(--maroon-primary, #800020);
+}
+
+/* General Note Box */
+.assessment-general-note { 
+    margin-bottom: 1.5rem; 
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 0.5rem;
+    background: #f8fafc;
+}
+
+.note-content {
+    font-size: 0.875rem;
+    color: var(--text-primary, #334155);
+    margin-top: 0.25rem;
+}
+
+/* Table Styling (Rapi & Bersih) */
+.modal-table-wrapper {
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
 
 .assessment-detail-table {
     width: 100%;
-    min-width: 720px;
     border-collapse: collapse;
-    font-size: 0.8rem;
-}
-
-.assessment-detail-table th {
-    padding: 0.65rem;
-    background: var(--maroon-gradient);
-    color: #ffffff;
+    font-size: 0.8125rem;
     text-align: left;
 }
 
+.assessment-detail-table thead tr {
+    background-color: var(--maroon-border);
+    border-bottom: 1px solid var(--border-color, #cbd5e1);
+}
+
+.assessment-detail-table th {
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    color: #334155;
+    white-space: nowrap;
+}
+
 .assessment-detail-table td {
-    padding: 0.65rem;
-    border-bottom: 1px solid var(--border-light);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    color: #475569;
     vertical-align: top;
 }
 
-.assessment-modal-footer {
-    justify-content: flex-end;
-    border-top: 1px solid var(--border-light);
+.assessment-detail-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
+.assessment-detail-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.btn-secondary-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #475569;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Efek saat kursor diarahkan ke tombol (Hover) */
+.btn-secondary-custom:hover {
+    background-color: #f8fafc;
+    color: #1e293b;
+    border-color: #94a3b8;
+}
+
+/* Responsif untuk Mobile */
 @media (max-width: 768px) {
-    .assessment-modal-summary { grid-template-columns: 1fr; }
-    .assessment-modal-body { padding: 0.85rem; }
+    .assessment-modal-summary { 
+        grid-template-columns: 1fr; 
+    }
+    .assessment-modal-body { 
+        padding: 1rem; 
+    }
 }
 
 .pagination {
@@ -842,17 +978,9 @@ body {
 }
 
 .custom-table.catatan-table th {
-    height: 44px;
-    padding: 0.7rem 0.65rem;
-    background: var(--maroon-gradient);
-    color: #ffffff;
-    text-align: center;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    line-height: 1.35;
-    border: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--maroon-primary);
 }
+
 
 .custom-table.catatan-table td {
     padding: 0.75rem 0.65rem;
@@ -1054,21 +1182,21 @@ body {
                             </div>
 
                             <div>
-                                <select name="penempatan" class="form-select-custom">
+                                <select name="off_id" class="select2">
                                     <option value="">- Semua Penempatan -</option>
-                                    @foreach($penempatans as $penempatan)
-                                        <option value="{{ $penempatan->off_id }}" @selected(request('penempatan') == $penempatan->off_id)>
-                                            {{ $penempatan->off_name ?? $penempatan->nama }}
+                                    @foreach($listPenempatan as $off)
+                                        <option value="{{ $off->off_id }}" {{ request('off_id') == $off->off_id ? 'selected' : '' }}>
+                                            {{ $off->off_name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
 
                             <div>
-                                <select name="departemen" class="form-select-custom">
+                                <select name="dept_id" class="select2">
                                     <option value="">- Semua Departemen -</option>
-                                    @foreach($departemens as $dept)
-                                        <option value="{{ $dept->dept_id }}" @selected(request('departemen') == $dept->dept_id)>
+                                    @foreach($listDepartemen as $dept)
+                                        <option value="{{ $dept->dept_id }}" {{ request('dept_id') == $dept->dept_id ? 'selected' : '' }}>
                                             {{ $dept->dept_name }}
                                         </option>
                                     @endforeach
@@ -1193,114 +1321,152 @@ body {
 
 <div class="assessment-modal" id="assessmentDetailModal" aria-hidden="true">
     <section class="assessment-modal-panel" role="dialog" aria-modal="true" aria-labelledby="assessmentModalTitle">
+        
+        <!-- Header -->
         <header class="assessment-modal-header">
             <div>
                 <h2 class="assessment-modal-title" id="assessmentModalTitle">Detail Penilaian</h2>
-                <div id="assessmentModalEmployee" class="text-muted small"></div>
+                <div id="assessmentModalEmployee" class="text-muted small fw-semibold"></div>
             </div>
             <button type="button" class="assessment-modal-close" data-modal-close aria-label="Tutup">&times;</button>
         </header>
+        
+        <!-- Body (Akan di-scroll jika konten panjang) -->
         <div class="assessment-modal-body">
+            
+            <!-- Summary Metric Cards -->
             <div class="assessment-modal-summary">
-                <div><span class="assessment-modal-label">Total Nilai</span><strong id="assessmentModalTotal"></strong></div>
-                <div><span class="assessment-modal-label">Predikat</span><strong id="assessmentModalPredikat"></strong></div>
-                <div><span class="assessment-modal-label">Jumlah Pertanyaan</span><strong id="assessmentModalCount"></strong></div>
+                <div class="summary-card">
+                    <span class="assessment-modal-label">Total Nilai</span>
+                    <strong id="assessmentModalTotal" class="summary-value text-maroon"></strong>
+                </div>
+                <div class="summary-card">
+                    <span class="assessment-modal-label">Predikat</span>
+                    <strong id="assessmentModalPredikat" class="summary-value"></strong>
+                </div>
+                <div class="summary-card">
+                    <span class="assessment-modal-label">Jumlah Pertanyaan</span>
+                    <strong id="assessmentModalCount" class="summary-value"></strong>
+                </div>
             </div>
+
+            <!-- Catatan Umum -->
             <div class="assessment-general-note">
                 <span class="assessment-modal-label">Catatan Umum Penilai</span>
-                <div id="assessmentModalGeneralNote"></div>
+                <div id="assessmentModalGeneralNote" class="note-content"></div>
             </div>
-            <div class="table-responsive">
+
+            <!-- Tabel Detail -->
+            <div class="table-responsive modal-table-wrapper">
                 <table class="assessment-detail-table">
                     <thead>
                         <tr>
-                            <th>Pertanyaan</th>
-                            <th>Bobot</th>
-                            <th>Nilai</th>
-                            <th>Catatan Penilai</th>
-                            <th>Catatan Verifikator</th>
+                            <th style="width: 30%;">Pertanyaan</th>
+                            <th style="width: 10%; text-align: center;">Bobot</th>
+                            <th style="width: 20%;">Nilai</th>
+                            <th style="width: 20%;">Catatan Penilai</th>
+                            <th style="width: 20%;">Catatan Verifikator</th>
                         </tr>
                     </thead>
-                    <tbody id="assessmentModalDetails"></tbody>
+                    <tbody id="assessmentModalDetails">
+                        <!-- Content via JS -->
+                    </tbody>
                 </table>
             </div>
+
         </div>
+
+        <!-- Footer -->
         <footer class="assessment-modal-footer">
-            <button type="button" class="btn-maroon-custom" data-modal-close>Tutup</button>
+            <button type="button" class="btn-secondary-custom" data-modal-close>Tutup</button>
         </footer>
+
     </section>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const modal = document.getElementById('assessmentDetailModal');
-    const detailBody = document.getElementById('assessmentModalDetails');
+@push('scripts')
+    <!-- Library jQuery & Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    function closeModal() {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-    }
+    <!-- Inisialisasi Select2 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('assessmentDetailModal');
+            const detailBody = document.getElementById('assessmentModalDetails');
 
-    document.querySelectorAll('.js-assessment-detail').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const details = JSON.parse(button.dataset.details || '[]');
-            document.getElementById('assessmentModalEmployee').textContent = button.dataset.employee || '-';
-            document.getElementById('assessmentModalTotal').textContent = button.dataset.total || '0.00';
-            document.getElementById('assessmentModalPredikat').textContent = button.dataset.predikat || '-';
-            document.getElementById('assessmentModalCount').textContent = details.length;
-            document.getElementById('assessmentModalGeneralNote').textContent = button.dataset.generalNote || '-';
-            detailBody.replaceChildren();
-
-            details.forEach(function (detail) {
-                const row = document.createElement('tr');
-                const questionCell = document.createElement('td');
-                questionCell.textContent = detail.question || '-';
-                if (detail.description) {
-                    const description = document.createElement('small');
-                    description.className = 'd-block text-muted';
-                    description.textContent = detail.description;
-                    questionCell.appendChild(description);
-                }
-                row.appendChild(questionCell);
-                [
-                    detail.weight ? detail.weight + '%' : '-',
-                    [detail.score_code, detail.score_name, detail.score].filter(Boolean).join(' / ') || '-',
-                    detail.note || '-',
-                    detail.verifier_note || '-'
-                ].forEach(function (value) {
-                    const cell = document.createElement('td');
-                    cell.textContent = value;
-                    row.appendChild(cell);
-                });
-                detailBody.appendChild(row);
-            });
-
-            if (details.length === 0) {
-                const row = document.createElement('tr');
-                const cell = document.createElement('td');
-                cell.colSpan = 5;
-                cell.className = 'text-center text-muted';
-                cell.textContent = 'Tidak ada rincian pertanyaan.';
-                row.appendChild(cell);
-                detailBody.appendChild(row);
+            function closeModal() {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
             }
 
-            modal.classList.add('is-open');
-            modal.setAttribute('aria-hidden', 'false');
+            document.querySelectorAll('.js-assessment-detail').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const details = JSON.parse(button.dataset.details || '[]');
+                    document.getElementById('assessmentModalEmployee').textContent = button.dataset.employee || '-';
+                    document.getElementById('assessmentModalTotal').textContent = button.dataset.total || '0.00';
+                    document.getElementById('assessmentModalPredikat').textContent = button.dataset.predikat || '-';
+                    document.getElementById('assessmentModalCount').textContent = details.length;
+                    document.getElementById('assessmentModalGeneralNote').textContent = button.dataset.generalNote || '-';
+                    detailBody.replaceChildren();
+
+                    details.forEach(function (detail) {
+                        const row = document.createElement('tr');
+                        const questionCell = document.createElement('td');
+                        questionCell.textContent = detail.question || '-';
+                        if (detail.description) {
+                            const description = document.createElement('small');
+                            description.className = 'd-block text-muted';
+                            description.textContent = detail.description;
+                            questionCell.appendChild(description);
+                        }
+                        row.appendChild(questionCell);
+                        [
+                            detail.weight ? detail.weight + '%' : '-',
+                            [detail.score_code, detail.score_name, detail.score].filter(Boolean).join(' / ') || '-',
+                            detail.note || '-',
+                            detail.verifier_note || '-'
+                        ].forEach(function (value) {
+                            const cell = document.createElement('td');
+                            cell.textContent = value;
+                            row.appendChild(cell);
+                        });
+                        detailBody.appendChild(row);
+                    });
+
+                    if (details.length === 0) {
+                        const row = document.createElement('tr');
+                        const cell = document.createElement('td');
+                        cell.colSpan = 5;
+                        cell.className = 'text-center text-muted';
+                        cell.textContent = 'Tidak ada rincian pertanyaan.';
+                        row.appendChild(cell);
+                        detailBody.appendChild(row);
+                    }
+
+                    modal.classList.add('is-open');
+                    modal.setAttribute('aria-hidden', 'false');
+                });
+            });
+
+            modal.querySelectorAll('[data-modal-close]').forEach(function (button) {
+                button.addEventListener('click', closeModal);
+            });
+
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) closeModal();
+            });
+
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+            });
         });
-    });
-
-    modal.querySelectorAll('[data-modal-close]').forEach(function (button) {
-        button.addEventListener('click', closeModal);
-    });
-
-    modal.addEventListener('click', function (event) {
-        if (event.target === modal) closeModal();
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
-    });
-});
-</script>
+        
+        $(document).ready(function() {
+            $('.select2').select2({
+                width: '100%'
+            });
+        });
+    </script>
+@endpush
 @endsection

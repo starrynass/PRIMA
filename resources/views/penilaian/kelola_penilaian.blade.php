@@ -1,5 +1,10 @@
 @extends('layout.app')
 
+@push('styles')
+    <!-- CSS Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+@endpush
+
 @section('content')
 
 <style>
@@ -394,7 +399,7 @@
     font-family: var(--font-main);
     color: var(--text-primary);
     background-color: #ffffff;
-    border: 1px solid var(--border-color);
+    border: 1px solid gray;
     border-radius: var(--radius-md);
     outline: none;
     transition: all 0.15s ease-in-out;
@@ -887,30 +892,52 @@
                 <div class="p-3">
                     <div class="filter-card" style="margin-bottom: 0;">
                         <form method="GET" action="{{ route('kelola-penilaian.index') }}" class="filter-grid">
+                            {{-- Keep Periode ID --}}
                             <input type="hidden" name="periode_id" value="{{ request('periode_id') }}">
 
+                            {{-- Input Cari Nama / NUP --}}
                             <div>
-                                <input type="text" name="search" class="form-control-custom" placeholder="Cari nama / NUP..." value="{{ request('search') }}">
+                                <input type="text" 
+                                    name="search" 
+                                    class="form-control-custom" 
+                                    placeholder="Cari nama / NUP..." 
+                                    value="{{ request('search') }}">
                             </div>
 
                             <div>
-                                <select name="penempatan" class="form-select-custom">
+                                <select name="off_id" class="select2">
                                     <option value="">- Semua Penempatan -</option>
+                                    @foreach($listPenempatan as $off)
+                                        <option value="{{ $off->off_id }}" {{ request('off_id') == $off->off_id ? 'selected' : '' }}>
+                                            {{ $off->off_name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div>
-                                <select name="departemen" class="form-select-custom">
+                                <select name="dept_id" class="select2">
                                     <option value="">- Semua Departemen -</option>
+                                    @foreach($listDepartemen as $dept)
+                                        <option value="{{ $dept->dept_id }}" {{ request('dept_id') == $dept->dept_id ? 'selected' : '' }}>
+                                            {{ $dept->dept_name }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
                             <div>
-                                <select name="status" class="form-select-custom">
+                                <select name="status" id="status" class="select2">
                                     <option value="">- Semua Status -</option>
+                                    @foreach($listStatus as $value => $label)
+                                        <option value="{{ $value }}" {{ request('status') == $value ? 'selected' : '' }}>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
+                            {{-- Tombol Submit Filter --}}
                             <div>
                                 <button type="submit" class="btn-maroon-custom" style="width: 100%; justify-content: center;">
                                     <i class="fas fa-search"></i> Tampilkan
@@ -971,7 +998,7 @@
                                         </td>
                                         <td class="text-center">
                                             @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMITTED', 'SUBMIT'], true))
-                                                <span class="badge-status-success">Diajukan</span>
+                                                <span class="badge-status-success">Submit</span>
                                             @elseif($statusPenilaian === 'DIKEMBALIKAN')
                                                 <span class="badge-status-danger">Dikembalikan</span>
                                             @elseif($statusPenilaian === 'DRAFT')
@@ -1087,18 +1114,31 @@
     </div>
 </div>
 
-<script>
-    window.selectedPeriodeData = null;
+@push('scripts')
+    <!-- Library jQuery & Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const selectPeriode = document.getElementById('periodeSelector');
+    <!-- Inisialisasi Select2 -->
+    <script>
+        window.selectedPeriodeData = null;
 
-        if (selectPeriode) {
-            selectPeriode.addEventListener('change', function() {
-                this.form.submit();
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectPeriode = document.getElementById('periodeSelector');
+
+            if (selectPeriode) {
+                selectPeriode.addEventListener('change', function() {
+                    this.form.submit();
+                });
+            }
+        });
+        
+        $(document).ready(function() {
+            $('.select2').select2({
+                width: '100%'
             });
-        }
-    });
-</script>
+        });
+    </script>
+@endpush
 
 @endsection

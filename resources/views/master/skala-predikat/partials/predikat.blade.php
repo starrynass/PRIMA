@@ -285,9 +285,14 @@
     .data-table tbody tr {
         border-bottom: 1px solid #F1F5F9;
         transition: background-color 0.15s;
+        cursor: pointer;
     }
 
     .data-table tbody tr:hover { background-color: #FDF7F9; }
+    .data-table tbody tr.table-active-row {
+        background-color: #fce8ec !important;
+        outline: 1px solid var(--maroon-primary);
+    }
 
     .id-cell { 
         color: var(--maroon-primary); 
@@ -392,10 +397,6 @@
 
 .modal-backdrop.active .modal-card {
     transform: scale(1) translateY(0);
-}
-
-tr.selected-row {
-    background-color: #f1f5f9 !important;
 }
 
 /* Modal Header */
@@ -800,7 +801,6 @@ tr.selected-row {
             <table class="data-table" id="predikatTable">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 2.5rem;">PILIH</th>
                         <th class="text-center" style="width: 3.5rem;">#</th>
                         <th>ID PREDIKAT</th>
                         <th>KODE</th>
@@ -813,11 +813,6 @@ tr.selected-row {
                 <tbody id="predikatTableBody">
                     @forelse($predikatNilai as $index => $item)
                         <tr onclick="selectRowPredikat(this, '{{ $item->predikat_id }}', '{{ $item->kode }}', '{{ $item->nilai_min }}', '{{ $item->nilai_max }}', '{{ $item->predikat }}')">
-                            <td class="text-center" onclick="event.stopPropagation()">
-                                <input type="radio" name="row_select_predikat" value="{{ $item->predikat_id }}" 
-                                       onchange="onRadioChangePredikat(this, '{{ $item->predikat_id }}', '{{ $item->kode }}', '{{ $item->nilai_min }}', '{{ $item->nilai_max }}', '{{ $item->predikat }}')"
-                                       class="radio-input">
-                            </td>
                             <td class="text-center font-mono" style="color: #94A3B8;">{{ sprintf('%02d', $index + 1) }}</td>
                             <td><span class="font-mono id-cell">{{ $item->predikat_id }}</span></td>
                             <td style="font-weight: 700; color: var(--text-primary);">{{ $item->kode }}</td>
@@ -841,7 +836,7 @@ tr.selected-row {
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center" style="padding: 3rem; color: var(--text-muted);">
+                            <td colspan="7" class="text-center" style="padding: 3rem; color: var(--text-muted);">
                                 Belum ada data predikat nilai yang tersimpan.
                             </td>
                         </tr>
@@ -955,12 +950,15 @@ tr.selected-row {
 
 <script>
     function selectRowPredikat(tr, id, kode, min, max, predikat) {
-        const radio = tr.querySelector('input[type="radio"]');
-        if (radio) radio.checked = true;
-        onRadioChangePredikat(radio, id, kode, min, max, predikat);
-    }
+        if (window.selectedPredikatData?.id === id) {
+            window.selectedPredikatData = null;
+            tr.classList.remove('table-active-row');
+            document.getElementById('btnEditPredikat').disabled = true;
+            document.getElementById('btnDeletePredikat').disabled = true;
+            return;
+        }
 
-    function onRadioChangePredikat(radio, id, kode, min, max, predikat) {
+        document.querySelectorAll('#predikatTable tbody tr').forEach(row => row.classList.remove('table-active-row'));
         window.selectedPredikatData = { 
             id: id, 
             kode: kode, 
@@ -982,15 +980,9 @@ tr.selected-row {
             btnDelete.removeAttribute('disabled');
         }
 
-        const tbody = radio.closest('tbody');
-        if (tbody) {
-            tbody.querySelectorAll('tr').forEach(row => row.classList.remove('selected-row'));
-        }
-        
-        const row = radio.closest('tr');
-        if (row) {
-            row.classList.add('selected-row');
-        }
+        tr.classList.add('table-active-row');
+        if (btnEdit) btnEdit.disabled = false;
+        if (btnDelete) btnDelete.disabled = false;
     }
 
     function openModalTambahPredikat() {

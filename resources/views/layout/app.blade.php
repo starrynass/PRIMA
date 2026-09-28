@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Penilaian Kinerja</title>
     <!-- FontAwesome CDN untuk Ikon -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @stack('styles')
     <style>
         :root{/* Crimson Maroon Palette */
         --maroon-primary: #7A1C38;
@@ -249,7 +251,7 @@
         <ul class="nav-menu">
             <!-- 1. Dashboard -->
             <li class="nav-item">
-                <a href="{{ route('dashboard-penilaian.index') }}" class="nav-link menu-item">
+                <a href="{{ route('dashboard.penilaian') }}" class="nav-link menu-item">
                     <i class="fa-solid fa-house nav-icon"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
@@ -316,7 +318,7 @@
                 </div>
                 <ul class="submenu">
                     <li class="submenu-item">
-                        <a href="{{ route('laporan-tahunan.index') }}" class="submenu-link menu-item">
+                        <a href="{{ route('laporan.tahunan.index') }}" class="submenu-link menu-item">
                             <span class="menu-text">Laporan Tahunan</span>
                         </a>
                     </li>
@@ -443,5 +445,6 @@
             });
         });
     </script>
+    @stack('scripts')
 </body>
 </html>
