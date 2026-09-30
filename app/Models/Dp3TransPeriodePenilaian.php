@@ -33,9 +33,6 @@ class Dp3TransPeriodePenilaian extends Model
         'tahun' => 'integer',
     ];
 
-    /**
-     * Relasi ke Detail Transaksi Penilaian (Dp3TransPenilaian)
-     */
     public function transPenilaian(): HasMany
     {
         // DIPERBAIKI: Menunjuk ke Model Dp3TransPenilaian::class

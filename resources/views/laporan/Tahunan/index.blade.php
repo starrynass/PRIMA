@@ -14,6 +14,20 @@
         --report-border: #CBD5E1;
     }
 
+    .custom-label-sm {
+    width: 105px !important;
+    min-width: 105px !important;
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    font-size: 0.825rem !important;
+    border: 1px solid #cbd5e1 !important;
+    border-right: none !important;
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+    justify-content: flex-start !important;
+}
+
     .annual-report {
         min-height: 100vh;
         padding: 1.5rem;
@@ -156,6 +170,10 @@
         .annual-report-button { width: 100%; }
     }
 
+    .d-none {
+        display: none !important;
+    }
+
 </style>
 
 <div class="annual-report">
@@ -173,28 +191,62 @@
 
             <div class="annual-report-body">
                 <form action="{{ route('laporan.tahunan.export') }}" method="GET" target="_blank">
+
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jenis_filter">Jenis</label>
                         <select id="jenis_filter" name="jenis_filter" class="annual-report-control">
-                            <option value="per_tahun">Per Tahun</option>
+                            <option value="per_tahun" selected>Per Tahun</option>
+                            <option value="per_periode">Per Periode</option>
                         </select>
                     </div>
 
-                    <div class="annual-report-field">
+                    <!-- 2. Section Tahun (DEFAULT TAMPIL) -->
+                    <div id="wrapper_per_tahun" class="annual-report-field">
                         <label class="annual-report-label" for="tahun">Tahun</label>
-                        <input id="tahun" type="number" name="tahun" value="{{ date('Y') }}" class="annual-report-control">
+                        <input type="number" id="tahun" name="tahun" value="{{ date('Y') }}" class="annual-report-control">
                     </div>
 
+                    <!-- 3. Section Periode (DEFAULT SEMBUNYI dengan class 'd-none') -->
+                    <div id="wrapper_per_periode" class="d-none">
+                        <!-- Dropdown Periode Awal -->
+                        <div class="annual-report-field">
+                            <label class="annual-report-label" for="periode_awal">Periode Awal</label>
+                            <select id="periode_awal" name="periode_awal" class="annual-report-control">
+                                <option value="">-- Pilih Periode Awal --</option>
+                                @foreach($periodes as $p)
+                                    <option value="{{ $p->periode_id }}">
+                                        {{ $p->nama_periode }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Dropdown Periode Akhir -->
+                        <div class="annual-report-field">
+                            <label class="annual-report-label" for="periode_akhir">Periode Akhir</label>
+                            <select id="periode_akhir" name="periode_akhir" class="annual-report-control">
+                                <option value="">-- Pilih Periode Akhir --</option>
+                                @foreach($periodes as $p)
+                                    <option value="{{ $p->periode_id }}">
+                                        {{ $p->nama_periode }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 4. Jabatan -->
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jabatan">Jabatan</label>
                         <select id="jabatan" name="jabatan" class="annual-report-control">
                             <option value="SEMUA JABATAN">SEMUA JABATAN</option>
-                            @foreach($occupations as $occ)
+                            @foreach($occupations ?? [] as $occ)
                                 <option value="{{ $occ->occ_id }}">{{ $occ->occ_name }}</option>
                             @endforeach
                         </select>
                     </div>
 
+                    <!-- 5. Jenis Laporan -->
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jenis_laporan">Jenis Laporan</label>
                         <select id="jenis_laporan" name="jenis_laporan" class="annual-report-control">
@@ -219,4 +271,28 @@
     </div>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const jenisFilter = document.getElementById('jenis_filter');
+        const wrapperTahun = document.getElementById('wrapper_per_tahun');
+        const wrapperPeriode = document.getElementById('wrapper_per_periode');
+
+        function toggleFilter() {
+            if (jenisFilter.value === 'per_periode') {
+                wrapperTahun.classList.add('d-none');
+                wrapperPeriode.classList.remove('d-none');
+            } else {
+                wrapperTahun.classList.remove('d-none');
+                wrapperPeriode.classList.add('d-none');
+            }
+        }
+
+        // Jalankan saat pertama kali dipanggil (untuk memastikan kondisi awal)
+        toggleFilter();
+
+        // Jalankan saat dropdown jenis diubah
+        jenisFilter.addEventListener('change', toggleFilter);
+    });
+</script>
+
 @endsection

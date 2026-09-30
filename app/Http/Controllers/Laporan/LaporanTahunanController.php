@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dp3TransPenilaian;
 use App\Models\Occupation;
+use App\Models\Dp3TransPeriodePenilaian;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporanTahunanExport;
@@ -21,7 +22,12 @@ class LaporanTahunanController extends Controller
             ->orderBy('occ_name', 'asc')
             ->get();
 
-        return view('laporan.tahunan.index', compact('occupations'));
+        $periodes = Dp3TransPeriodePenilaian::orderBy('tahun', 'asc')
+            ->orderBy('bulan', 'asc')
+            ->get();
+
+        return view('laporan.tahunan.index', compact('occupations', 'periodes'));
+
     }
 
     /**
