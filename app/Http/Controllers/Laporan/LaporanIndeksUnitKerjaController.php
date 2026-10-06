@@ -10,13 +10,12 @@ use App\Models\Dp3TransPeriodePenilaian;
 use App\Models\MasterTemplate;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\LaporanRekapNilaiExport;
+use App\Exports\LaporanIndeksUnitKerjaExport;
 
-class LaporanRekapNilaiController extends Controller
+class LaporanIndeksUnitKerjaController extends Controller
 {
     public function index()
     {
-        $templates = MasterTemplate::orderBy('nama_template')->get();
         $occupations = Occupation::where('is_aktif', 1)
             ->orderBy('occ_name', 'asc')
             ->get();
@@ -25,7 +24,7 @@ class LaporanRekapNilaiController extends Controller
             ->orderBy('bulan', 'asc')
             ->get();
 
-        return view('laporan.RekapNilai.index', compact('occupations', 'periodes', 'templates'));
+        return view('laporan.IndeksUnitKerja.index', compact('occupations', 'periodes'));
 
     }
 }

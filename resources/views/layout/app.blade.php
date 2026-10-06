@@ -323,17 +323,17 @@
                         </a>
                     </li>
                     <li class="submenu-item">
-                        <a href="{{ route('laporan-index-unit-kerja.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Laporan Index Unit Kerja</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('laporan-rekap-nilai.index') }}" class="submenu-link menu-item">
+                        <a href="{{ route('laporan.rekap-nilai.index') }}" class="submenu-link menu-item">
                             <span class="menu-text">Laporan Rekap Nilai</span>
                         </a>
                     </li>
                     <li class="submenu-item">
-                        <a href="{{ route('laporan-index-kompetensi.index') }}" class="submenu-link menu-item">
+                        <a href="{{ route('laporan.indeks-unit-kerja.index') }}" class="submenu-link menu-item">
+                            <span class="menu-text">Laporan Index Unit Kerja</span>
+                        </a>
+                    </li>
+                    <li class="submenu-item">
+                        <a href="{{ route('laporan.indeks-kompetensi.index') }}" class="submenu-link menu-item">
                             <span class="menu-text">Laporan Index Kompetensi</span>
                         </a>
                     </li>

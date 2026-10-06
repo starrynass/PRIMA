@@ -39,10 +39,8 @@ class LaporanTahunanController extends Controller
         $jabatanId = $request->input('jabatan');
         $action = $request->input('action'); // preview, excel, pdf
 
-        // Query ke tabel dp3_trans_penilaian
         $query = Dp3TransPenilaian::with(['pegawai', 'office', 'department'])
             ->whereHas('periode', function ($q) use ($tahun) {
-                // Filter berdasarkan tahun pada tabel/relasi periode
                 $q->where('tahun', $tahun);
             });
 

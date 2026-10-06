@@ -179,24 +179,46 @@
 <div class="annual-report">
 
     <div class="breadcrumb-title">
-        Laporan Penilaian <span>» Indeks Unit Kerja</span>
+        Laporan Penilaian <span>» Indeks Kompetensi</span>
     </div>
 
     <div class="annual-report-layout">
         <section class="annual-report-card" aria-labelledby="annualReportTitle">
             <div class="annual-report-heading" id="annualReportTitle">
                 <i class="fas fa-file-alt" aria-hidden="true"></i>
-                <span>Form Laporan Penilaian Indeks Unit Kerja</span>
+                <span>Form Laporan Penilaian Indeks Kompetensi</span>
             </div>
 
             <div class="annual-report-body">
-                <form action="{{ route('laporan.indeks-unit-kerja.export') }}" method="GET" target="_blank">
+                <form action="{{ route('laporan.indeks-kompetensi.export') }}" method="GET" target="_blank">
 
-                    <!-- 2. Section Tahun (DEFAULT TAMPIL) -->
                     <div class="annual-report-field">
-                            <label class="annual-report-label" for="periode_awal">Periode</label>
+                        <label class="annual-report-label" for="jenis_filter">Jenis</label>
+                        <select id="jenis_filter" name="jenis_filter" class="annual-report-control">
+                            <option value="per_tahun" selected>Per Tahun</option>
+                            <option value="per_periode">Per Periode</option>
+                        </select>
+                    </div>
+
+                    <div class="annual-report-field">
+                        <label class="annual-report-label" for="periode">Periode</label>
+                        <select id="periode_awal" name="periode" class="annual-report-control">
+                            <option value="">-- Pilih Periode --</option>
+                            @foreach($periodes as $p)
+                                <option value="{{ $p->periode_id }}">
+                                    {{ $p->nama_periode }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- 3. Section Periode (DEFAULT SEMBUNYI dengan class 'd-none') -->
+                    <div id="wrapper_per_periode" class="d-none">
+                        <!-- Dropdown Periode Awal -->
+                        <div class="annual-report-field">
+                            <label class="annual-report-label" for="periode_awal">Periode Awal</label>
                             <select id="periode_awal" name="periode_awal" class="annual-report-control">
-                                <option value="">-- Pilih Periode --</option>
+                                <option value="">-- Pilih Periode Awal --</option>
                                 @foreach($periodes as $p)
                                     <option value="{{ $p->periode_id }}">
                                         {{ $p->nama_periode }}
@@ -204,6 +226,20 @@
                                 @endforeach
                             </select>
                         </div>
+
+                        <!-- Dropdown Periode Akhir -->
+                        <div class="annual-report-field">
+                            <label class="annual-report-label" for="periode_akhir">Periode Akhir</label>
+                            <select id="periode_akhir" name="periode_akhir" class="annual-report-control">
+                                <option value="">-- Pilih Periode Akhir --</option>
+                                @foreach($periodes as $p)
+                                    <option value="{{ $p->periode_id }}">
+                                        {{ $p->nama_periode }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
                     <!-- 4. Jabatan -->
                     <div class="annual-report-field">

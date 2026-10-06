@@ -12,9 +12,9 @@ use App\Http\Controllers\KelolaPenilaianController;
 use App\Http\Controllers\VerifikasiPenilaianController;
 use App\Http\Controllers\CatatanPenilaianController;
 use App\Http\Controllers\Laporan\LaporanTahunanController;
-use App\Http\Controllers\Laporan\LaporanIndexUnitKerjaController;
+use App\Http\Controllers\Laporan\LaporanIndeksUnitKerjaController;
 use App\Http\Controllers\Laporan\LaporanRekapNilaiController;
-use App\Http\Controllers\Laporan\LaporanIndexKompetensiController;
+use App\Http\Controllers\Laporan\LaporanIndeksKompetensiController;
 use App\Http\Controllers\FormPenilaianController;
 
 
@@ -90,15 +90,15 @@ Route::prefix('laporan')->name('laporan.')->group(function () {
     Route::get('/tahunan/export', [LaporanTahunanController::class, 'export'])->name('tahunan.export');
 
     // 2. Laporan Index Unit Kerja
-    Route::get('/unit-kerja', [LaporanUnitKerjaController::class, 'index'])->name('unit-kerja.index');
-    Route::get('/unit-kerja/export', [LaporanUnitKerjaController::class, 'export'])->name('unit-kerja.export');
+    Route::get('/unit-kerja', [LaporanIndeksUnitKerjaController::class, 'index'])->name('indeks-unit-kerja.index');
+    Route::get('/unit-kerja/export', [LaporanIndeksUnitKerjaController::class, 'export'])->name('indeks-unit-kerja.export');
 
     // 3. Laporan Rekap Nilai
     Route::get('/rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('rekap-nilai.index');
     Route::get('/rekap-nilai/export', [LaporanRekapNilaiController::class, 'export'])->name('rekap-nilai.export');
 
     // 4. Laporan Index Kompetensi
-    Route::get('/kompetensi', [LaporanKompetensiController::class, 'index'])->name('kompetensi.index');
-    Route::get('/kompetensi/export', [LaporanKompetensiController::class, 'export'])->name('kompetensi.export');
+    Route::get('/kompetensi', [LaporanIndeksKompetensiController::class, 'index'])->name('indeks-kompetensi.index');
+    Route::get('/kompetensi/export', [LaporanIndeksKompetensiController::class, 'export'])->name('indeks-kompetensi.export');
 
 });

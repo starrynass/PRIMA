@@ -10,9 +10,9 @@ use App\Models\Dp3TransPeriodePenilaian;
 use App\Models\MasterTemplate;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\LaporanRekapNilaiExport;
+use App\Exports\LaporanIndeksKompetensiExport;  
 
-class LaporanRekapNilaiController extends Controller
+class LaporanIndeksKompetensiController extends Controller
 {
     public function index()
     {
@@ -25,7 +25,7 @@ class LaporanRekapNilaiController extends Controller
             ->orderBy('bulan', 'asc')
             ->get();
 
-        return view('laporan.RekapNilai.index', compact('occupations', 'periodes', 'templates'));
+        return view('laporan.IndeksKompetensi.index', compact('occupations', 'periodes', 'templates'));
 
     }
 }
