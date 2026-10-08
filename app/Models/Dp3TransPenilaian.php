@@ -56,6 +56,11 @@ class Dp3TransPenilaian extends Model
         'created_by',
     ];
 
+    public function getLingkupKerjaAttribute(): string
+    {
+        return $this->unitKerja->lingkup_kerja ?? 'LAINNYA';
+    }
+
     // Relasi ke Periode Penilaian
     public function periode()
     {
@@ -95,5 +100,15 @@ public function office()
 public function department()
 {
     return $this->belongsTo(Department::class, 'pgw_id_dept', 'dept_id');
+}
+
+public function occupation()
+{
+    return $this->belongsTo(Occupation::class, 'pgw_id_jabatan', 'occ_id'); 
+}
+
+public function unitkerja()
+{
+    return $this->belongsTo(UnitKerja::class, 'pgw_kode_unit_kerja', 'kode_unit_kerja'); 
 }
 }

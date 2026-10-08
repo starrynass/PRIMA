@@ -275,6 +275,9 @@ class PeriodePenilaianController extends Controller
                 $namaDepartemen = DB::table('department')->where('dept_id', $pgw->dept_id)->value('dept_name');
                 $namaSubDepartemen = DB::table('department_sub')->where('subdept_id', $pgw->subdept_id)->value('subdept_name');
                 $namaOffice = DB::table('office')->where('off_id', $pgw->off_id)->value('off_name');
+                
+                // Ambil nama unit kerja dari tabel unit_kerja
+                $namaUnitKerja = DB::table('unit_kerja')->where('kode_unit_kerja', $pgw->kode_unit_kerja)->value('nama_unit_kerja');
 
                 DB::table('dp3_trans_penilaian')->updateOrInsert(
                     [
@@ -293,6 +296,11 @@ class PeriodePenilaianController extends Controller
                         'pgw_id_subdept_name' => $namaSubDepartemen,
                         'pgw_off_id' => $pgw->off_id,
                         'pgw_off_name' => $namaOffice,
+                        
+                        // TAMBAHKAN KODE & NAMA UNIT KERJA DI SINI
+                        'kode_unit_kerja' => $pgw->kode_unit_kerja,
+                        'pgw_unit_kerja' => $namaUnitKerja, // sertakan jika ada kolom snapshot nama_unit_kerja
+                        
                         'pgw_kode_satker' => $pgw->off_id ?? $pgw->dept_id,
                         'status_nilai' => 'Belum Diisi',
                         'total_nilai' => 0.00,
@@ -339,6 +347,7 @@ class PeriodePenilaianController extends Controller
             ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
             ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
             ->leftJoin('department_sub as sd', 'e.subdept_id', '=', 'sd.subdept_id')
+            ->leftJoin('unit_kerja as uk', 'e.kode_unit_kerja', '=', 'uk.kode_unit_kerja') // Join Unit Kerja
             ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
             ->leftJoin('employee as verifikator', 'tp.verifikator_id', '=', 'verifikator.pgw_id')
             ->where('tp.periode_id', $id)
@@ -350,12 +359,14 @@ class PeriodePenilaianController extends Controller
                 'occ.occ_name as jabatan',
                 'd.dept_name as departemen',
                 'sd.subdept_name as sub_departemen',
+                'uk.nama_unit_kerja as unit_kerja', // Select nama unit kerja
                 'tp.status_nilai as status_penilaian',
                 'tp.total_nilai as nilai_akhir',
                 'penilai.nama as nama_penilai',
                 'verifikator.nama as nama_verifikator'
             );
 
+        // Filter Search Text
         if ($request->filled('search')) {
             $search = trim($request->search);
             $query->where(function ($q) use ($search) {
@@ -366,11 +377,13 @@ class PeriodePenilaianController extends Controller
             });
         }
 
+        // Filter Status
         if ($request->filled('status')) {
             $status = strtoupper((string) $request->status);
             $query->whereRaw('UPPER(COALESCE(tp.status_nilai, "BELUM DIISI")) = ?', [$status]);
         }
 
+        // Filter Departemen
         if ($request->filled('dept_id')) {
             $deptId = (string) $request->dept_id;
             $query->where(function ($q) use ($deptId) {
@@ -380,6 +393,7 @@ class PeriodePenilaianController extends Controller
             });
         }
 
+        // Filter Sub Departemen
         if ($request->filled('subdept_id')) {
             $subDeptId = (string) $request->subdept_id;
             $query->where(function ($q) use ($subDeptId) {
@@ -389,6 +403,17 @@ class PeriodePenilaianController extends Controller
             });
         }
 
+        // FILTER BARU: Unit Kerja
+        if ($request->filled('kode_unit_kerja')) {
+            $kodeUnit = (string) $request->kode_unit_kerja;
+            $query->where(function ($q) use ($kodeUnit) {
+                $q->where('uk.kode_unit_kerja', $kodeUnit)
+                    ->orWhere('e.kode_unit_kerja', $kodeUnit)
+                    ->orWhere('tp.kode_unit_kerja', $kodeUnit);
+            });
+        }
+
+        // Sorting
         $sort = $request->get('sort', 'nama_asc');
         switch ($sort) {
             case 'nama_desc':
@@ -421,6 +446,9 @@ class PeriodePenilaianController extends Controller
 
         $departments = DB::table('department')->select('dept_id', 'dept_name')->orderBy('dept_name')->get();
         $subDepartments = DB::table('department_sub')->select('subdept_id', 'subdept_name')->orderBy('subdept_name')->get();
+        
+        // TAMBAHKAN KODE INI: Ambil list Unit Kerja untuk dropdown filter
+        $unitKerjaList = DB::table('unit_kerja')->select('kode_unit_kerja', 'nama_unit_kerja')->orderBy('nama_unit_kerja')->get();
 
         $stats = [
             'total_pegawai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->count(),
@@ -433,6 +461,7 @@ class PeriodePenilaianController extends Controller
             'perlu_ditinjau' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Perlu Ditinjau')->count(),
         ];
 
-        return view('penilaian.detail_periode', compact('periode', 'penilaianList', 'stats', 'departments', 'subDepartments'));
+        // Kirim $unitKerjaList ke View
+        return view('penilaian.detail_periode', compact('periode', 'penilaianList', 'stats', 'departments', 'subDepartments', 'unitKerjaList'));
     }
 }

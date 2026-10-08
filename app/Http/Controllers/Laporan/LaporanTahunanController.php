@@ -51,7 +51,6 @@ class LaporanTahunanController extends Controller
 
         $data = $query->get();
 
-        // Data Profile Header PDAM untuk Kop Surat
         $profile = [
             'namapdam' => 'PERUMDA AIR MINUM TIRTA KAHURIPAN KABUPATEN BOGOR',
             'kota'     => 'Kab. Bogor',

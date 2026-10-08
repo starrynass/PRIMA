@@ -673,6 +673,17 @@
                     </div>
 
                     <div>
+                        <select name="subdept_id" class="form-select-custom">
+                            <option value="">- Semua Unit Kerja -</option>
+                            @foreach($unitKerjaList as $uk)
+                                <option value="{{ $uk->kode_unit_kerja }}" {{ request('kode_unit_kerja') == $uk->kode_unit_kerja ? 'selected' : '' }}>
+                                    {{ $uk->nama_unit_kerja }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
                         <select name="status" class="form-select-custom">
                             <option value="">- Semua Status -</option>
                             <option value="BELUM DIISI" {{ request('status') === 'BELUM DIISI' ? 'selected' : '' }}>Belum Diisi</option>
@@ -710,6 +721,7 @@
                             <th width="40">NO</th>
                             <th>NUP</th>
                             <th>NAMA</th>
+                            <th>UNIT KERJA</th> <!-- Kolom Baru -->
                             <th>PENEMPATAN</th>
                             <th>JABATAN</th>
                             <th>DEPARTEMEN</th>
@@ -733,6 +745,7 @@
                                 <td>{{ (($penilaianList->currentPage() - 1) * $penilaianList->perPage()) + $loop->iteration }}</td>
                                 <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
                                 <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
+                                <td>{{ data_get($row, 'unit_kerja', '-') }}</td> <!-- Tampilkan Unit Kerja -->
                                 <td>{{ data_get($row, 'penempatan', '-') }}</td>
                                 <td>{{ data_get($row, 'jabatan', '-') }}</td>
                                 <td>{{ data_get($row, 'departemen', '-') }}</td>
@@ -789,7 +802,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="13" class="text-center py-4 text-muted">Belum ada data pegawai yang di-generate untuk periode ini.</td>
+                                <td colspan="14" class="text-center py-4 text-muted">Belum ada data pegawai yang di-generate untuk periode ini.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -194,8 +194,8 @@
 
                     <!-- 2. Section Tahun (DEFAULT TAMPIL) -->
                     <div class="annual-report-field">
-                            <label class="annual-report-label" for="periode_awal">Periode</label>
-                            <select id="periode_awal" name="periode_awal" class="annual-report-control">
+                            <label class="annual-report-label" for="periode">Periode</label>
+                            <select id="periode" name="periode" class="annual-report-control">
                                 <option value="">-- Pilih Periode --</option>
                                 @foreach($periodes as $p)
                                     <option value="{{ $p->periode_id }}">
@@ -217,10 +217,11 @@
                     </div>
 
                     <div class="annual-report-field">
-                        <label class="annual-report-label" for="template_penilaian">Satker</label>
-                        <select id="template_penilaian" name="template_penilaian" class="annual-report-control">
-                            @foreach($templates ?? [] as $template)
-                                <option value="{{ $template->template_id }}">{{ $template->nama_template }}</option>
+                        <label class="annual-report-label" for="unit_kerja">Unit Kerja</label>
+                        <select id="unit_kerja" name="unit_kerja" class="annual-report-control">
+                            <option value="">SEMUA UNIT KERJA</option>
+                            @foreach($unitkerja ?? [] as $uk)
+                                <option value="{{ $uk->kode_unit_kerja }}">{{ $uk->nama_unit_kerja }}</option>
                             @endforeach
                         </select>
                     </div>

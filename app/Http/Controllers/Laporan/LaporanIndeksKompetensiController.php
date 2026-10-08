@@ -8,6 +8,7 @@ use App\Models\Dp3TransPenilaian;
 use App\Models\Occupation;
 use App\Models\Dp3TransPeriodePenilaian;
 use App\Models\MasterTemplate;
+use App\Models\UnitKerja;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LaporanIndeksKompetensiExport;  
@@ -24,8 +25,10 @@ class LaporanIndeksKompetensiController extends Controller
         $periodes = Dp3TransPeriodePenilaian::orderBy('tahun', 'asc')
             ->orderBy('bulan', 'asc')
             ->get();
+        
+        $unitkerja = UnitKerja::orderBy('kode_unit_kerja')->get();
 
-        return view('laporan.IndeksKompetensi.index', compact('occupations', 'periodes', 'templates'));
+        return view('laporan.IndeksKompetensi.index', compact('occupations', 'periodes', 'templates', 'unitkerja'));
 
     }
 }

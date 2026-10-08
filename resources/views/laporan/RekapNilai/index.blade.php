@@ -227,10 +227,10 @@
                     </div>
 
                     <div class="annual-report-field">
-                        <label class="annual-report-label" for="template_penilaian">Satker</label>
-                        <select id="template_penilaian" name="template_penilaian" class="annual-report-control">
-                            @foreach($templates ?? [] as $template)
-                                <option value="{{ $template->template_id }}">{{ $template->nama_template }}</option>
+                        <label class="annual-report-label" for="unit_kerja">Unit Kerja</label>
+                        <select id="unit_kerja" name="unit_kerja" class="annual-report-control">
+                            @foreach($unitKerja ?? [] as $uk)
+                                <option value="{{ $uk->kode_unit_kerja }}">{{ $uk->nama_unit_kerja }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -252,28 +252,5 @@
     </div>
 
 </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const jenisFilter = document.getElementById('jenis_filter');
-        const wrapperTahun = document.getElementById('wrapper_per_tahun');
-        const wrapperPeriode = document.getElementById('wrapper_per_periode');
-
-        function toggleFilter() {
-            if (jenisFilter.value === 'per_periode') {
-                wrapperTahun.classList.add('d-none');
-                wrapperPeriode.classList.remove('d-none');
-            } else {
-                wrapperTahun.classList.remove('d-none');
-                wrapperPeriode.classList.add('d-none');
-            }
-        }
-
-        // Jalankan saat pertama kali dipanggil (untuk memastikan kondisi awal)
-        toggleFilter();
-
-        // Jalankan saat dropdown jenis diubah
-        jenisFilter.addEventListener('change', toggleFilter);
-    });
-</script>
 
 @endsection

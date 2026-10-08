@@ -195,14 +195,14 @@
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jenis_filter">Jenis</label>
                         <select id="jenis_filter" name="jenis_filter" class="annual-report-control">
-                            <option value="per_tahun" selected>Per Tahun</option>
+                            <option value="per_bulan" selected>Per Bulan</option>
                             <option value="per_periode">Per Periode</option>
                         </select>
                     </div>
 
-                    <div class="annual-report-field">
+                    <div id="wrapper_per_bulan" class="annual-report-field">
                         <label class="annual-report-label" for="periode">Periode</label>
-                        <select id="periode_awal" name="periode" class="annual-report-control">
+                        <select id="periode" name="periode" class="annual-report-control">
                             <option value="">-- Pilih Periode --</option>
                             @foreach($periodes as $p)
                                 <option value="{{ $p->periode_id }}">
@@ -245,7 +245,6 @@
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jabatan">Jabatan</label>
                         <select id="jabatan" name="jabatan" class="annual-report-control">
-                            <option value="SEMUA JABATAN">SEMUA JABATAN</option>
                             @foreach($occupations ?? [] as $occ)
                                 <option value="{{ $occ->occ_id }}">{{ $occ->occ_name }}</option>
                             @endforeach
@@ -253,10 +252,20 @@
                     </div>
 
                     <div class="annual-report-field">
-                        <label class="annual-report-label" for="template_penilaian">Satker</label>
+                        <label class="annual-report-label" for="template_penilaian">Template</label>
                         <select id="template_penilaian" name="template_penilaian" class="annual-report-control">
                             @foreach($templates ?? [] as $template)
                                 <option value="{{ $template->template_id }}">{{ $template->nama_template }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="annual-report-field">
+                        <label class="annual-report-label" for="template_penilaian">Unit Kerja</label>
+                        <select id="template_penilaian" name="template_penilaian" class="annual-report-control">
+                            <option value="">SEMUA UNIT KERJA</option>
+                            @foreach($unitkerja ?? [] as $uk)
+                                <option value="{{ $uk->kode_unit_kerja }}">{{ $uk->nama_unit_kerja }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -281,15 +290,15 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const jenisFilter = document.getElementById('jenis_filter');
-        const wrapperTahun = document.getElementById('wrapper_per_tahun');
+        const wrapperBulan = document.getElementById('wrapper_per_bulan');
         const wrapperPeriode = document.getElementById('wrapper_per_periode');
 
         function toggleFilter() {
             if (jenisFilter.value === 'per_periode') {
-                wrapperTahun.classList.add('d-none');
+                wrapperBulan.classList.add('d-none');
                 wrapperPeriode.classList.remove('d-none');
             } else {
-                wrapperTahun.classList.remove('d-none');
+                wrapperBulan.classList.remove('d-none');
                 wrapperPeriode.classList.add('d-none');
             }
         }

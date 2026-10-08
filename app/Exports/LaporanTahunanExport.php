@@ -5,8 +5,9 @@ namespace App\Exports;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class LaporanTahunanExport implements FromView, ShouldAutoSize
+class LaporanTahunanExport implements FromView, ShouldAutoSize, WithTitle
 {
     protected $data;
     protected $tahun;
@@ -23,5 +24,10 @@ class LaporanTahunanExport implements FromView, ShouldAutoSize
             'data'  => $this->data,
             'tahun' => $this->tahun
         ]);
+    }
+
+    public function title(): string
+    {
+        return 'Laporan Tahunan ' . $this->tahun;
     }
 }

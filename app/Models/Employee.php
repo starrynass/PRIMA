@@ -72,4 +72,15 @@ class Employee extends Model
     {
         return $this->belongsTo(Occupation::class, 'occ_id', 'occ_id');
     }
+
+    public function unitkerja()
+    {
+        return $this->belongsTo(UnitKerja::class, 'pgw_kode_unit_kerja', 'kode_unit_kerja'); 
+    }
+
+    public function penilaian()
+    {
+        // Parameter: (ModelTujuan, Foreign_Key_di_Dp3TransPenilaian, Primary_Key_di_Employee)
+        return $this->hasMany(Dp3TransPenilaian::class, 'pegawai_id', 'pgw_id');
+    }
 }

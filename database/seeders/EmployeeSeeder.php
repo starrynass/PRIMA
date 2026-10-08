@@ -30,6 +30,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 1, // Direksi
                 'subdept_id'         => 1, // Direksi
                 'occ_id'             => 1, // Direktur Utama
+                'kode_unit_kerja'    => 'UK-CAB-BMD',
                 'jurusan_pendidikan' => 'Teknik Informatika',
                 'thn_lulus'          => 2012,
                 'no_npwp'            => '12.345.678.9-001.000',
@@ -55,6 +56,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 5, // Keuangan
                 'subdept_id'         => 5, // Akuntansi & Perpajakan
                 'occ_id'             => 2, // Direktur Umum
+                'kode_unit_kerja'    => 'UK-CAB-BMD',
                 'jurusan_pendidikan' => 'Manajemen',
                 'thn_lulus'          => 2013,
                 'no_npwp'            => '12.345.678.9-002.000',
@@ -80,6 +82,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 7, // MIS
                 'subdept_id'         => 56, // Software & Database
                 'occ_id'             => 3, // Direktur Operasional
+                'kode_unit_kerja'    => 'UK-CAB-CBN',
                 'jurusan_pendidikan' => 'Sistem Informasi',
                 'thn_lulus'          => 2014,
                 'no_npwp'            => '12.345.678.9-003.000',
@@ -105,6 +108,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 15, // Sekretariat Perusahaan
                 'subdept_id'         => 55, // Sekretariat Perusahaan
                 'occ_id'             => 4, // Sekretaris Perusahaan
+                'kode_unit_kerja'    => 'UK-SEKPER',
                 'jurusan_pendidikan' => 'Akuntansi',
                 'thn_lulus'          => 2015,
                 'no_npwp'            => '12.345.678.9-004.000',
@@ -130,6 +134,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 14, // SDM
                 'subdept_id'         => 54, // SDM
                 'occ_id'             => 5, // Manajer
+                'kode_unit_kerja'    => 'UK-CAB-CLG',
                 'jurusan_pendidikan' => 'Teknik Sipil',
                 'thn_lulus'          => 2016,
                 'no_npwp'            => '12.345.678.9-005.000',
@@ -155,6 +160,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 9, // Pemasaran & Humas
                 'subdept_id'         => 16, // Humas
                 'occ_id'             => 6, // Asmen
+                'kode_unit_kerja'    => 'UK-CAB-CLG',
                 'jurusan_pendidikan' => 'Ilmu Komunikasi',
                 'thn_lulus'          => 2017,
                 'no_npwp'            => '12.345.678.9-006.000',
@@ -180,6 +186,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 7, // MIS
                 'subdept_id'         => 12, // GIS
                 'occ_id'             => 9, // Staf
+                'kode_unit_kerja'    => 'UK-CAB-CMS',
                 'jurusan_pendidikan' => 'Rekayasa Perangkat Lunak',
                 'thn_lulus'          => 2018,
                 'no_npwp'            => '12.345.678.9-007.000',
@@ -205,6 +212,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 17, // Umum
                 'subdept_id'         => 4, // Adm.Umum & Kearsipan
                 'occ_id'             => 9, // Staf
+                'kode_unit_kerja'    => 'UK-CAB-CMS',
                 'jurusan_pendidikan' => 'Administrasi Perkantoran',
                 'thn_lulus'          => 2019,
                 'no_npwp'            => '12.345.678.9-008.000',
@@ -230,6 +238,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 3, // Distribusi & NRW
                 'subdept_id'         => 10, // Distribusi & NRW
                 'occ_id'             => 10, // Staf Instalasi
+                'kode_unit_kerja'    => 'UK-CAB-CWI',
                 'jurusan_pendidikan' => 'Teknik Mesin',
                 'thn_lulus'          => 2020,
                 'no_npwp'            => '12.345.678.9-009.000',
@@ -255,6 +264,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 12, // Produksi
                 'subdept_id'         => 50, // Produksi
                 'occ_id'             => 10, // Staf Instalasi
+                'kode_unit_kerja'    => 'UK-CAB-CWI',
                 'jurusan_pendidikan' => 'Teknik Lingkungan',
                 'thn_lulus'          => 2020,
                 'no_npwp'            => '12.345.678.9-010.000',
@@ -280,6 +290,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 4, // Instalasi
                 'subdept_id'         => 17, // Instalasi
                 'occ_id'             => 14, // As.Mgr.Instalasi Cijeruk...
+                'kode_unit_kerja'    => 'UK-CAB-JGL',
                 'jurusan_pendidikan' => 'Teknik Elektro',
                 'thn_lulus'          => 2021,
                 'no_npwp'            => '12.345.678.9-011.000',
@@ -305,6 +316,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 4, // Instalasi
                 'subdept_id'         => 17, // Instalasi
                 'occ_id'             => 17, // As.Mgr.Instalasi Ciburial...
+                'kode_unit_kerja'    => 'UK-CAB-JGL',
                 'jurusan_pendidikan' => 'Teknik Sipil',
                 'thn_lulus'          => 2010,
                 'no_npwp'            => '12.345.678.9-012.000',
@@ -330,6 +342,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 5, // Keuangan
                 'subdept_id'         => 19, // Keuangan
                 'occ_id'             => 18, // As.Mgr.Instalasi Tajur Halang...
+                'kode_unit_kerja'    => 'UK-CAB-KMG',
                 'jurusan_pendidikan' => 'Manajemen Keuangan',
                 'thn_lulus'          => 2014,
                 'no_npwp'            => '12.345.678.9-013.000',
@@ -355,6 +368,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 11, // Rentek
                 'subdept_id'         => 49, // Pertek
                 'occ_id'             => 19, // As.Mgr.Instalasi Sukaraja...
+                'kode_unit_kerja'    => 'UK-CAB-KMG',
                 'jurusan_pendidikan' => 'Teknik Mesin',
                 'thn_lulus'          => 2016,
                 'no_npwp'            => '12.345.678.9-014.000',
@@ -380,6 +394,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 15, // Sekretariat Perusahaan
                 'subdept_id'         => 15, // Hukum
                 'occ_id'             => 20, // As.Mgr.Instalasi Parung Panjang...
+                'kode_unit_kerja'    => 'UK-CAB-LWL',
                 'jurusan_pendidikan' => 'Hukum',
                 'thn_lulus'          => 2018,
                 'no_npwp'            => '12.345.678.9-015.000',
@@ -405,6 +420,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 16, // SPI
                 'subdept_id'         => 57, // SPI
                 'occ_id'             => 21, // As.Mgr.Leuwiliang...
+                'kode_unit_kerja'    => 'UK-CAB-LWL',
                 'jurusan_pendidikan' => 'Teknik Komputer',
                 'thn_lulus'          => 2015,
                 'no_npwp'            => '12.345.678.9-016.000',
@@ -430,6 +446,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 14, // SDM
                 'subdept_id'         => 46, // Pengembangan SDM
                 'occ_id'             => 22, // As.Mgr.Instalasi Kota Wisata...
+                'kode_unit_kerja'    => 'UK-CAB-PPJ',
                 'jurusan_pendidikan' => 'Psikologi',
                 'thn_lulus'          => 2017,
                 'no_npwp'            => '12.345.678.9-017.000',
@@ -455,6 +472,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 8, // Pelaksana Kegiatan
                 'subdept_id'         => 20, // Konstruksi
                 'occ_id'             => 23, // As.Mgr.Instalasi Kd.Halang...
+                'kode_unit_kerja'    => 'UK-CAB-PPJ',
                 'jurusan_pendidikan' => 'Teknik Sipil',
                 'thn_lulus'          => 2013,
                 'no_npwp'            => '12.345.678.9-018.000',
@@ -480,6 +498,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 9, // Pemasaran & Humas
                 'subdept_id'         => 32, // Pemasaran
                 'occ_id'             => 26, // As.Mgr.Instalasi Jonggol...
+                'kode_unit_kerja'    => 'UK-DIST-NRW',
                 'jurusan_pendidikan' => 'Desain Komunikasi Visual',
                 'thn_lulus'          => 2019,
                 'no_npwp'            => '12.345.678.9-019.000',
@@ -505,6 +524,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 1, // Direksi
                 'subdept_id'         => 1, // Direksi
                 'occ_id'             => 1, // Direktur Utama
+                'kode_unit_kerja'    => 'UK-DIST-NRW',
                 'jurusan_pendidikan' => 'Manajemen Perusahaan',
                 'thn_lulus'          => 1988,
                 'no_npwp'            => '12.345.678.9-020.000',
@@ -530,6 +550,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 10, // Penjaminan Mutu & K3
                 'subdept_id'         => 18, // K3
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-INS-CBN',
                 'jurusan_pendidikan' => 'Teknik Informatika',
                 'thn_lulus'          => 2020,
                 'no_npwp'            => '12.345.678.9-021.000',
@@ -555,6 +576,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 6, // Layanan Pengadaan
                 'subdept_id'         => 23, // Layanan Pengadaan
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-INS-CBN',
                 'jurusan_pendidikan' => 'Sistem Informasi',
                 'thn_lulus'          => 2021,
                 'no_npwp'            => '12.345.678.9-022.000',
@@ -580,6 +602,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 13, // Renbang
                 'subdept_id'         => 9, // Data & Pelaporan
                 'occ_id'             => 6,
+                'kode_unit_kerja'    => 'UK-INS-CCB',
                 'jurusan_pendidikan' => 'Teknik Elektro',
                 'thn_lulus'          => 2015,
                 'no_npwp'            => '12.345.678.9-023.000',
@@ -605,6 +628,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 5, // Keuangan
                 'subdept_id'         => 6, // Anggaran & Pelaporan
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-INS-CCB',
                 'jurusan_pendidikan' => 'Akuntansi',
                 'thn_lulus'          => 2016,
                 'no_npwp'            => '12.345.678.9-024.000',
@@ -630,6 +654,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 2, // Cabang
                 'subdept_id'         => 2, // Adm.&Keu.
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-INS-CCBBV',
                 'jurusan_pendidikan' => 'Teknik Sipil',
                 'thn_lulus'          => 2018,
                 'no_npwp'            => '12.345.678.9-025.000',
@@ -655,6 +680,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 10, // Penjaminan Mutu & K3
                 'subdept_id'         => 21, // Laboratorium
                 'occ_id'             => 10,
+                'kode_unit_kerja'    => 'UK-INS-CCBBV',
                 'jurusan_pendidikan' => 'Teknik Lingkungan',
                 'thn_lulus'          => 2019,
                 'no_npwp'            => '12.345.678.9-026.000',
@@ -680,6 +706,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 12, // Produksi
                 'subdept_id'         => 35, // Pemeliharaan ME
                 'occ_id'             => 10,
+                'kode_unit_kerja'    => 'UK-INS-GP',
                 'jurusan_pendidikan' => 'Teknik Mesin',
                 'thn_lulus'          => 2017,
                 'no_npwp'            => '12.345.678.9-027.000',
@@ -705,6 +732,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 9, // Pemasaran & Humas
                 'subdept_id'         => 22, // Layanan Pelanggan
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-INS-GP',
                 'jurusan_pendidikan' => 'Administrasi Bisnis',
                 'thn_lulus'          => 2020,
                 'no_npwp'            => '12.345.678.9-028.000',
@@ -730,6 +758,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 3, // Distribusi & NRW
                 'subdept_id'         => 34, // Pemeliharaan Jaringan
                 'occ_id'             => 14,
+                'kode_unit_kerja'    => 'UK-INS-JC',
                 'jurusan_pendidikan' => 'Teknik Elektro',
                 'thn_lulus'          => 2014,
                 'no_npwp'            => '12.345.678.9-029.000',
@@ -755,6 +784,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 13, // Renbang
                 'subdept_id'         => 38, // Peng,Investasi&Kerjasama
                 'occ_id'             => 17,
+                'kode_unit_kerja'    => 'UK-INS-JC',
                 'jurusan_pendidikan' => 'Manajemen Pemasaran',
                 'thn_lulus'          => 2016,
                 'no_npwp'            => '12.345.678.9-030.000',
@@ -780,6 +810,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 14, // SDM
                 'subdept_id'         => 30, // Organisasi
                 'occ_id'             => 5,
+                'kode_unit_kerja'    => 'UK-INS-KK',
                 'jurusan_pendidikan' => 'Ilmu Olahraga',
                 'thn_lulus'          => 2013,
                 'no_npwp'            => '12.345.678.9-031.000',
@@ -805,6 +836,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 15, // Sekretariat Perusahaan
                 'subdept_id'         => 60, // TU Direksi & Protokol
                 'occ_id'             => 6,
+                'kode_unit_kerja'    => 'UK-INS-KK',
                 'jurusan_pendidikan' => 'Sastra Inggris',
                 'thn_lulus'          => 2015,
                 'no_npwp'            => '12.345.678.9-032.000',
@@ -830,6 +862,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 7, // MIS
                 'subdept_id'         => 13, // Hardware & Network
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-INS-KWBG',
                 'jurusan_pendidikan' => 'Teknik Informatika',
                 'thn_lulus'          => 2018,
                 'no_npwp'            => '12.345.678.9-033.000',
@@ -855,6 +888,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 16, // SPI
                 'subdept_id'         => 43, // Pengawasan SDM
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-INS-LC',
                 'jurusan_pendidikan' => 'Psikologi',
                 'thn_lulus'          => 2019,
                 'no_npwp'            => '12.345.678.9-034.000',
@@ -880,6 +914,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 17, // Umum
                 'subdept_id'         => 44, // Pengelolaan Aset
                 'occ_id'             => 18,
+                'kode_unit_kerja'    => 'UK-INS-PPT',
                 'jurusan_pendidikan' => 'Hukum',
                 'thn_lulus'          => 2012,
                 'no_npwp'            => '12.345.678.9-035.000',
@@ -905,6 +940,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 9, // Pemasaran & Humas
                 'subdept_id'         => 61, // Tunggakan & Penagihan
                 'occ_id'             => 19,
+                'kode_unit_kerja'    => 'UK-INS-SCBM',
                 'jurusan_pendidikan' => 'Hubungan Internasional',
                 'thn_lulus'          => 2017,
                 'no_npwp'            => '12.345.678.9-036.000',
@@ -930,6 +966,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 12, // Produksi
                 'subdept_id'         => 51, // Proses Produksi
                 'occ_id'             => 20,
+                'kode_unit_kerja'    => 'UK-INS-THR',
                 'jurusan_pendidikan' => 'Teknik Mesin',
                 'thn_lulus'          => 2020,
                 'no_npwp'            => '12.345.678.9-037.000',
@@ -955,6 +992,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 5, // Keuangan
                 'subdept_id'         => 37, // Penerimaan & Pengeluaran
                 'occ_id'             => 21,
+                'kode_unit_kerja'    => 'UK-KEU',
                 'jurusan_pendidikan' => 'Perpajakan',
                 'thn_lulus'          => 2021,
                 'no_npwp'            => '12.345.678.9-038.000',
@@ -980,6 +1018,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 3, // Distribusi & NRW
                 'subdept_id'         => 39, // Pengaturan Distribusi
                 'occ_id'             => 22,
+                'kode_unit_kerja'    => 'UK-LP',
                 'jurusan_pendidikan' => 'Teknik Komputer',
                 'thn_lulus'          => 2015,
                 'no_npwp'            => '12.345.678.9-039.000',
@@ -1005,6 +1044,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 10, // Penjaminan Mutu & K3
                 'subdept_id'         => 48, // Penjaminan Mutu & K3
                 'occ_id'             => 23,
+                'kode_unit_kerja'    => 'UK-PMK3',
                 'jurusan_pendidikan' => 'Farmasi',
                 'thn_lulus'          => 2018,
                 'no_npwp'            => '12.345.678.9-040.000',
@@ -1030,6 +1070,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 11, // Rentek
                 'subdept_id'         => 11, // Evaluasi & Adm Teknik
                 'occ_id'             => 26,
+                'kode_unit_kerja'    => 'UK-PET',
                 'jurusan_pendidikan' => 'Teknik Pertanian',
                 'thn_lulus'          => 2016,
                 'no_npwp'            => '12.345.678.9-041.000',
@@ -1055,6 +1096,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 17, // Umum
                 'subdept_id'         => 62, // Umum
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-UMUM',
                 'jurusan_pendidikan' => 'Seni Musik',
                 'thn_lulus'          => 2019,
                 'no_npwp'            => '12.345.678.9-042.000',
@@ -1080,6 +1122,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 2, // Cabang
                 'subdept_id'         => 8, // Cabang
                 'occ_id'             => 9,
+                'kode_unit_kerja'    => 'UK-MARHUM',
                 'jurusan_pendidikan' => 'Manajemen Informatika',
                 'thn_lulus'          => 2014,
                 'no_npwp'            => '12.345.678.9-043.000',
@@ -1105,6 +1148,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 6, // Layanan Pengadaan
                 'subdept_id'         => 28, // Non Tender
                 'occ_id'             => 10,
+                'kode_unit_kerja'    => 'UK-MIS',
                 'jurusan_pendidikan' => 'Desain Produk',
                 'thn_lulus'          => 2017,
                 'no_npwp'            => '12.345.678.9-044.000',
@@ -1130,6 +1174,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 8, // Pelaksana Kegiatan
                 'subdept_id'         => 27, // Non Konstruksi
                 'occ_id'             => 10,
+                'kode_unit_kerja'    => 'UK-PELKEG',
                 'jurusan_pendidikan' => 'Teknik Geodesi',
                 'thn_lulus'          => 2013,
                 'no_npwp'            => '12.345.678.9-045.000',
@@ -1155,6 +1200,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 16, // SPI
                 'subdept_id'         => 40, // Pengawasan Adm.&Keu.
                 'occ_id'             => 14,
+                'kode_unit_kerja'    => 'UK-SPI',
                 'jurusan_pendidikan' => 'Gizi Masyarakat',
                 'thn_lulus'          => 2020,
                 'no_npwp'            => '12.345.678.9-046.000',
@@ -1180,6 +1226,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 12, // Produksi
                 'subdept_id'         => 45, // Pengelolaan Sumber
                 'occ_id'             => 17,
+                'kode_unit_kerja'    => 'UK-PROD',
                 'jurusan_pendidikan' => 'Teknik Kelautan',
                 'thn_lulus'          => 2015,
                 'no_npwp'            => '12.345.678.9-047.000',
@@ -1205,6 +1252,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 17, // Umum
                 'subdept_id'         => 53, // Sarana & Prasarana
                 'occ_id'             => 18,
+                'kode_unit_kerja'    => 'UK-UMUM',
                 'jurusan_pendidikan' => 'Kebidanan',
                 'thn_lulus'          => 2018,
                 'no_npwp'            => '12.345.678.9-048.000',
@@ -1230,6 +1278,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 13, // Renbang
                 'subdept_id'         => 52, // Renbang Operasional
                 'occ_id'             => 19,
+                'kode_unit_kerja'    => 'UK-RENBANG',
                 'jurusan_pendidikan' => 'Manajemen Bisnis',
                 'thn_lulus'          => 2012,
                 'no_npwp'            => '12.345.678.9-049.000',
@@ -1255,6 +1304,7 @@ class EmployeeSeeder extends Seeder
                 'dept_id'            => 1, // Direksi
                 'subdept_id'         => 1, // Direksi
                 'occ_id'             => 1, // Direktur Utama
+                'kode_unit_kerja'    => 'UK-SDM',
                 'jurusan_pendidikan' => 'Ilmu Hukum',
                 'thn_lulus'          => 1987,
                 'no_npwp'            => '12.345.678.9-050.000',
@@ -1272,6 +1322,7 @@ class EmployeeSeeder extends Seeder
             $employee['off_id'] = $employee['off_id'] ?? null;
             $employee['dept_id'] = $employee['dept_id'] ?? null;
             $employee['subdept_id'] = $employee['subdept_id'] ?? null;
+            $employee['kode_unit_kerja'] = $employee['kode_unit_kerja'] ?? null;
 
             return $employee;
         }, $employees);
