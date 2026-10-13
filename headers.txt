@@ -1,0 +1,8 @@
+HTTP/1.1 500 Internal Server Error
+Host: localhost:8000
+Connection: close
+X-Powered-By: PHP/8.2.12
+Cache-Control: no-cache, private
+date: Tue, 13 Oct 2026 09:56:53 GMT
+Content-Type: text/html; charset=UTF-8
+

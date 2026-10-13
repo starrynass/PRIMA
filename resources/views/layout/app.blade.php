@@ -344,11 +344,20 @@
 
 
     <header class="page-header" role="banner">
-        <div class="header-inner">
-            <button class="hamburger-btn" id="toggleSidebar">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <div class="header-title">(DP3) Penilaian Kinerja</div>
+        <div class="header-inner" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="hamburger-btn" id="toggleSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="header-title">(DP3) Penilaian Kinerja</div>
+            </div>
+
+            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                @csrf
+                <button type="submit" class="hamburger-btn" title="Keluar" style="padding: 6px 10px; font-size: 14px; border-radius: 10px;">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </form>
         </div>
     </header>
 

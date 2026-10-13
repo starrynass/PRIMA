@@ -56,6 +56,16 @@ class Dp3TransPenilaian extends Model
         'created_by',
     ];
 
+    public function getStatusVerifikatorAttribute(): ?string
+    {
+        return $this->attributes['status_verifitor'] ?? null;
+    }
+
+    public function setStatusVerifikatorAttribute($value): void
+    {
+        $this->attributes['status_verifitor'] = $value;
+    }
+
     public function getLingkupKerjaAttribute(): string
     {
         return $this->unitKerja->lingkup_kerja ?? 'LAINNYA';

@@ -767,7 +767,7 @@
             <div>
                 <h1 class="toolbar-title">Master Predikat Nilai</h1>
                 <p class="toolbar-subtitle">
-                    Total Master Data: <span class="toolbar-subtitle-count">{{ count($predikatNilai) }} Data</span>
+                    Total Master Data: <span class="toolbar-subtitle-count">{{ count($predikatNilai ?? []) }} Data</span>
                 </p>
             </div>
         </div>

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MasterSkalaController;
 use App\Http\Controllers\MasterPredikatController;
@@ -17,88 +18,95 @@ use App\Http\Controllers\Laporan\LaporanRekapNilaiController;
 use App\Http\Controllers\Laporan\LaporanIndeksKompetensiController;
 use App\Http\Controllers\FormPenilaianController;
 
+Route::get('/', [AuthController::class, 'redirectToApp']);
 
-Route::get('/dashboard-penilaian', [DashboardController::class, 'index'])->name('dashboard.penilaian');
-Route::get('/dashboard-penilaian/modal-detail', [DashboardController::class, 'getModalDetail'])->name('dashboard.modal-detail');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+});
 
-// SKALA NILAI
-Route::post('/master/skala', [MasterSkalaController::class, 'store'])->name('skala.store');
-Route::put('/master/skala/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala.update');
-Route::delete('/master/skala/{skalaNilai}', [MasterSkalaController::class, 'destroy'])->name('skala.destroy');
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// PREDIKAT NILAI
+    Route::get('/dashboard-penilaian', [DashboardController::class, 'index'])->name('dashboard.penilaian');
+    Route::get('/dashboard-penilaian/modal-detail', [DashboardController::class, 'getModalDetail'])->name('dashboard.modal-detail');
 
-Route::get('/master/skala-predikat', [MasterPredikatController::class, 'index'])->name('skala-predikat.index');
-Route::post('/master/predikat/store', [MasterPredikatController::class, 'store'])->name('predikat.store');
-Route::put('/master/predikat/{id}', [MasterPredikatController::class, 'update'])->name('predikat.update');
-Route::delete('/master/predikat/{id}', [MasterPredikatController::class, 'destroy'])->name('predikat.destroy');
+    // SKALA NILAI
+    Route::post('/master/skala', [MasterSkalaController::class, 'store'])->name('skala.store');
+    Route::put('/master/skala/{skalaNilai}', [MasterSkalaController::class, 'update'])->name('skala.update');
+    Route::delete('/master/skala/{skalaNilai}', [MasterSkalaController::class, 'destroy'])->name('skala.destroy');
 
-// TEMPLATE PENILAIAN
-Route::get('/master/template-penilaian', [TemplatePenilaianController::class, 'index'])->name('template-penilaian.index');
-Route::post('master/template-penilaian/store', [TemplatePenilaianController::class, 'store'])->name('template-penilaian.store');
-Route::put('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'update'])->name('template-penilaian.update');
-Route::delete('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'destroy'])->name('template-penilaian.destroy');
+    // PREDIKAT NILAI
+    Route::get('/master/skala-predikat', [MasterPredikatController::class, 'index'])->name('skala-predikat.index');
+    Route::post('/master/predikat/store', [MasterPredikatController::class, 'store'])->name('predikat.store');
+    Route::put('/master/predikat/{id}', [MasterPredikatController::class, 'update'])->name('predikat.update');
+    Route::delete('/master/predikat/{id}', [MasterPredikatController::class, 'destroy'])->name('predikat.destroy');
 
-// KATEGORI TEMPLATE PENILAIAN
-Route::post('master/kategori-penilaian/store', [KategoriPenilaianController::class, 'store'])->name('kategori-penilaian.store');
-Route::put('master/kategori-penilaian/{kategori}', [KategoriPenilaianController::class, 'update'])->name('kategori-penilaian.update');
-Route::delete('master/kategori-penilaian/{kategori}', [KategoriPenilaianController::class, 'destroy'])->name('kategori-penilaian.destroy');
+    // TEMPLATE PENILAIAN
+    Route::get('/master/template-penilaian', [TemplatePenilaianController::class, 'index'])->name('template-penilaian.index');
+    Route::post('master/template-penilaian/store', [TemplatePenilaianController::class, 'store'])->name('template-penilaian.store');
+    Route::put('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'update'])->name('template-penilaian.update');
+    Route::delete('master/template-penilaian/{template}', [TemplatePenilaianController::class, 'destroy'])->name('template-penilaian.destroy');
 
-// PERTANYAAN TEMPLATE PENILAIAN
-Route::post('master/pertanyaan-penilaian/store', [PertanyaanPenilaianController::class, 'store'])->name('pertanyaan-penilaian.store');
-Route::put('master/pertanyaan-penilaian/{pertanyaan}', [PertanyaanPenilaianController::class, 'update'])->name('pertanyaan-penilaian.update');
-Route::delete('master/pertanyaan-penilaian/{pertanyaan}', [PertanyaanPenilaianController::class, 'destroy'])->name('pertanyaan-penilaian.destroy');
+    // KATEGORI TEMPLATE PENILAIAN
+    Route::post('master/kategori-penilaian/store', [KategoriPenilaianController::class, 'store'])->name('kategori-penilaian.store');
+    Route::put('master/kategori-penilaian/{kategori}', [KategoriPenilaianController::class, 'update'])->name('kategori-penilaian.update');
+    Route::delete('master/kategori-penilaian/{kategori}', [KategoriPenilaianController::class, 'destroy'])->name('kategori-penilaian.destroy');
 
-// PERIODE PENILAIAN
-Route::get('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'index'])->name('periode-penilaian.index');
-Route::post('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'store'])->name('periode.store');
-Route::put('/penilaian/periode-penilaian/{id}', [PeriodePenilaianController::class, 'update'])->name('periode.update');
-Route::delete('/penilaian/periode-penilaian/{id}', [PeriodePenilaianController::class, 'destroy'])->name('periode.destroy');
-Route::patch('/penilaian/periode-penilaian/{id}/toggle-lock', [PeriodePenilaianController::class, 'toggleLock'])->name('periode.toggleLock');
-Route::post('/penilaian/periode-penilaian/{id}/generate', [PeriodePenilaianController::class, 'generate'])->name('periode.generate');
-Route::get('/penilaian/periode-penilaian/{id}/detail', [PeriodePenilaianController::class, 'detail'])->name('periode.detail');
+    // PERTANYAAN TEMPLATE PENILAIAN
+    Route::post('master/pertanyaan-penilaian/store', [PertanyaanPenilaianController::class, 'store'])->name('pertanyaan-penilaian.store');
+    Route::put('master/pertanyaan-penilaian/{pertanyaan}', [PertanyaanPenilaianController::class, 'update'])->name('pertanyaan-penilaian.update');
+    Route::delete('master/pertanyaan-penilaian/{pertanyaan}', [PertanyaanPenilaianController::class, 'destroy'])->name('pertanyaan-penilaian.destroy');
 
-// KELOLA PENILAIAN
-Route::get('/penilaian/kelola-penilaian', [KelolaPenilaianController::class, 'index'])->name('kelola-penilaian.index');
+    // PERIODE PENILAIAN
+    Route::get('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'index'])->name('periode-penilaian.index');
+    Route::post('/penilaian/periode-penilaian', [PeriodePenilaianController::class, 'store'])->name('periode.store');
+    Route::put('/penilaian/periode-penilaian/{id}', [PeriodePenilaianController::class, 'update'])->name('periode.update');
+    Route::delete('/penilaian/periode-penilaian/{id}', [PeriodePenilaianController::class, 'destroy'])->name('periode.destroy');
+    Route::patch('/penilaian/periode-penilaian/{id}/toggle-lock', [PeriodePenilaianController::class, 'toggleLock'])->name('periode.toggleLock');
+    Route::post('/penilaian/periode-penilaian/{id}/generate', [PeriodePenilaianController::class, 'generate'])->name('periode.generate');
+    Route::get('/penilaian/periode-penilaian/{id}/detail', [PeriodePenilaianController::class, 'detail'])->name('periode.detail');
 
-// FORM PENILAIAN
-Route::get('/penilaian/form/{penilaian_id}', [FormPenilaianController::class, 'index'])->name('penilaian.form');
-Route::post('/penilaian/store/{penilaian_id}', [FormPenilaianController::class, 'store'])->name('penilaian.store');
+    // KELOLA PENILAIAN
+    Route::get('/penilaian/kelola-penilaian', [KelolaPenilaianController::class, 'index'])->name('kelola-penilaian.index');
 
-// VERIFIKASI PENILAIAN
-Route::get('/penilaian/verifikasi-penilaian', [VerifikasiPenilaianController::class, 'index'])->name('verifikasi-penilaian.index');
-Route::get('/penilaian/verifikasi-penilaian/{penilaian_id}/form', [VerifikasiPenilaianController::class, 'form'])->name('verifikasi-penilaian.form');
-Route::post('/penilaian/verifikasi-penilaian/{penilaian_id}/store', [VerifikasiPenilaianController::class, 'storeForm'])->name('verifikasi-penilaian.store-form');
+    // FORM PENILAIAN
+    Route::get('/penilaian/form/{penilaian_id}', [FormPenilaianController::class, 'index'])->name('penilaian.form');
+    Route::post('/penilaian/store/{penilaian_id}', [FormPenilaianController::class, 'store'])->name('penilaian.store');
 
-// CATATAN PENILAIAN
-Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');
-Route::get('/penilaian/catatan-penilaian/export', [CatatanPenilaianController::class, 'exportExcel'])->name('catatan-penilaian.export');
+    // VERIFIKASI PENILAIAN
+    Route::get('/penilaian/verifikasi-penilaian', [VerifikasiPenilaianController::class, 'index'])->name('verifikasi-penilaian.index');
+    Route::get('/penilaian/verifikasi-penilaian/{penilaian_id}/form', [VerifikasiPenilaianController::class, 'form'])->name('verifikasi-penilaian.form');
+    Route::post('/penilaian/verifikasi-penilaian/{penilaian_id}/store', [VerifikasiPenilaianController::class, 'storeForm'])->name('verifikasi-penilaian.store-form');
 
-//LAPORAN INDEX UNIT KERJA
-Route::get('/laporan/laporan-index-unit-kerja', [LaporanIndexUnitKerjaController::class, 'index'])->name('laporan-index-unit-kerja.index');
+    // CATATAN PENILAIAN
+    Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');
+    Route::get('/penilaian/catatan-penilaian/export', [CatatanPenilaianController::class, 'exportExcel'])->name('catatan-penilaian.export');
 
-//LAPORAN REKAP NILAI
-Route::get('/laporan/laporan-rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('laporan-rekap-nilai.index');
+    //LAPORAN INDEX UNIT KERJA
+    Route::get('/laporan/laporan-index-unit-kerja', [LaporanIndeksUnitKerjaController::class, 'index'])->name('laporan-index-unit-kerja.index');
 
-//LAPORAN INDEX KOMPETENSI
-Route::get('/laporan/laporan-index-kompetensi', [LaporanIndexKompetensiController::class, 'index'])->name('laporan-index-kompetensi.index');
+    //LAPORAN REKAP NILAI
+    Route::get('/laporan/laporan-rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('laporan-rekap-nilai.index');
 
-Route::prefix('laporan')->name('laporan.')->group(function () {
-    
-    // 1. Laporan Tahunan
-    Route::get('/tahunan', [LaporanTahunanController::class, 'index'])->name('tahunan.index');
-    Route::get('/tahunan/export', [LaporanTahunanController::class, 'export'])->name('tahunan.export');
+    //LAPORAN INDEX KOMPETENSI
+    Route::get('/laporan/laporan-index-kompetensi', [LaporanIndeksKompetensiController::class, 'index'])->name('laporan-index-kompetensi.index');
 
-    // 2. Laporan Index Unit Kerja
-    Route::get('/unit-kerja', [LaporanIndeksUnitKerjaController::class, 'index'])->name('indeks-unit-kerja.index');
-    Route::get('/unit-kerja/export', [LaporanIndeksUnitKerjaController::class, 'export'])->name('indeks-unit-kerja.export');
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        // 1. Laporan Tahunan
+        Route::get('/tahunan', [LaporanTahunanController::class, 'index'])->name('tahunan.index');
+        Route::get('/tahunan/export', [LaporanTahunanController::class, 'export'])->name('tahunan.export');
 
-    // 3. Laporan Rekap Nilai
-    Route::get('/rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('rekap-nilai.index');
-    Route::get('/rekap-nilai/export', [LaporanRekapNilaiController::class, 'export'])->name('rekap-nilai.export');
+        // 2. Laporan Index Unit Kerja
+        Route::get('/unit-kerja', [LaporanIndeksUnitKerjaController::class, 'index'])->name('indeks-unit-kerja.index');
+        Route::get('/unit-kerja/export', [LaporanIndeksUnitKerjaController::class, 'export'])->name('indeks-unit-kerja.export');
 
-    // 4. Laporan Index Kompetensi
-    Route::get('/kompetensi', [LaporanIndeksKompetensiController::class, 'index'])->name('indeks-kompetensi.index');
-    Route::get('/kompetensi/export', [LaporanIndeksKompetensiController::class, 'export'])->name('indeks-kompetensi.export');
+        // 3. Laporan Rekap Nilai
+        Route::get('/rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('rekap-nilai.index');
+        Route::get('/rekap-nilai/export', [LaporanRekapNilaiController::class, 'export'])->name('rekap-nilai.export');
 
+        // 4. Laporan Index Kompetensi
+        Route::get('/kompetensi', [LaporanIndeksKompetensiController::class, 'index'])->name('indeks-kompetensi.index');
+        Route::get('/kompetensi/export', [LaporanIndeksKompetensiController::class, 'export'])->name('indeks-kompetensi.export');
+    });
 });

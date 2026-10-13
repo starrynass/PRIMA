@@ -13,40 +13,40 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $periodes = Dp3TransPeriodePenilaian::orderBy('created_at', 'desc')->get();
-        $selectedPeriodeId = $request->get('periode_id', $periodes->first()->periode_id ?? null);
+        $selectedPeriodeId = $request->get('periode_id', $periodes->first()?->periode_id);
 
         $totalPegawai = Employee::count();
 
-        // 1. Sudah Terverifikasi (status_verifikator: VERIFIED, VERIFIKASI, SELESAI, APPROVED)
+        // 1. Sudah Terverifikasi (status_verifitor: VERIFIED, VERIFIKASI, SELESAI, APPROVED)
         $sudahTerverifikasi = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-            ->whereIn(DB::raw('UPPER(status_verifikator)'), ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'])
+            ->whereIn(DB::raw('UPPER(COALESCE(status_verifitor, ""))'), ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'])
             ->count();
 
-        // 2. Menunggu Verifikasi (status_nilai diajukan AND status_verifikator belum verifikasi)
+        // 2. Menunggu Verifikasi (status_nilai diajukan AND status_verifitor belum verifikasi)
         $menungguVerifikasi = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-            ->whereIn(DB::raw('UPPER(status_nilai)'), ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'])
+            ->whereIn(DB::raw('UPPER(COALESCE(status_nilai, ""))'), ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'])
             ->where(function ($q) {
-                $q->whereNull('status_verifikator')
-                  ->orWhereIn(DB::raw('UPPER(status_verifikator)'), ['BELUM VERIFIKASI', 'UNVERIFIED', '']);
+                $q->whereNull('status_verifitor')
+                  ->orWhereIn(DB::raw('UPPER(COALESCE(status_verifitor, ""))'), ['BELUM VERIFIKASI', 'UNVERIFIED', '']);
             })
             ->count();
 
-        // 3. Dikembalikan (status_nilai ATAU status_verifikator = DIKEMBALIKAN / REVISI)
+        // 3. Dikembalikan (status_nilai ATAU status_verifitor = DIKEMBALIKAN / REVISI)
         $dikembalikan = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
             ->where(function ($q) {
-                $q->whereIn(DB::raw('UPPER(status_nilai)'), ['DIKEMBALIKAN', 'REVISI'])
-                  ->orWhereIn(DB::raw('UPPER(status_verifikator)'), ['DIKEMBALIKAN', 'REVISI']);
+                $q->whereIn(DB::raw('UPPER(COALESCE(status_nilai, ""))'), ['DIKEMBALIKAN', 'REVISI'])
+                  ->orWhereIn(DB::raw('UPPER(COALESCE(status_verifitor, ""))'), ['DIKEMBALIKAN', 'REVISI']);
             })
             ->count();
 
-        // 4. Ada Koreksi / Perlu Ditinjau (status_verifikator: KOREKSI, PERLU DITINJAU)
+        // 4. Ada Koreksi / Perlu Ditinjau (status_verifitor: KOREKSI, PERLU DITINJAU)
         $dikoreksi = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-            ->whereIn(DB::raw('UPPER(status_verifikator)'), ['KOREKSI', 'PERLU DITINJAU'])
+            ->whereIn(DB::raw('UPPER(COALESCE(status_verifitor, ""))'), ['KOREKSI', 'PERLU DITINJAU'])
             ->count();
 
         // 5. At Risk / Lewat Batas (Jika ada kriteria khusus misal status AT_RISK)
         $atRisk = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-            ->whereIn(DB::raw('UPPER(status_nilai)'), ['AT_RISK', 'LEWAT BATAS'])
+            ->whereIn(DB::raw('UPPER(COALESCE(status_nilai, ""))'), ['AT_RISK', 'LEWAT BATAS'])
             ->count();
 
         // 6. Belum Dinilai
@@ -89,7 +89,7 @@ class DashboardController extends Controller
                 'o.off_name as satker',
                 'occ.occ_name as jabatan',
                 'tp.status_nilai',
-                'tp.status_verifikator',
+                'tp.status_verifitor as status_verifikator',
                 'tp.total_nilai',
                 'mp.predikat'
             );
@@ -97,29 +97,29 @@ class DashboardController extends Controller
         // Filter Sesuai Kategori Card Modal
         switch ($type) {
             case 'terverifikasi':
-                $query->whereIn(DB::raw('UPPER(tp.status_verifikator)'), ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED']);
+                $query->whereIn(DB::raw('UPPER(COALESCE(tp.status_verifitor, ""))'), ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED']);
                 $title = "Pegawai Sudah Terverifikasi";
                 break;
 
             case 'menunggu':
-                $query->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'])
+                $query->whereIn(DB::raw('UPPER(COALESCE(tp.status_nilai, ""))'), ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'])
                       ->where(function ($q) {
-                          $q->whereNull('tp.status_verifikator')
-                            ->orWhereIn(DB::raw('UPPER(tp.status_verifikator)'), ['BELUM VERIFIKASI', 'UNVERIFIED', '']);
+                          $q->whereNull('tp.status_verifitor')
+                            ->orWhereIn(DB::raw('UPPER(COALESCE(tp.status_verifitor, ""))'), ['BELUM VERIFIKASI', 'UNVERIFIED', '']);
                       });
                 $title = "Pegawai Menunggu Verifikasi";
                 break;
 
             case 'dikembalikan':
                 $query->where(function ($q) {
-                    $q->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['DIKEMBALIKAN', 'REVISI'])
-                      ->orWhereIn(DB::raw('UPPER(tp.status_verifikator)'), ['DIKEMBALIKAN', 'REVISI']);
+                    $q->whereIn(DB::raw('UPPER(COALESCE(tp.status_nilai, ""))'), ['DIKEMBALIKAN', 'REVISI'])
+                      ->orWhereIn(DB::raw('UPPER(COALESCE(tp.status_verifitor, ""))'), ['DIKEMBALIKAN', 'REVISI']);
                 });
                 $title = "Penilaian Dikembalikan";
                 break;
 
             case 'dikoreksi':
-                $query->whereIn(DB::raw('UPPER(tp.status_verifikator)'), ['KOREKSI', 'PERLU DITINJAU']);
+                $query->whereIn(DB::raw('UPPER(COALESCE(tp.status_verifitor, ""))'), ['KOREKSI', 'PERLU DITINJAU']);
                 $title = "Penilaian Perlu Koreksi / Ditinjau";
                 break;
 
