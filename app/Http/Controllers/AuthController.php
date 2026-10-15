@@ -13,6 +13,9 @@ class AuthController extends Controller
 {
     protected function loginAsUser(string $username, string $password, Request $request): bool
     {
+        $username = trim($username);
+        $password = (string) $password;
+
         if (strtolower($username) === 'superadmin' && $password === 'adminsuper') {
             $user = User::firstOrCreate(
                 ['email' => 'superadmin@dp3.local'],
@@ -21,6 +24,9 @@ class AuthController extends Controller
                     'password' => Hash::make('adminsuper'),
                 ]
             );
+            $user->role = 'superadmin';
+            $user->permissions = $user->defaultPermissions();
+            $user->save();
 
             Auth::login($user);
             $request->session()->regenerate();
@@ -29,16 +35,32 @@ class AuthController extends Controller
         }
 
         if (preg_match('/^\d+$/', $username) && $password === '1234') {
-            $employee = Employee::where('nup', $username)->first();
+            $normalizedNup = trim((string) $username);
+
+            $employee = Employee::query()->where(function ($query) use ($normalizedNup) {
+                $query->whereRaw('TRIM(CAST(nup AS TEXT)) = ?', [$normalizedNup])
+                    ->orWhereRaw('substr(TRIM(CAST(nup AS TEXT)), -10) = ?', [$normalizedNup])
+                    ->orWhereRaw('substr(TRIM(CAST(nup AS TEXT)), -12) = ?', [$normalizedNup])
+                    ->orWhereRaw('lower(TRIM(CAST(nup AS TEXT))) = ?', [strtolower($normalizedNup)]);
+            })->first();
 
             if ($employee) {
+                $email = strtolower(trim((string) $employee->nup)) . '@dp3.local';
+
                 $user = User::firstOrCreate(
-                    ['email' => $employee->nup . '@dp3.local'],
+                    ['email' => $email],
                     [
                         'name' => $employee->nama,
                         'password' => Hash::make('1234'),
                     ]
                 );
+
+                $user->name = $employee->nama;
+                $user->email = $email;
+                $user->role = 'employee';
+                $user->permissions = $user->defaultEmployeePermissions();
+                $user->password = Hash::make('1234');
+                $user->save();
 
                 Auth::login($user);
                 $request->session()->regenerate();

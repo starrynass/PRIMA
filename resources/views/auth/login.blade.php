@@ -116,27 +116,37 @@
         }
 
         .password-wrap .form-input {
-            padding-right: 46px;
+            padding-right: 52px;
         }
 
         .toggle-password {
             position: absolute;
-            right: 12px;
-            top: 50%;
+            right: 14px;
+            top: 65%; 
             transform: translateY(-50%);
             border: none;
             background: transparent;
-            color: var(--muted);
+            color: #8a7d86;
             cursor: pointer;
             font-size: 1rem;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
+            width: 20px;
+            height: 20px;
+            border-radius: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.95;
+            box-shadow: none;
         }
 
-        .toggle-password:hover {
-            background: rgba(122, 28, 56, 0.07);
+        .toggle-password:hover,
+        .toggle-password:focus-visible {
+            background: transparent;
+            border: none;
             color: var(--maroon-primary);
+            outline: none;
+            box-shadow: none;
         }
 
         .login-btn {
@@ -242,7 +252,7 @@
                         required
                     >
                     <button type="button" class="toggle-password" aria-label="Lihat password" id="togglePassword">
-                        <i class="fa-solid fa-eye-slash" id="togglePasswordIcon"></i>
+                        <i class="fa-solid fa-eye" id="togglePasswordIcon"></i>
                     </button>
                 </div>
 
@@ -255,19 +265,14 @@
         const passwordInput = document.getElementById('password');
         const toggleButton = document.getElementById('togglePassword');
         const toggleIcon = document.getElementById('togglePasswordIcon');
-        const loginAlert = document.getElementById('login-alert');
 
         toggleButton.addEventListener('click', function () {
             const isHidden = passwordInput.type === 'password';
             passwordInput.type = isHidden ? 'text' : 'password';
-            toggleIcon.classList.toggle('fa-eye', isHidden);
-            toggleIcon.classList.toggle('fa-eye-slash', !isHidden);
+            toggleIcon.classList.toggle('fa-eye', !isHidden);
+            toggleIcon.classList.toggle('fa-eye-slash', isHidden);
             this.setAttribute('aria-label', isHidden ? 'Sembunyikan password' : 'Lihat password');
         });
-
-        if (loginAlert) {
-            alert(loginAlert.textContent.trim());
-        }
     </script>
 </body>
 </html>

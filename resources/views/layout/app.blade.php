@@ -309,36 +309,54 @@
                 </ul>
             </li>
 
-            <!-- 4. Laporan -->
-            <li class="nav-item">
-                <div class="nav-link dropdown-toggle">
-                    <i class="fa-solid fa-file-lines nav-icon"></i>
-                    <span class="menu-text">Laporan</span>
-                    <i class="fa-solid fa-chevron-left arrow"></i>
-                </div>
-                <ul class="submenu">
-                    <li class="submenu-item">
-                        <a href="{{ route('laporan.tahunan.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Laporan Tahunan</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('laporan.rekap-nilai.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Laporan Rekap Nilai</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('laporan.indeks-unit-kerja.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Laporan Index Unit Kerja</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('laporan.indeks-kompetensi.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Laporan Index Kompetensi</span>
-                        </a>
-                    </li>
-                </ul> 
-            </li>
+            @if(Auth::check() && Auth::user()->hasAccess('laporan'))
+                <li class="nav-item">
+                    <div class="nav-link dropdown-toggle">
+                        <i class="fa-solid fa-file-lines nav-icon"></i>
+                        <span class="menu-text">Laporan</span>
+                        <i class="fa-solid fa-chevron-left arrow"></i>
+                    </div>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="{{ route('laporan.tahunan.index') }}" class="submenu-link menu-item">
+                                <span class="menu-text">Laporan Tahunan</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="{{ route('laporan.rekap-nilai.index') }}" class="submenu-link menu-item">
+                                <span class="menu-text">Laporan Rekap Nilai</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="{{ route('laporan.indeks-unit-kerja.index') }}" class="submenu-link menu-item">
+                                <span class="menu-text">Laporan Index Unit Kerja</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="{{ route('laporan.indeks-kompetensi.index') }}" class="submenu-link menu-item">
+                                <span class="menu-text">Laporan Index Kompetensi</span>
+                            </a>
+                        </li>
+                    </ul> 
+                </li>
+            @endif
+
+            @if(Auth::check() && Auth::user()->isSuperAdmin())
+                <li class="nav-item">
+                    <div class="nav-link dropdown-toggle">
+                        <i class="fa-solid fa-gear nav-icon"></i>
+                        <span class="menu-text">Setting</span>
+                        <i class="fa-solid fa-chevron-left arrow"></i>
+                    </div>
+                    <ul class="submenu">
+                        <li class="submenu-item">
+                            <a href="{{ route('setting.hak-akses') }}" class="submenu-link menu-item">
+                                <span class="menu-text">Hak Akses & Aksi</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endif
         </ul>
     </div>
 

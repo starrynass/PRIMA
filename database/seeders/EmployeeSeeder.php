@@ -1318,7 +1318,7 @@ class EmployeeSeeder extends Seeder
         ];
 
         $normalizedEmployees = array_map(function ($employee) {
-            $employee['nup'] = substr((string) ($employee['nup'] ?? ''), -10);
+            $employee['nup'] = trim((string) ($employee['nup'] ?? ''));
             $employee['off_id'] = $employee['off_id'] ?? null;
             $employee['dept_id'] = $employee['dept_id'] ?? null;
             $employee['subdept_id'] = $employee['subdept_id'] ?? null;
