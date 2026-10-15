@@ -75,7 +75,7 @@ class Employee extends Model
 
     public function unitkerja()
     {
-        return $this->belongsTo(UnitKerja::class, 'pgw_kode_unit_kerja', 'kode_unit_kerja'); 
+        return $this->belongsTo(UnitKerja::class, 'kode_unit_kerja', 'kode_unit_kerja');
     }
 
     public function penilaian()

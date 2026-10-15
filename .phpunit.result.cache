@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version":2,"defects":{"Tests\\Feature\\ExampleTest::test_the_application_returns_a_successful_response":7,"Tests\\Feature\\ExampleTest::test_default_admin_can_login":7,"Tests\\Feature\\ExampleTest::test_admin_session_remains_authenticated_on_dashboard_request":7},"times":{"Tests\\Unit\\ExampleTest::test_that_true_is_true":0.783,"Tests\\Feature\\ExampleTest::test_the_application_returns_a_successful_response":0.059,"Tests\\Feature\\ExampleTest::test_default_admin_can_login":0.129,"Tests\\Feature\\ExampleTest::test_admin_session_remains_authenticated_on_dashboard_request":0.064,"Tests\\Feature\\ExampleTest::test_the_application_redirects_to_login_when_not_authenticated":0.165}}
+=======
+{"version":2,"defects":{"Tests\\Feature\\ExampleTest::test_the_application_returns_a_successful_response":7},"times":{"Tests\\Unit\\ExampleTest::test_that_true_is_true":2.258,"Tests\\Feature\\ExampleTest::test_the_application_returns_a_successful_response":3.18}}
+>>>>>>> 93bf0e59c75e13445f596e7139e9f418e490cbd0

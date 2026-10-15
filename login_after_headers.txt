@@ -1,0 +1,20 @@
+HTTP/1.1 302 Found
+Host: 127.0.0.1:8000
+Connection: close
+X-Powered-By: PHP/8.2.12
+Cache-Control: no-cache, private
+Date: Thu, 15 Oct 2026 09:08:37 GMT
+Location: http://127.0.0.1:8000/dashboard-penilaian
+Content-Type: text/html; charset=utf-8
+Set-Cookie: XSRF-TOKEN=eyJpdiI6Ijg1WTFmV2JrUnFnck80ZkxNR2IrMkE9PSIsInZhbHVlIjoiYi8zSjVLRmdZSnFJK1FZdEoveXUvTmVMT0dnYm1rSGNCbmhHTjVjcTZHR3lLN1B1MnM2cjNPSWNKelVDejRNNG8yK1JOYlFkS2Fmbll2RnB5VW1uOFdIM2Zwb2Q3WUM1OCtYWmlaT2l1T2lvMzhvVXVwZGIwaVlIbWRwVlB0MGkiLCJtYWMiOiI1NDg3ZGIyOTQ1YzkzOTI4ZjI2YjZjZWJkMmI1NzQ2MGM4ZTc2MDY3NzkwZTJhMTMzZjc4MWEwNzMwYjdlNDk2IiwidGFnIjoiIn0%3D; expires=Thu, 15 Oct 2026 11:08:37 GMT; Max-Age=7200; path=/; samesite=lax
+Set-Cookie: laravel_session=eyJpdiI6IkRlQXlPdm1PUzhnT1M2RXdhVE41Vmc9PSIsInZhbHVlIjoiRSs5MElZcFBHSHMvM2xwSjBxTElKV25ERE8vZ0lWOEdIaG5MdkkrQ2o0OGFEMGV4QkVGN3VacEhzT2Q1Tjh1dnJSL3hXcjVDVHA0UEdTVHFsMTFpTWwrVm0ydnFlbGc3L1FwSWpGVmdvaGV4T2FSZE11cXUwMURHSE9oeEdiZmgiLCJtYWMiOiIyODU0NTcyYWJhMjFjZTE4MDE2NTBlNjM1MjdjODc0MDA4NDZhYzNjNDA3MmVhNTdkNmVkYTk0MjJlNjhlMzdmIiwidGFnIjoiIn0%3D; expires=Thu, 15 Oct 2026 11:08:37 GMT; Max-Age=7200; path=/; httponly; samesite=lax
+
+HTTP/1.1 405 Method Not Allowed
+Host: 127.0.0.1:8000
+Connection: close
+X-Powered-By: PHP/8.2.12
+allow: GET, HEAD
+Cache-Control: no-cache, private
+date: Thu, 15 Oct 2026 09:08:45 GMT
+Content-Type: text/html; charset=UTF-8
+

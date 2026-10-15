@@ -8,8 +8,8 @@ use App\Models\Dp3TransPenilaianDetail;
 use App\Models\MasterTemplate;
 use App\Models\MasterSkalaNilai;
 use App\Models\MasterPredikatNilai;
-use App\Models\Department;
 use App\Models\Office;
+use App\Models\UnitKerja;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,7 @@ class VerifikasiPenilaianController extends Controller
         $penilaians = collect();
 
         $listPenempatan = Office::orderBy('off_name', 'asc')->get();
-        $listDepartemen = Department::where('isaktif', true)->orderBy('dept_name', 'asc')->get();
+        $listUnitKerja = UnitKerja::orderBy('nama_unit_kerja', 'asc')->get();
 
         if ($selectedPeriodeId) {
             $selectedPeriode = Dp3TransPeriodePenilaian::where('periode_id', $selectedPeriodeId)->first();
@@ -49,8 +49,9 @@ class VerifikasiPenilaianController extends Controller
                     ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
                     ->leftJoin('office as o', 'e.off_id', '=', 'o.off_id')
                     ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
-                    ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
-                    ->leftJoin('department_sub as ds', 'e.subdept_id', '=', 'ds.subdept_id')
+                    ->leftJoin('unit_kerja as uk', function ($join) {
+                        $join->on('uk.kode_unit_kerja', '=', DB::raw('COALESCE(e.kode_unit_kerja, tp.pgw_kode_unit_kerja)'));
+                    })
                     ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
                     ->leftJoin('employee as verifikator', 'tp.verifikator_id', '=', 'verifikator.pgw_id')
                     ->where('tp.periode_id', $selectedPeriodeId)
@@ -62,8 +63,7 @@ class VerifikasiPenilaianController extends Controller
                         'e.nama',
                         'o.off_name as penempatan',
                         'occ.occ_name as jabatan',
-                        'd.dept_name as departemen',
-                        'ds.subdept_name as sub_departemen',
+                        DB::raw("COALESCE(uk.nama_unit_kerja, e.kode_unit_kerja, tp.pgw_kode_unit_kerja, '-') as unit_kerja"),
                         'tp.status_nilai',
                         'tp.status_verifikator',
                         'tp.status_nilai as status_penilaian',
@@ -92,13 +92,13 @@ class VerifikasiPenilaianController extends Controller
                     });
                 }
 
-                // Filter Departemen
-                if ($request->filled('dept_id')) {
-                    $deptId = (string) $request->dept_id;
-                    $queryPenilaian->where(function ($q) use ($deptId) {
-                        $q->where('d.dept_id', $deptId)
-                        ->orWhere('e.dept_id', $deptId)
-                        ->orWhere('tp.pgw_id_dept', $deptId);
+                // Filter Unit Kerja
+                if ($request->filled('kode_unit_kerja')) {
+                    $kodeUnitKerja = (string) $request->kode_unit_kerja;
+                    $queryPenilaian->where(function ($q) use ($kodeUnitKerja) {
+                        $q->where('uk.kode_unit_kerja', $kodeUnitKerja)
+                            ->orWhere('e.kode_unit_kerja', $kodeUnitKerja)
+                            ->orWhere('tp.pgw_kode_unit_kerja', $kodeUnitKerja);
                     });
                 }
 
@@ -181,7 +181,7 @@ class VerifikasiPenilaianController extends Controller
             'dikembalikan',
             'penilaians',
             'listPenempatan',
-            'listDepartemen'
+            'listUnitKerja'
         ));
     }
 

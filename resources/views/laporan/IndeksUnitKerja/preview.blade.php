@@ -70,6 +70,21 @@
         .bg-mengecewakan { background-color: #ffe4e6 !important; color: #9f1239 !important; font-weight: 700; }
         .bg-belum-dinilai { background-color: #f3f4f6 !important; color: #6b7280 !important; }
 
+        .legend {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 16px;
+            font-size: 11px;
+        }
+
+        .legend-box {
+            display: inline-block;
+            padding: 3px 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
         @media print {
             .no-print { display: none !important; }
             body { background-color: white; }
@@ -197,6 +212,16 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <div class="legend">
+        <span class="fw-bold text-secondary">Keterangan warna predikat:</span>
+        <span class="legend-box bg-luar-biasa">Luar Biasa (&gt;= 90)</span>
+        <span class="legend-box bg-diatas-ekspektasi">Diatas Ekspektasi (&gt;= 80)</span>
+        <span class="legend-box bg-sesuai-ekspektasi">Sesuai Ekspektasi (&gt;= 70)</span>
+        <span class="legend-box bg-dibawah-ekspektasi">Dibawah Ekspektasi (&gt;= 60)</span>
+        <span class="legend-box bg-mengecewakan">Mengecewakan (&lt; 60)</span>
+        <span class="legend-box bg-belum-dinilai">Kosong = belum dinilai</span>
     </div>
 </div>
 

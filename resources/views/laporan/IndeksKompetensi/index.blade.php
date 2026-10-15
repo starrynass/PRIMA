@@ -190,7 +190,7 @@
             </div>
 
             <div class="annual-report-body">
-                <form action="{{ route('laporan.indeks-kompetensi.export') }}" method="GET" target="_blank">
+                <form action="{{ route('laporan.indeks-kompetensi.export') }}" method="GET">
 
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jenis_filter">Jenis</label>
@@ -245,6 +245,7 @@
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jabatan">Jabatan</label>
                         <select id="jabatan" name="jabatan" class="annual-report-control">
+                            <option value="SEMUA JABATAN">SEMUA JABATAN</option>
                             @foreach($occupations ?? [] as $occ)
                                 <option value="{{ $occ->occ_id }}">{{ $occ->occ_name }}</option>
                             @endforeach
@@ -261,9 +262,9 @@
                     </div>
 
                     <div class="annual-report-field">
-                        <label class="annual-report-label" for="template_penilaian">Unit Kerja</label>
-                        <select id="template_penilaian" name="template_penilaian" class="annual-report-control">
-                            <option value="">SEMUA UNIT KERJA</option>
+                        <label class="annual-report-label" for="unit_kerja">Unit Kerja</label>
+                        <select id="unit_kerja" name="unit_kerja" class="annual-report-control">
+                            <option value="SEMUA UNIT KERJA">SEMUA UNIT KERJA</option>
                             @foreach($unitkerja ?? [] as $uk)
                                 <option value="{{ $uk->kode_unit_kerja }}">{{ $uk->nama_unit_kerja }}</option>
                             @endforeach
@@ -274,10 +275,10 @@
                         <button type="submit" name="action" value="preview" class="annual-report-button">
                             <i class="fas fa-eye" aria-hidden="true"></i> Preview <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </button>
-                        <button type="submit" name="action" value="excel" class="annual-report-button">
+                        <button type="submit" name="action" value="excel" formtarget="_blank" class="annual-report-button">
                             <i class="fas fa-file-excel" aria-hidden="true"></i> Export to Excel <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </button>
-                        <button type="submit" name="action" value="pdf" class="annual-report-button">
+                        <button type="submit" name="action" value="pdf" formtarget="_blank" class="annual-report-button">
                             <i class="fas fa-file-pdf" aria-hidden="true"></i> Export to PDF <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </button>
                     </div>

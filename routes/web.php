@@ -83,15 +83,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');
     Route::get('/penilaian/catatan-penilaian/export', [CatatanPenilaianController::class, 'exportExcel'])->name('catatan-penilaian.export');
 
-    //LAPORAN INDEX UNIT KERJA
-    Route::get('/laporan/laporan-index-unit-kerja', [LaporanIndeksUnitKerjaController::class, 'index'])->name('laporan-index-unit-kerja.index');
-
-    //LAPORAN REKAP NILAI
-    Route::get('/laporan/laporan-rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('laporan-rekap-nilai.index');
-
-    //LAPORAN INDEX KOMPETENSI
-    Route::get('/laporan/laporan-index-kompetensi', [LaporanIndeksKompetensiController::class, 'index'])->name('laporan-index-kompetensi.index');
-
     Route::prefix('laporan')->name('laporan.')->group(function () {
         // 1. Laporan Tahunan
         Route::get('/tahunan', [LaporanTahunanController::class, 'index'])->name('tahunan.index');

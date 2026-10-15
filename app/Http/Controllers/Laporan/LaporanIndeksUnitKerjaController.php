@@ -44,7 +44,13 @@ class LaporanIndeksUnitKerjaController extends Controller
         if ($periodeId && $periodeId !== 'SEMUA PERIODE') {
             $query->where('periode_id', $periodeId);
         }
-        // 2. FILTER HANYA YANG SUDAH DINILAI (Mengabaikan data yang belum diisi nilainya)
+        // 2. Hanya sertakan penilaian yang sudah diajukan atau diverifikasi.
+        $query->whereRaw(
+            'UPPER(status_nilai) IN (?, ?, ?, ?, ?, ?)',
+            ['SUBMIT', 'SUBMITTED', 'DIAJUKAN', 'MENUNGGU VERIFIKASI', 'VERIFIED', 'TERVERIFIKASI']
+        );
+
+        // 3. FILTER NILAI (mengabaikan data tanpa nilai)
         $query->where(function ($q) {
             $q->whereNotNull('total_nilai_verifikator')
             ->orWhereNotNull('total_nilai');
@@ -53,12 +59,12 @@ class LaporanIndeksUnitKerjaController extends Controller
             ->orWhere('total_nilai', '>', 0);
         });
 
-        // 3. FILTER JABATAN
+        // 4. FILTER JABATAN
         if ($jabatanId && $jabatanId !== 'SEMUA JABATAN') {
             $query->where('pgw_id_jabatan', $jabatanId);
         }
 
-        // 4. FILTER UNIT KERJA
+        // 5. FILTER UNIT KERJA
         if ($unitKerja && $unitKerja !== 'SEMUA UNIT KERJA') {
             $query->where('pgw_kode_unit_kerja', $unitKerja);
         }
@@ -102,7 +108,7 @@ class LaporanIndeksUnitKerjaController extends Controller
                         ?? 'TANPA NAMA UNIT';
                 })->map(function ($itemsPerUnit, $unitName) {
                     // Hitung jumlah pegawai unik yang dinilai di unit ini
-                    $jumlahPegawai = $itemsPerUnit->pluck('pgw_id')->unique()->count() ?: $itemsPerUnit->count();
+                    $jumlahPegawai = $itemsPerUnit->pluck('pegawai_id')->unique()->count() ?: $itemsPerUnit->count();
 
                     $avgNilai = $itemsPerUnit->avg(function ($i) {
                         return (float)($i->total_nilai_verifikator ?? $i->total_nilai ?? 0);
