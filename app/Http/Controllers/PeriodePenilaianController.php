@@ -257,8 +257,6 @@ class PeriodePenilaianController extends Controller
         }
 
         try {
-            DB::beginTransaction();
-
             // 4. Ambil seluruh pegawai untuk snapshot periode.
             // Semua pegawai tetap masuk ke periode agar data penilaian konsisten dengan total pegawai yang dikelola.
             $pegawaiAktif = DB::table('employee')->get();
@@ -266,6 +264,8 @@ class PeriodePenilaianController extends Controller
             if ($pegawaiAktif->isEmpty()) {
                 return redirect()->back()->with('warning', 'Tidak ada data pegawai untuk di-generate.');
             }
+
+            DB::beginTransaction();
 
             // 5. Insert
             foreach ($pegawaiAktif as $pgw) {
@@ -276,9 +276,6 @@ class PeriodePenilaianController extends Controller
                 $namaSubDepartemen = DB::table('department_sub')->where('subdept_id', $pgw->subdept_id)->value('subdept_name');
                 $namaOffice = DB::table('office')->where('off_id', $pgw->off_id)->value('off_name');
                 
-                // Ambil nama unit kerja dari tabel unit_kerja
-                $namaUnitKerja = DB::table('unit_kerja')->where('kode_unit_kerja', $pgw->kode_unit_kerja)->value('nama_unit_kerja');
-
                 DB::table('dp3_trans_penilaian')->updateOrInsert(
                     [
                         'periode_id' => $periode->periode_id,
@@ -297,15 +294,14 @@ class PeriodePenilaianController extends Controller
                         'pgw_off_id' => $pgw->off_id,
                         'pgw_off_name' => $namaOffice,
                         
-                        // TAMBAHKAN KODE & NAMA UNIT KERJA DI SINI
-                        'kode_unit_kerja' => $pgw->kode_unit_kerja,
-                        'pgw_unit_kerja' => $namaUnitKerja, // sertakan jika ada kolom snapshot nama_unit_kerja
+                        // SESUAIKAN MENJADI PGW_KODE_UNIT_KERJA
+                        'pgw_kode_unit_kerja' => $pgw->kode_unit_kerja,
                         
                         'pgw_kode_satker' => $pgw->off_id ?? $pgw->dept_id,
                         'status_nilai' => 'Belum Diisi',
                         'total_nilai' => 0.00,
                         'predikat' => 'Mengecewakan',
-                        'created_by' => auth()->user()->name ?? 'System',
+                        'created_by' => auth()->user()?->name ?? 'System',
                         'updated_at' => now(),
                         'created_at' => now(),
                     ]

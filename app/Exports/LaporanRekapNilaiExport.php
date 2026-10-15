@@ -11,11 +11,13 @@ class LaporanRekapNilaiExport implements FromView, ShouldAutoSize, WithTitle
 {
     protected $groupedData;
     protected $periodeText;
+    protected $questions;
 
-    public function __construct($groupedData, $periodeText)
+    public function __construct($groupedData, $periodeText, $questions)
     {
         $this->groupedData = $groupedData;
         $this->periodeText = $periodeText;
+        $this->questions = $questions;
     }
 
     /**
@@ -25,7 +27,8 @@ class LaporanRekapNilaiExport implements FromView, ShouldAutoSize, WithTitle
     {
         return view('laporan.RekapNilai.excel', [
             'groupedData' => $this->groupedData,
-            'periodeText' => $this->periodeText
+            'periodeText' => $this->periodeText,
+            'questions' => $this->questions,
         ]);
     }
 

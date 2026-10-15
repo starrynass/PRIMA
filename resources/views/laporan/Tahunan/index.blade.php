@@ -203,7 +203,7 @@
                     <!-- 2. Section Tahun (DEFAULT TAMPIL) -->
                     <div id="wrapper_per_tahun" class="annual-report-field">
                         <label class="annual-report-label" for="tahun">Tahun</label>
-                        <input type="number" id="tahun" name="tahun" value="{{ date('Y') }}" class="annual-report-control">
+                        <input type="number" id="tahun" name="tahun" value="{{ date('Y') }}" class="annual-report-control" required>
                     </div>
 
                     <!-- 3. Section Periode (DEFAULT SEMBUNYI dengan class 'd-none') -->
@@ -211,7 +211,7 @@
                         <!-- Dropdown Periode Awal -->
                         <div class="annual-report-field">
                             <label class="annual-report-label" for="periode_awal">Periode Awal</label>
-                            <select id="periode_awal" name="periode_awal" class="annual-report-control">
+                            <select id="periode_awal" name="periode_awal" class="annual-report-control" disabled>
                                 <option value="">-- Pilih Periode Awal --</option>
                                 @foreach($periodes as $p)
                                     <option value="{{ $p->periode_id }}">
@@ -224,7 +224,7 @@
                         <!-- Dropdown Periode Akhir -->
                         <div class="annual-report-field">
                             <label class="annual-report-label" for="periode_akhir">Periode Akhir</label>
-                            <select id="periode_akhir" name="periode_akhir" class="annual-report-control">
+                            <select id="periode_akhir" name="periode_akhir" class="annual-report-control" disabled>
                                 <option value="">-- Pilih Periode Akhir --</option>
                                 @foreach($periodes as $p)
                                     <option value="{{ $p->periode_id }}">
@@ -250,7 +250,11 @@
                     <div class="annual-report-field">
                         <label class="annual-report-label" for="jenis_laporan">Jenis Laporan</label>
                         <select id="jenis_laporan" name="jenis_laporan" class="annual-report-control">
-                            <option value="Tahunan">Tahunan</option>
+                            <option value="tahunan">Tahunan</option>
+                            <option value="rata_rata">Rata-Rata</option>
+                            <option value="rekapitulasi">Rekapitulasi</option>
+                            <option value="grafik_divisi">Grafik Divisi</option>
+                            <option value="grafik_unit_kerja">Grafik Unit Kerja</option>
                         </select>
                     </div>
 
@@ -276,14 +280,27 @@
         const jenisFilter = document.getElementById('jenis_filter');
         const wrapperTahun = document.getElementById('wrapper_per_tahun');
         const wrapperPeriode = document.getElementById('wrapper_per_periode');
+        const tahun = document.getElementById('tahun');
+        const periodeAwal = document.getElementById('periode_awal');
+        const periodeAkhir = document.getElementById('periode_akhir');
 
         function toggleFilter() {
             if (jenisFilter.value === 'per_periode') {
                 wrapperTahun.classList.add('d-none');
                 wrapperPeriode.classList.remove('d-none');
+                tahun.disabled = true;
+                periodeAwal.disabled = false;
+                periodeAkhir.disabled = false;
+                periodeAwal.required = true;
+                periodeAkhir.required = true;
             } else {
                 wrapperTahun.classList.remove('d-none');
                 wrapperPeriode.classList.add('d-none');
+                tahun.disabled = false;
+                periodeAwal.disabled = true;
+                periodeAkhir.disabled = true;
+                periodeAwal.required = false;
+                periodeAkhir.required = false;
             }
         }
 

@@ -74,15 +74,6 @@ Route::post('/penilaian/verifikasi-penilaian/{penilaian_id}/store', [VerifikasiP
 Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');
 Route::get('/penilaian/catatan-penilaian/export', [CatatanPenilaianController::class, 'exportExcel'])->name('catatan-penilaian.export');
 
-//LAPORAN INDEX UNIT KERJA
-Route::get('/laporan/laporan-index-unit-kerja', [LaporanIndexUnitKerjaController::class, 'index'])->name('laporan-index-unit-kerja.index');
-
-//LAPORAN REKAP NILAI
-Route::get('/laporan/laporan-rekap-nilai', [LaporanRekapNilaiController::class, 'index'])->name('laporan-rekap-nilai.index');
-
-//LAPORAN INDEX KOMPETENSI
-Route::get('/laporan/laporan-index-kompetensi', [LaporanIndexKompetensiController::class, 'index'])->name('laporan-index-kompetensi.index');
-
 Route::prefix('laporan')->name('laporan.')->group(function () {
     
     // 1. Laporan Tahunan

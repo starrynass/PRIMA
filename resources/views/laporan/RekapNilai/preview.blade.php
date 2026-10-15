@@ -128,29 +128,32 @@
 
     <!-- Tabel Rekapitulasi -->
     <div class="table-responsive">
+        @php $columnCount = 6 + max(1, $questions->count()); @endphp
+        @php
+            $questionGroups = $questions->groupBy('group');
+            if ($questionGroups->isEmpty()) {
+                $questionGroups = collect(['GENERAL' => collect()]);
+            }
+        @endphp
         <table class="table table-bordered align-middle table-custom">
             <thead class="table-maroon-header">
                 <tr>
-                    <th rowspan="2" width="4%">NO.</th>
-                    <th rowspan="2" width="22%">NAMA</th>
-                    <th rowspan="2" width="14%">JABATAN</th>
-                    <th rowspan="2" width="20%">UNIT KERJA</th>
-                    <th colspan="6" width="18%">GENERAL</th>
-                    <th colspan="2" width="6%">SPECIALITY</th>
+                    <th rowspan="2">NO.</th>
+                    <th rowspan="2">NAMA</th>
+                    <th rowspan="2">JABATAN</th>
+                    <th rowspan="2">UNIT KERJA</th>
+                    @foreach($questionGroups as $group => $groupQuestions)
+                        <th colspan="{{ max(1, $groupQuestions->count()) }}">{{ $group }}</th>
+                    @endforeach
                     <th rowspan="2" width="8%">TOTAL NILAI</th>
                     <th rowspan="2" width="10%">PREDIKAT</th>
                 </tr>
                 <tr>
-                    <!-- General Sub-Headers -->
-                    <th width="3%">G1</th>
-                    <th width="3%">G2</th>
-                    <th width="3%">G3</th>
-                    <th width="3%">G4</th>
-                    <th width="3%">G5</th>
-                    <th width="3%">G6</th>
-                    <!-- Speciality Sub-Headers -->
-                    <th width="3%">S1</th>
-                    <th width="3%">S2</th>
+                    @forelse($questions as $question)
+                        <th title="{{ $question['id'] }}">{{ $question['code'] }}</th>
+                    @empty
+                        <th>-</th>
+                    @endforelse
                 </tr>
             </thead>
             <tbody>
@@ -158,7 +161,7 @@
                 @forelse($groupedData as $unitName => $items)
                     <!-- Group Header per Unit Kerja -->
                     <tr class="row-group-header">
-                        <td colspan="14">
+                        <td colspan="{{ $columnCount }}">
                             <i class="fas fa-building me-1" style="color: var(--maroon-primary);"></i>
                             {{ $unitName }}
                         </td>
@@ -166,7 +169,7 @@
 
                     @foreach($items as $row)
                         @php
-                            $predikat = $row->predikat_verifikator ?? $row->predikat ?? '-';
+                            $predikat = $row['predikat'] ?? '-';
                             $bgClass = match(strtolower(trim($predikat))) {
                                 'luar biasa' => 'bg-luar-biasa',
                                 'diatas ekspektasi', 'di atas ekspektasi' => 'bg-diatas-ekspektasi',
@@ -178,25 +181,19 @@
                         @endphp
                         <tr>
                             <td class="text-center">{{ $no++ }}</td>
-                            <td class="fw-semibold">{{ $row->pgw_nama ?? $row->pegawai->pgw_nama ?? '-' }}</td>
-                            <td>{{ $row->occupation->occ_name ?? $row->pgw_jabatan ?? '-' }}</td>
+                            <td class="fw-semibold">{{ $row['nama'] ?? '-' }}</td>
+                            <td>{{ $row['jabatan'] ?? '-' }}</td>
                             <td>{{ $unitName }}</td>
                             
-                            <!-- Values Nilai General (G1-G6) -->
-                            <td class="text-center">{{ $row->g1 ?? 'B' }}</td>
-                            <td class="text-center">{{ $row->g2 ?? 'B' }}</td>
-                            <td class="text-center">{{ $row->g3 ?? 'B' }}</td>
-                            <td class="text-center">{{ $row->g4 ?? 'C' }}</td>
-                            <td class="text-center">{{ $row->g5 ?? 'B' }}</td>
-                            <td class="text-center">{{ $row->g6 ?? 'C' }}</td>
-                            
-                            <!-- Values Nilai Speciality (S1-S2) -->
-                            <td class="text-center">{{ $row->s1 ?? 'B' }}</td>
-                            <td class="text-center">{{ $row->s2 ?? 'C' }}</td>
+                            @forelse($questions as $question)
+                                <td class="text-center">{{ $row['nilai_pertanyaan'][$question['id']] ?? '-' }}</td>
+                            @empty
+                                <td class="text-center">-</td>
+                            @endforelse
 
                             <!-- Total Nilai -->
                             <td class="text-center fw-bold">
-                                {{ number_format((float)($row->total_nilai_verifikator ?? $row->total_nilai ?? 0), 2) }}
+                                {{ number_format((float)($row['total_nilai'] ?? 0), 2) }}
                             </td>
 
                             <!-- Predikat dengan Highlight Warna -->
@@ -207,7 +204,7 @@
                     @endforeach
                 @empty
                     <tr>
-                        <td colspan="14" class="text-center py-4 text-muted">
+                        <td colspan="{{ $columnCount }}" class="text-center py-4 text-muted">
                             <i class="fas fa-info-circle me-1"></i> Tidak ada data penilaian yang ditemukan untuk filter yang dipilih.
                         </td>
                     </tr>

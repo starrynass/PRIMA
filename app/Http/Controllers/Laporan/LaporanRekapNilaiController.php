@@ -32,117 +32,133 @@ class LaporanRekapNilaiController extends Controller
     }
 
     public function export(Request $request)
-{
-    $periodeId  = $request->input('periode');
-    $jabatanId  = $request->input('jabatan');
-    $templateId = $request->input('template_penilaian');
-    $unitKerja  = $request->input('unit_kerja');
-    $action     = $request->input('action'); 
+    {
+        $periodeId = $request->input('periode');
+        $jabatanId = $request->input('jabatan');
+        $templateId = $request->input('template_penilaian');
+        $unitKerja = $request->input('unit_kerja');
+        $action = $request->input('action');
+        $selectedTemplate = $templateId
+            ? MasterTemplate::with('kategoris.pertanyaans')->find($templateId)
+            : null;
 
-    // 1. Ambil Data Pegawai
-    $queryPegawai = Employee::with(['occupation', 'office', 'unitKerja']);
+        $queryPegawai = Employee::with(['occupation', 'office', 'unitKerja']);
 
-    // Filter Unit Kerja
-    if ($unitKerja && $unitKerja !== 'SEMUA UNIT KERJA') {
-        $queryPegawai->where(function($q) use ($unitKerja) {
-            $q->where('pgw_kode_unit_kerja', $unitKerja)
-              ->orWhere('kode_unit_kerja', $unitKerja)
-              ->orWhere('off_id', $unitKerja);
+        if ($selectedTemplate) {
+            $queryPegawai->whereIn('occ_id', $selectedTemplate->occ_id_array);
+        }
+
+        if ($unitKerja && $unitKerja !== 'SEMUA UNIT KERJA') {
+            $queryPegawai->where('kode_unit_kerja', $unitKerja);
+        }
+
+        if ($jabatanId && $jabatanId !== 'SEMUA JABATAN') {
+            $queryPegawai->where('occ_id', $jabatanId);
+        }
+
+        $pegawaiList = $queryPegawai->get();
+        $pegawaiIds = $pegawaiList->pluck('pgw_id');
+
+        $queryPenilaian = Dp3TransPenilaian::with('details')
+            ->whereIn('pegawai_id', $pegawaiIds);
+
+        if ($periodeId) {
+            $queryPenilaian->where('periode_id', $periodeId);
+        }
+
+        $penilaianCollection = $queryPenilaian
+            ->orderByDesc('penilaian_id')
+            ->get();
+        $penilaianMap = $penilaianCollection->keyBy(
+            fn ($penilaian) => (string) $penilaian->pegawai_id
+        );
+
+        if ($selectedTemplate) {
+            $templates = collect([$selectedTemplate]);
+        } else {
+            $templates = MasterTemplate::with('kategoris.pertanyaans')->get();
+        }
+
+        $questions = $templates
+            ->flatMap(fn ($template) => $template->kategoris->flatMap(
+                fn ($kategori) => $kategori->pertanyaans->map(fn ($pertanyaan) => [
+                    'id' => $pertanyaan->pertanyaan_id,
+                    'group' => preg_match('/special|spesial|khusus/i', $kategori->nama . ' ' . $kategori->kode)
+                        ? 'SPECIALITY'
+                        : 'GENERAL',
+                ])
+            ))
+            ->unique('id')
+            ->values();
+
+        $questionCounters = ['GENERAL' => 0, 'SPECIALITY' => 0];
+        $questions = $questions->map(function ($question) use (&$questionCounters) {
+            $group = $question['group'];
+            $questionCounters[$group]++;
+            $prefix = $group === 'SPECIALITY' ? 'S' : 'G';
+            $question['code'] = $prefix . $questionCounters[$group];
+
+            return $question;
         });
-    }
 
-    // Filter Jabatan
-    if ($jabatanId && $jabatanId !== 'SEMUA JABATAN') {
-        $queryPegawai->where(function($q) use ($jabatanId) {
-            $q->where('occ_id', $jabatanId)
-              ->orWhere('pgw_id_jabatan', $jabatanId);
+        $periodeData = Dp3TransPeriodePenilaian::find($periodeId);
+        $periodeText = $periodeData ? strtoupper($periodeData->nama_periode) : 'SEMUA PERIODE';
+
+        $mappedData = $pegawaiList->map(function ($pgw) use ($penilaianMap, $questions) {
+            $penilaian = $penilaianMap->get((string) $pgw->pgw_id);
+            $detailByQuestion = $penilaian
+                ? $penilaian->details->keyBy('pertanyaan_id')
+                : collect();
+            $nilaiPerPertanyaan = $questions->mapWithKeys(function ($question) use ($detailByQuestion) {
+                $detail = $detailByQuestion->get($question['id']);
+                $nilai = $detail
+                    ? ($detail->verif_kode_nilai ?: $detail->kode_nilai)
+                    : null;
+
+                return [$question['id'] => $nilai ?: '-'];
+            })->all();
+
+            $totalNilai = $penilaian
+                ? ($penilaian->total_nilai_verifikator ?? $penilaian->total_nilai ?? 0)
+                : 0;
+            $predikat = $penilaian
+                ? ($penilaian->predikat_verifikator ?: ($penilaian->predikat ?: '-'))
+                : '-';
+
+            return [
+                'nama' => $pgw->nama ?: ($penilaian->pgw_nama ?? '-'),
+                'jabatan' => $pgw->occupation->occ_name ?? $penilaian->pgw_jabatan ?? '-',
+                'unit_kerja' => $pgw->unitKerja->nama_unit_kerja
+                    ?? $pgw->kode_unit_kerja
+                    ?? $pgw->office->off_name
+                    ?? $penilaian->pgw_off_name
+                    ?? 'UNIT KERJA LAINNYA',
+                'nilai_pertanyaan' => $nilaiPerPertanyaan,
+                'total_nilai' => $totalNilai,
+                'predikat' => strtoupper($predikat),
+            ];
         });
-    }
 
-    $pegawaiList = $queryPegawai->get();
+        $groupedData = $mappedData->groupBy('unit_kerja');
 
-    // 2. Ambil Penilaian Sesuai Periode
-    $queryPenilaian = Dp3TransPenilaian::query();
-    if ($periodeId) {
-        $queryPenilaian->where('periode_id', $periodeId);
-    }
-    
-    $penilaianMap = $queryPenilaian->get()->keyBy('pgw_id');
-
-    $periodeData = Dp3TransPeriodePenilaian::find($periodeId);
-    $periodeText = $periodeData ? strtoupper($periodeData->nama_periode) : 'SEMUA PERIODE';
-
-    // 3. Mapping Data dengan Pengecekan Kolom yang Lebih Lengkap
-    $mappedData = $pegawaiList->map(function ($pgw) use ($penilaianMap) {
-        // Ambil data transaksi berdasarkan ID Pegawai
-        $pgwId = $pgw->id ?? $pgw->pgw_id;
-        $penilaian = $penilaianMap->get($pgwId);
-
-        // Pengecekan nama pegawai di berbagai kemungkinan nama kolom
-        $namaPegawai = $pgw->pgw_nama 
-            ?? $pgw->nama_pegawai 
-            ?? $pgw->nama 
-            ?? $penilaian->pgw_nama 
-            ?? '-';
-
-        // Pengecekan nama jabatan
-        $namaJabatan = $pgw->occupation->occ_name 
-            ?? $pgw->jabatan->nama_jabatan 
-            ?? $pgw->pgw_jabatan_name 
-            ?? $penilaian->pgw_jabatan_name 
-            ?? '-';
-
-        // Pengecekan nama unit kerja
-        $namaUnitKerja = $pgw->unitKerja->nama_unit_kerja 
-            ?? $pgw->office->off_name 
-            ?? $pgw->pgw_off_name 
-            ?? $penilaian->pgw_off_name 
-            ?? 'UNIT KERJA LAINNYA';
-
-        return [
-            'nama'        => $namaPegawai,
-            'jabatan'     => $namaJabatan,
-            'unit_kerja'  => $namaUnitKerja,
-            
-            // Kolom Nilai Alfabet
-            'g1'          => $penilaian->g1 ?? $penilaian->q1 ?? 'B',
-            'g2'          => $penilaian->g2 ?? $penilaian->q2 ?? 'B',
-            'g3'          => $penilaian->g3 ?? $penilaian->q3 ?? 'B',
-            'g4'          => $penilaian->g4 ?? $penilaian->q4 ?? 'C',
-            'g5'          => $penilaian->g5 ?? $penilaian->q5 ?? 'B',
-            'g6'          => $penilaian->g6 ?? $penilaian->q6 ?? 'C',
-            's1'          => $penilaian->s1 ?? 'B',
-            's2'          => $penilaian->s2 ?? 'C',
-            
-            'total_nilai' => ($penilaian && ($penilaian->total_nilai_verifikator || $penilaian->total_nilai)) 
-                ? number_format($penilaian->total_nilai_verifikator ?? $penilaian->total_nilai, 2) 
-                : '0.00',
-            'predikat'    => ($penilaian && $penilaian->predikat) 
-                ? strtoupper($penilaian->predikat) 
-                : '-'
+        $profile = [
+            'namapdam' => 'PERUMDA AIR MINUM TIRTA KAHURIPAN KABUPATEN BOGOR',
+            'kota' => 'Kab. Bogor',
+            'alamat' => 'Jl. Raya Sukahati No 12, Sukahati, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16913',
+            'logo' => public_path('logo/logo_pdam.png')
         ];
-    });
 
-    // Grouping Berdasarkan Unit Kerja
-    $groupedData = $mappedData->groupBy('unit_kerja');
+        $tglNow = now()->format('d-m-Y H:i:s');
 
-    $profile = [
-        'namapdam' => 'PERUMDA AIR MINUM TIRTA KAHURIPAN KABUPATEN BOGOR',
-        'kota'     => 'Kab. Bogor',
-        'alamat'   => 'Jl. Raya Sukahati No 12, Sukahati, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16913',
-        'logo'     => public_path('logo/logo_pdam.png')
-    ];
+        if ($action === 'pdf') {
+            $pdf = Pdf::loadView('laporan.RekapNilai.pdf', compact('groupedData', 'profile', 'periodeText', 'tglNow', 'questions'))->setPaper('a4', 'landscape');
+            return $pdf->stream('Laporan_Rekap_Nilai.pdf');
+        }
 
-    // Response View
-    if ($action === 'pdf') {
-        $pdf = Pdf::loadView('laporan.RekapNilai.pdf', compact('groupedData', 'profile', 'periodeText'))->setPaper('a4', 'landscape');
-        return $pdf->stream('Laporan_Rekap_Nilai.pdf');
+        if ($action === 'excel') {
+            return Excel::download(new LaporanRekapNilaiExport($groupedData, $periodeText, $questions), 'Laporan_Rekap_Nilai.xlsx');
+        }
+
+        return view('laporan.RekapNilai.preview', compact('groupedData', 'profile', 'periodeText', 'questions'));
     }
-
-    if ($action === 'excel') {
-        return Excel::download(new LaporanRekapNilaiExport($groupedData, $periodeText), 'Laporan_Rekap_Nilai.xlsx');
-    }
-
-    return view('laporan.RekapNilai.preview', compact('groupedData', 'profile', 'periodeText'));
-}
 }

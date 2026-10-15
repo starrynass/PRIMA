@@ -85,16 +85,16 @@ class Dp3TransPenilaian extends Model
     }
 
     // Relasi ke Verifikator
-public function verifikator()
-{
-    return $this->belongsTo(Employee::class, 'verifikator_id', 'pgw_id');
-}
+    public function verifikator()
+    {
+        return $this->belongsTo(Employee::class, 'verifikator_id', 'pgw_id');
+    }
 
-// Relasi ke Office (Penempatan)
-public function office()
-{
-    return $this->belongsTo(Office::class, 'pgw_off_id', 'off_id');
-}
+    // Relasi ke Office (Penempatan)
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'pgw_off_id', 'off_id');
+    }
 
 // Relasi ke Department
 public function department()

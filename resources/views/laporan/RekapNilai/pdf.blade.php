@@ -174,39 +174,44 @@
     </div>
 
     <!-- Tabel Data -->
+    @php $columnCount = 6 + max(1, $questions->count()); @endphp
+    @php
+        $questionGroups = $questions->groupBy('group');
+        if ($questionGroups->isEmpty()) {
+            $questionGroups = collect(['GENERAL' => collect()]);
+        }
+    @endphp
     <table class="table-data">
         <thead>
             <tr>
-                <th rowspan="2" width="3%">NO</th>
-                <th rowspan="2" width="22%">NAMA</th>
-                <th rowspan="2" width="15%">JABATAN</th>
-                <th rowspan="2" width="20%">UNIT KERJA</th>
-                <th colspan="6" width="18%">GENERAL</th>
-                <th colspan="2" width="6%">SPECIALITY</th>
+                <th rowspan="2">NO</th>
+                <th rowspan="2">NAMA</th>
+                <th rowspan="2">JABATAN</th>
+                <th rowspan="2">UNIT KERJA</th>
+                @foreach($questionGroups as $group => $groupQuestions)
+                    <th colspan="{{ max(1, $groupQuestions->count()) }}">{{ $group }}</th>
+                @endforeach
                 <th rowspan="2" width="7%">TOTAL NILAI</th>
                 <th rowspan="2" width="9%">PREDIKAT</th>
             </tr>
             <tr>
-                <th width="3%">G1</th>
-                <th width="3%">G2</th>
-                <th width="3%">G3</th>
-                <th width="3%">G4</th>
-                <th width="3%">G5</th>
-                <th width="3%">G6</th>
-                <th width="3%">S1</th>
-                <th width="3%">S2</th>
+                @forelse($questions as $question)
+                    <th title="{{ $question['id'] }}">{{ $question['code'] }}</th>
+                @empty
+                    <th>-</th>
+                @endforelse
             </tr>
         </thead>
         <tbody>
             @php $no = 1; @endphp
             @forelse($groupedData as $unitName => $items)
                 <tr class="row-group">
-                    <td colspan="14">UNIT KERJA: {{ $unitName }}</td>
+                    <td colspan="{{ $columnCount }}">UNIT KERJA: {{ $unitName }}</td>
                 </tr>
 
                 @foreach($items as $row)
                     @php
-                        $predikat = $row->predikat_verifikator ?? $row->predikat ?? '-';
+                        $predikat = $row['predikat'] ?? '-';
                         $bgClass = match(strtolower(trim($predikat))) {
                             'luar biasa' => 'bg-luar-biasa',
                             'diatas ekspektasi', 'di atas ekspektasi' => 'bg-diatas-ekspektasi',
@@ -218,22 +223,18 @@
                     @endphp
                     <tr>
                         <td class="text-center">{{ $no++ }}</td>
-                        <td class="text-bold">{{ $row->pgw_nama ?? $row->pegawai->pgw_nama ?? '-' }}</td>
-                        <td>{{ $row->occupation->occ_name ?? $row->pgw_jabatan ?? '-' }}</td>
+                        <td class="text-bold">{{ $row['nama'] ?? '-' }}</td>
+                        <td>{{ $row['jabatan'] ?? '-' }}</td>
                         <td>{{ $unitName }}</td>
                         
-                        <td class="text-center">{{ $row->g1 ?? 'B' }}</td>
-                        <td class="text-center">{{ $row->g2 ?? 'B' }}</td>
-                        <td class="text-center">{{ $row->g3 ?? 'B' }}</td>
-                        <td class="text-center">{{ $row->g4 ?? 'C' }}</td>
-                        <td class="text-center">{{ $row->g5 ?? 'B' }}</td>
-                        <td class="text-center">{{ $row->g6 ?? 'C' }}</td>
-                        
-                        <td class="text-center">{{ $row->s1 ?? 'B' }}</td>
-                        <td class="text-center">{{ $row->s2 ?? 'C' }}</td>
+                        @forelse($questions as $question)
+                            <td class="text-center">{{ $row['nilai_pertanyaan'][$question['id']] ?? '-' }}</td>
+                        @empty
+                            <td class="text-center">-</td>
+                        @endforelse
 
                         <td class="text-center text-bold">
-                            {{ number_format((float)($row->total_nilai_verifikator ?? $row->total_nilai ?? 0), 2) }}
+                            {{ number_format((float)($row['total_nilai'] ?? 0), 2) }}
                         </td>
 
                         <td class="text-center {{ $bgClass }}">
@@ -243,7 +244,7 @@
                 @endforeach
             @empty
                 <tr>
-                    <td colspan="14" class="text-center" style="padding: 15px;">Tidak ada data penilaian yang ditemukan.</td>
+                    <td colspan="{{ $columnCount }}" class="text-center" style="padding: 15px;">Tidak ada data penilaian yang ditemukan.</td>
                 </tr>
             @endforelse
         </tbody>
