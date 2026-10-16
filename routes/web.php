@@ -32,6 +32,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/hak-akses', [\App\Http\Controllers\UserAccessController::class, 'index'])->name('hak-akses');
         Route::post('/hak-akses', [\App\Http\Controllers\UserAccessController::class, 'store'])->name('hak-akses.store');
         Route::post('/hak-akses/{user}', [\App\Http\Controllers\UserAccessController::class, 'update'])->name('hak-akses.update');
+        Route::delete('/hak-akses/{user}', [\App\Http\Controllers\UserAccessController::class, 'destroy'])->name('hak-akses.destroy');
+
+        Route::get('/otorisasi-menu', [\App\Http\Controllers\UserAccessController::class, 'otorisasiMenu'])->name('otorisasi-menu');
+        Route::post('/otorisasi-menu', [\App\Http\Controllers\UserAccessController::class, 'saveOtorisasiMenu'])->name('otorisasi-menu.store');
     });
 
     Route::get('/dashboard-penilaian', [DashboardController::class, 'index'])->name('dashboard.penilaian');

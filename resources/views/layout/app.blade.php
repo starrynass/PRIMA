@@ -351,7 +351,12 @@
                     <ul class="submenu">
                         <li class="submenu-item">
                             <a href="{{ route('setting.hak-akses') }}" class="submenu-link menu-item">
-                                <span class="menu-text">Hak Akses & Aksi</span>
+                                <span class="menu-text">Hak Akses</span>
+                            </a>
+                        </li>
+                        <li class="submenu-item">
+                            <a href="{{ route('setting.otorisasi-menu') }}" class="submenu-link menu-item">
+                                <span class="menu-text">Otorisasi Menu</span>
                             </a>
                         </li>
                     </ul>

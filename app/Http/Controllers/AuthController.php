@@ -25,7 +25,9 @@ class AuthController extends Controller
                 ]
             );
             $user->role = 'superadmin';
-            $user->permissions = $user->defaultPermissions();
+            if ($user->wasRecentlyCreated || empty($user->permissions) || !is_array($user->permissions)) {
+                $user->permissions = $user->defaultPermissions();
+            }
             $user->save();
 
             Auth::login($user);
@@ -57,8 +59,10 @@ class AuthController extends Controller
 
                 $user->name = $employee->nama;
                 $user->email = $email;
-                $user->role = 'employee';
-                $user->permissions = $user->defaultEmployeePermissions();
+                $user->role = 'staff';
+                if ($user->wasRecentlyCreated || empty($user->permissions) || !is_array($user->permissions)) {
+                    $user->permissions = $user->defaultRolePermissions('staff');
+                }
                 $user->password = Hash::make('1234');
                 $user->save();
 
