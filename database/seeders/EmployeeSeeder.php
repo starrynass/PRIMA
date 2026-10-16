@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Employee;
+use App\Support\EmployeeAccountSync;
 
 class EmployeeSeeder extends Seeder
 {
@@ -1332,6 +1334,9 @@ class EmployeeSeeder extends Seeder
                 ['pgw_id' => $employee['pgw_id']],
                 $employee
             );
+
+            $savedEmployee = Employee::findOrFail($employee['pgw_id']);
+            EmployeeAccountSync::sync($savedEmployee);
         }
     }
 }

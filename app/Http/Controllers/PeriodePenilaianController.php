@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dp3TransPeriodePenilaian;
+use App\Exports\PeriodePenilaianExport;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\View\View;
-use App\Models\Employee;
 
 class PeriodePenilaianController extends Controller
 {
@@ -323,6 +325,294 @@ class PeriodePenilaianController extends Controller
         }
     }
 
+    private function periodMutationGuard(string $id): ?RedirectResponse
+    {
+        $periode = Dp3TransPeriodePenilaian::where('periode_id', $id)->first();
+
+        if (! $periode) {
+            return redirect()->route('periode-penilaian.index')
+                ->with('error', 'Periode tidak ditemukan.');
+        }
+
+        if (strtoupper($periode->status ?? '') === 'LOCKED') {
+            return redirect()->route('periode.detail', $id)
+                ->with('error', 'Periode sedang terkunci. Buka kunci periode terlebih dahulu.');
+        }
+
+        if (! $this->isPeriodGenerated($id)) {
+            return redirect()->route('periode-penilaian.index')
+                ->with('error', 'Periode belum di-generate.');
+        }
+
+        return null;
+    }
+
+    private function selectedActiveEntries(Request $request, string $id)
+    {
+        $validated = $request->validate([
+            'penilaian_ids' => ['required', 'array', 'min:1'],
+            'penilaian_ids.*' => ['required', 'integer', 'distinct'],
+        ]);
+
+        $entries = DB::table('dp3_trans_penilaian')
+            ->where('periode_id', $id)
+            ->where('is_active', true)
+            ->whereIn('penilaian_id', $validated['penilaian_ids'])
+            ->get();
+
+        if ($entries->count() !== count($validated['penilaian_ids'])) {
+            abort(422, 'Pilihan pegawai tidak valid untuk periode ini.');
+        }
+
+        return $entries;
+    }
+
+    private function matchingTemplate($occupationId): ?object
+    {
+        if (! $occupationId) {
+            return null;
+        }
+
+        return DB::table('dp3_master_template_penilaian')
+            ->where(function ($query) {
+                $query->where('status_aktif', 'Aktif')
+                    ->orWhere('status_aktif', 1);
+            })
+            ->orderBy('template_id')
+            ->get(['template_id', 'nama_template', 'occ_id'])
+            ->first(function ($template) use ($occupationId) {
+                $occupationIds = json_decode((string) $template->occ_id, true);
+                if (! is_array($occupationIds)) {
+                    $occupationIds = explode(',', (string) $template->occ_id);
+                }
+
+                return in_array(
+                    (string) $occupationId,
+                    array_map(static fn ($value) => trim((string) $value, " \t\n\r\0\x0B\"'"), $occupationIds),
+                    true
+                );
+            });
+    }
+
+    public function searchEmployees(string $id, Request $request)
+    {
+        $periode = Dp3TransPeriodePenilaian::where('periode_id', $id)->first();
+        if (! $periode) {
+            return response()->json(['message' => 'Periode tidak ditemukan.'], 404);
+        }
+        if (strtoupper($periode->status ?? '') === 'LOCKED' || ! $this->isPeriodGenerated($id)) {
+            return response()->json(['message' => 'Periode tidak dapat diubah.'], 422);
+        }
+
+        $validated = $request->validate([
+            'q' => ['required', 'string', 'min:3', 'max:100'],
+        ]);
+
+        $search = trim($validated['q']);
+        $employees = DB::table('employee as e')
+            ->whereNotExists(function ($query) use ($id) {
+                $query->selectRaw('1')
+                    ->from('dp3_trans_penilaian as tp')
+                    ->whereColumn('tp.pegawai_id', 'e.pgw_id')
+                    ->where('tp.periode_id', $id);
+            })
+            ->where(function ($query) use ($search) {
+                $query->where('e.nama', 'like', "%{$search}%")
+                    ->orWhere('e.nup', 'like', "%{$search}%");
+            })
+            ->orderBy('e.nama')
+            ->limit(20)
+            ->get(['e.pgw_id', 'e.nup', 'e.nama', 'e.occ_id'])
+            ->map(function ($employee) {
+                $employee->has_template = $this->matchingTemplate($employee->occ_id) !== null;
+                return $employee;
+            });
+
+        return response()->json($employees);
+    }
+
+    public function addEmployee(string $id, Request $request): RedirectResponse
+    {
+        if ($response = $this->periodMutationGuard($id)) {
+            return $response;
+        }
+
+        $validated = $request->validate([
+            'pegawai_id' => ['required', 'integer', 'exists:employee,pgw_id'],
+        ]);
+
+        $employee = DB::table('employee')->where('pgw_id', $validated['pegawai_id'])->first();
+
+        if (DB::table('dp3_trans_penilaian')
+            ->where('periode_id', $id)
+            ->where('pegawai_id', $employee->pgw_id)
+            ->exists()) {
+            return back()->withErrors(['pegawai_id' => 'Pegawai ini sudah terdaftar pada periode.']);
+        }
+
+        $template = $this->matchingTemplate($employee->occ_id);
+        $snapshot = [
+            'kode' => 'PEN-' . $id . '-' . $employee->pgw_id,
+            'periode_id' => $id,
+            'pegawai_id' => $employee->pgw_id,
+            'pgw_nup' => $employee->nup,
+            'pgw_nama' => $employee->nama,
+            'pgw_sex' => $employee->sex,
+            'pgw_id_jabatan' => $employee->occ_id,
+            'pgw_jabatan' => DB::table('occupation')->where('occ_id', $employee->occ_id)->value('occ_name'),
+            'pgw_id_dept' => $employee->dept_id,
+            'pgw_dept_name' => DB::table('department')->where('dept_id', $employee->dept_id)->value('dept_name'),
+            'pgw_id_subdept' => $employee->subdept_id,
+            'pgw_id_subdept_name' => DB::table('department_sub')->where('subdept_id', $employee->subdept_id)->value('subdept_name'),
+            'pgw_off_id' => $employee->off_id,
+            'pgw_off_name' => DB::table('office')->where('off_id', $employee->off_id)->value('off_name'),
+            'pgw_kode_satker' => $employee->kode_satker ?? $employee->off_id ?? $employee->dept_id,
+            'pgw_kode_unit_kerja' => $employee->kode_unit_kerja ?? null,
+            'template_id' => $template?->template_id,
+            'template_nama' => $template?->nama_template,
+            'status_nilai' => 'Belum Diisi',
+            'total_nilai' => 0,
+            'predikat' => 'Mengecewakan',
+            'is_active' => true,
+            'created_by' => auth()->user()?->name ?? 'System',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        DB::table('dp3_trans_penilaian')->insert($snapshot);
+
+        return back()->with('success', 'Pegawai berhasil ditambahkan ke periode.');
+    }
+
+    public function updateEmployees(string $id, Request $request): RedirectResponse
+    {
+        if ($response = $this->periodMutationGuard($id)) {
+            return $response;
+        }
+
+        $entries = $this->selectedActiveEntries($request, $id);
+        $validated = $request->validate([
+            'occ_id' => ['nullable', 'integer', 'exists:occupation,occ_id'],
+            'dept_id' => ['nullable', 'integer', 'exists:department,dept_id'],
+            'subdept_id' => ['nullable', 'integer', 'exists:department_sub,subdept_id'],
+            'off_id' => ['nullable', 'integer', 'exists:office,off_id'],
+            'kode_satker' => ['nullable', 'string', 'max:255'],
+            'kode_unit_kerja' => ['nullable', 'string', 'max:20', 'exists:unit_kerja,kode_unit_kerja'],
+        ]);
+
+        $updates = [];
+        foreach ([
+            'occ_id' => ['pgw_id_jabatan', 'pgw_jabatan', 'occupation', 'occ_id', 'occ_name'],
+            'dept_id' => ['pgw_id_dept', 'pgw_dept_name', 'department', 'dept_id', 'dept_name'],
+            'subdept_id' => ['pgw_id_subdept', 'pgw_id_subdept_name', 'department_sub', 'subdept_id', 'subdept_name'],
+            'off_id' => ['pgw_off_id', 'pgw_off_name', 'office', 'off_id', 'off_name'],
+        ] as $input => [$idColumn, $nameColumn, $table, $keyColumn, $labelColumn]) {
+            if (! empty($validated[$input])) {
+                $updates[$idColumn] = $validated[$input];
+                $updates[$nameColumn] = DB::table($table)
+                    ->where($keyColumn, $validated[$input])
+                    ->value($labelColumn);
+            }
+        }
+
+        if (! empty($validated['kode_satker'])) {
+            $updates['pgw_kode_satker'] = $validated['kode_satker'];
+        }
+
+        if (! empty($validated['kode_unit_kerja'])) {
+            $updates['pgw_kode_unit_kerja'] = $validated['kode_unit_kerja'];
+        }
+
+        if ($updates === []) {
+            return back()->withErrors(['pegawai_ids' => 'Pilih setidaknya satu data pegawai yang akan diperbarui.']);
+        }
+
+        DB::table('dp3_trans_penilaian')
+            ->where('periode_id', $id)
+            ->whereIn('penilaian_id', $entries->pluck('penilaian_id'))
+            ->update($updates + ['updated_at' => now()]);
+
+        return back()->with('success', 'Data pegawai pada periode berhasil diperbarui.');
+    }
+
+    public function deactivateEmployees(string $id, Request $request): RedirectResponse
+    {
+        if ($response = $this->periodMutationGuard($id)) {
+            return $response;
+        }
+
+        $entries = $this->selectedActiveEntries($request, $id);
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:255'],
+        ]);
+
+        DB::table('dp3_trans_penilaian')
+            ->where('periode_id', $id)
+            ->whereIn('penilaian_id', $entries->pluck('penilaian_id'))
+            ->update([
+                'is_active' => false,
+                'inactive_reason' => trim($validated['reason']),
+                'updated_at' => now(),
+            ]);
+
+        return back()->with('success', 'Pegawai berhasil dinonaktifkan dari periode.');
+    }
+
+    public function assignEvaluator(string $id, Request $request): RedirectResponse
+    {
+        if ($response = $this->periodMutationGuard($id)) {
+            return $response;
+        }
+
+        $entries = $this->selectedActiveEntries($request, $id);
+        $validated = $request->validate([
+            'penilai_id' => ['required', 'integer', 'exists:employee,pgw_id'],
+        ]);
+
+        DB::table('dp3_trans_penilaian')
+            ->where('periode_id', $id)
+            ->whereIn('penilaian_id', $entries->pluck('penilaian_id'))
+            ->update([
+                'penilai_id' => $validated['penilai_id'],
+                'penilai_manual' => true,
+                'updated_at' => now(),
+            ]);
+
+        return back()->with('success', 'Penilai berhasil ditetapkan secara manual.');
+    }
+
+    public function resetEvaluator(string $id, Request $request): RedirectResponse
+    {
+        if ($response = $this->periodMutationGuard($id)) {
+            return $response;
+        }
+
+        $entries = $this->selectedActiveEntries($request, $id);
+
+        DB::table('dp3_trans_penilaian')
+            ->where('periode_id', $id)
+            ->whereIn('penilaian_id', $entries->pluck('penilaian_id'))
+            ->update([
+                'penilai_id' => null,
+                'penilai_manual' => false,
+                'updated_at' => now(),
+            ]);
+
+        return back()->with('success', 'Penugasan manual dihapus. Penilai dapat ditetapkan kembali melalui mekanisme otomatis.');
+    }
+
+    public function export(string $id, Request $request)
+    {
+        if ($response = $this->periodMutationGuard($id)) {
+            return $response;
+        }
+
+        return Excel::download(
+            new PeriodePenilaianExport($id, $request->query()),
+            'detail-periode-' . $id . '.xlsx'
+        );
+    }
+
     public function detail($id, Request $request)
     {
         $periode = Dp3TransPeriodePenilaian::where('periode_id', $id)->first();
@@ -338,24 +628,24 @@ class PeriodePenilaianController extends Controller
         }
 
         $query = DB::table('dp3_trans_penilaian as tp')
-            ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
-            ->leftJoin('office as o', 'e.off_id', '=', 'o.off_id')
-            ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
-            ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
-            ->leftJoin('department_sub as sd', 'e.subdept_id', '=', 'sd.subdept_id')
-            ->leftJoin('unit_kerja as uk', 'e.kode_unit_kerja', '=', 'uk.kode_unit_kerja') // Join Unit Kerja
+            ->leftJoin('office as o', 'tp.pgw_off_id', '=', 'o.off_id')
+            ->leftJoin('occupation as occ', 'tp.pgw_id_jabatan', '=', 'occ.occ_id')
+            ->leftJoin('department as d', 'tp.pgw_id_dept', '=', 'd.dept_id')
+            ->leftJoin('department_sub as sd', 'tp.pgw_id_subdept', '=', 'sd.subdept_id')
+            ->leftJoin('unit_kerja as uk', 'tp.pgw_kode_unit_kerja', '=', 'uk.kode_unit_kerja')
             ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
             ->leftJoin('employee as verifikator', 'tp.verifikator_id', '=', 'verifikator.pgw_id')
             ->where('tp.periode_id', $id)
+            ->where('tp.is_active', true)
             ->select(
                 'tp.*',
-                'e.nup',
-                'e.nama',
-                'o.off_name as penempatan',
-                'occ.occ_name as jabatan',
-                'd.dept_name as departemen',
-                'sd.subdept_name as sub_departemen',
-                'uk.nama_unit_kerja as unit_kerja', // Select nama unit kerja
+                'tp.pgw_nup as nup',
+                'tp.pgw_nama as nama',
+                DB::raw('COALESCE(tp.pgw_off_name, o.off_name) as penempatan'),
+                DB::raw('COALESCE(tp.pgw_jabatan, occ.occ_name) as jabatan'),
+                DB::raw('COALESCE(tp.pgw_dept_name, d.dept_name) as departemen'),
+                DB::raw('COALESCE(tp.pgw_id_subdept_name, sd.subdept_name) as sub_departemen'),
+                'uk.nama_unit_kerja as unit_kerja',
                 'tp.status_nilai as status_penilaian',
                 'tp.total_nilai as nilai_akhir',
                 'penilai.nama as nama_penilai',
@@ -366,10 +656,8 @@ class PeriodePenilaianController extends Controller
         if ($request->filled('search')) {
             $search = trim($request->search);
             $query->where(function ($q) use ($search) {
-                $q->where('e.nama', 'like', "%{$search}%")
-                    ->orWhere('e.nup', 'like', "%{$search}%")
-                    ->orWhere('tp.pgw_nama', 'like', "%{$search}%")
-                    ->orWhere('tp.pgw_nup', 'like', "%{$search}%");
+                $q->where('tp.pgw_nama', 'like', "%{$search}%")
+                ->orWhere('tp.pgw_nup', 'like', "%{$search}%");
             });
         }
 
@@ -384,8 +672,7 @@ class PeriodePenilaianController extends Controller
             $deptId = (string) $request->dept_id;
             $query->where(function ($q) use ($deptId) {
                 $q->where('d.dept_id', $deptId)
-                    ->orWhere('e.dept_id', $deptId)
-                    ->orWhere('tp.pgw_id_dept', $deptId);
+                ->orWhere('tp.pgw_id_dept', $deptId);
             });
         }
 
@@ -394,8 +681,7 @@ class PeriodePenilaianController extends Controller
             $subDeptId = (string) $request->subdept_id;
             $query->where(function ($q) use ($subDeptId) {
                 $q->where('sd.subdept_id', $subDeptId)
-                    ->orWhere('e.subdept_id', $subDeptId)
-                    ->orWhere('tp.pgw_id_subdept', $subDeptId);
+                ->orWhere('tp.pgw_id_subdept', $subDeptId);
             });
         }
 
@@ -404,8 +690,7 @@ class PeriodePenilaianController extends Controller
             $kodeUnit = (string) $request->kode_unit_kerja;
             $query->where(function ($q) use ($kodeUnit) {
                 $q->where('uk.kode_unit_kerja', $kodeUnit)
-                    ->orWhere('e.kode_unit_kerja', $kodeUnit)
-                    ->orWhere('tp.kode_unit_kerja', $kodeUnit);
+                ->orWhere('tp.pgw_kode_unit_kerja', $kodeUnit);
             });
         }
 
@@ -413,7 +698,7 @@ class PeriodePenilaianController extends Controller
         $sort = $request->get('sort', 'nama_asc');
         switch ($sort) {
             case 'nama_desc':
-                $query->orderBy('e.nama', 'desc');
+                $query->orderBy('tp.pgw_nama', 'desc');
                 break;
             case 'nilai_desc':
                 $query->orderBy('tp.total_nilai', 'desc');
@@ -426,7 +711,7 @@ class PeriodePenilaianController extends Controller
                 break;
             case 'nama_asc':
             default:
-                $query->orderBy('e.nama', 'asc');
+                $query->orderBy('tp.pgw_nama', 'asc');
                 break;
         }
 
@@ -442,22 +727,32 @@ class PeriodePenilaianController extends Controller
 
         $departments = DB::table('department')->select('dept_id', 'dept_name')->orderBy('dept_name')->get();
         $subDepartments = DB::table('department_sub')->select('subdept_id', 'subdept_name')->orderBy('subdept_name')->get();
-        
-        // TAMBAHKAN KODE INI: Ambil list Unit Kerja untuk dropdown filter
+        $occupations = DB::table('occupation')->select('occ_id', 'occ_name')->orderBy('occ_name')->get();
+        $offices = DB::table('office')->select('off_id', 'off_name')->orderBy('off_name')->get();
         $unitKerjaList = DB::table('unit_kerja')->select('kode_unit_kerja', 'nama_unit_kerja')->orderBy('nama_unit_kerja')->get();
+        $employees = DB::table('employee')->select('pgw_id', 'nup', 'nama')->orderBy('nama')->get();
 
         $stats = [
-            'total_pegawai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->count(),
-            'belum_diisi'    => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Belum Diisi')->count(),
-            'draft'          => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Draft')->count(),
-            'submit'         => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Submit')->count(),
-            'verifikasi'     => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Verifikasi')->count(),
-            'tanpa_penilai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->whereNull('penilai_id')->count(),
-            'penilai_manual' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('penilai_manual', 1)->count(),
-            'perlu_ditinjau' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('status_nilai', 'Perlu Ditinjau')->count(),
+            'total_pegawai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->count(),
+            'belum_diisi'    => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Belum Diisi')->count(),
+            'draft'          => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Draft')->count(),
+            'submit'         => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Submit')->count(),
+            'verifikasi'     => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Verifikasi')->count(),
+            'tanpa_penilai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->whereNull('penilai_id')->count(),
+            'penilai_manual' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('penilai_manual', 1)->count(),
+            'perlu_ditinjau' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Perlu Ditinjau')->count(),
         ];
 
-        // Kirim $unitKerjaList ke View
-        return view('penilaian.detail_periode', compact('periode', 'penilaianList', 'stats', 'departments', 'subDepartments', 'unitKerjaList'));
+        return view('penilaian.detail_periode', compact(
+            'periode',
+            'penilaianList',
+            'stats',
+            'departments',
+            'subDepartments',
+            'occupations',
+            'offices',
+            'unitKerjaList',
+            'employees'
+        ));
     }
 }

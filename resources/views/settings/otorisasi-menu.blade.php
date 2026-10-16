@@ -14,6 +14,11 @@
             {{ session('success') }}
         </div>
     @endif
+    @if(session('info'))
+        <div class="alert-success">
+            {{ session('info') }}
+        </div>
+    @endif
 
     <div class="panel-box">
         <div class="toolbar-row">
@@ -24,6 +29,10 @@
                         <option value="{{ $value }}" {{ $selectedRole === $value ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
+                <p class="permission-help">
+                    Pilihan di bawah langsung menentukan menu sidebar dan halaman yang dapat dibuka oleh semua pengguna dengan role ini.
+                    Aktifkan menu yang diperlukan, lalu tekan <strong>Simpan Otorisasi</strong>. Role Super Admin tidak ditampilkan karena selalu memiliki akses penuh.
+                </p>
             </div>
         </div>
 
@@ -45,21 +54,21 @@
                             <tr class="menu-row">
                                 <td class="menu-cell">
                                     <div class="menu-label">
-                                        <span class="menu-icon"><i class="fa-solid fa-house"></i></span>
+                                        <span class="menu-icon"><i class="fa-solid {{ $menu['icon'] }}"></i></span>
                                         <span>{{ $menu['label'] }}</span>
                                     </div>
                                 </td>
                                 <td class="url-cell">{{ $menu['url'] }}</td>
                                 <td class="check-cell">
                                     <label class="switch">
-                                        <input type="checkbox" name="permissions[{{ $menuKey }}][view]" value="1" {{ !empty($rolePermissions[$menuKey]['view']) ? 'checked' : '' }}>
+                                        <input type="checkbox" name="permissions[{{ $menuKey }}][view]" value="1" data-parent-toggle="{{ $menuKey }}" {{ !empty($rolePermissions[$menuKey]['view']) ? 'checked' : '' }}>
                                         <span class="slider"></span>
                                     </label>
                                 </td>
                             </tr>
 
                             @foreach($menu['children'] as $child)
-                                <tr class="submenu-row">
+                                <tr class="submenu-row" data-parent-row="{{ $menuKey }}" {{ empty($rolePermissions[$menuKey]['view']) ? 'hidden' : '' }}>
                                     <td class="submenu-cell">
                                         <span class="submenu-bullet">›</span>
                                         {{ $child['label'] }}
@@ -67,7 +76,7 @@
                                     <td class="url-cell">{{ $child['url'] }}</td>
                                     <td class="check-cell">
                                         <label class="switch">
-                                            <input type="checkbox" name="permissions[{{ $child['key'] }}][view]" value="1" {{ !empty($rolePermissions[$child['key']]['view']) ? 'checked' : '' }}>
+                                            <input type="checkbox" name="permissions[{{ $child['key'] }}][view]" value="1" data-parent-child="{{ $menuKey }}" {{ !empty($rolePermissions[$child['key']]['view']) ? 'checked' : '' }}>
                                             <span class="slider"></span>
                                         </label>
                                     </td>
@@ -84,6 +93,19 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('[data-parent-toggle]').forEach(function (parentToggle) {
+        const parentKey = parentToggle.dataset.parentToggle;
+        const childRows = document.querySelectorAll('[data-parent-row="' + parentKey + '"]');
+
+        parentToggle.addEventListener('change', function () {
+            childRows.forEach(function (row) {
+                row.hidden = !parentToggle.checked;
+            });
+        });
+    });
+</script>
 
 <style>
     .page-shell {
@@ -159,6 +181,13 @@
         color: #1f2937;
         outline: none;
         box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+    }
+
+    .permission-help {
+        margin: 10px 0 0;
+        color: #64748b;
+        font-size: 0.84rem;
+        line-height: 1.5;
     }
 
     .table-wrap {

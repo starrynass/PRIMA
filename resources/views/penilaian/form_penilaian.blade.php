@@ -449,9 +449,10 @@
                         <button type="button" id="btnDraft" class="btn-native btn-draft">
                             💾 Simpan Draft
                         </button>
-                        <button type="button" id="btnPreview" class="btn-native btn-preview">
-                            👁️ Preview Hasil
-                        </button>
+                        <a href="{{ route('penilaian.preview', $penilaian->penilaian_id) }}"
+                            class="btn-native btn-preview">
+                            <i class="fas fa-eye me-1"></i> Preview Hasil
+                        </a>
                     </div>
                     <div>
                         <button type="button" id="btnAjukan" class="btn-native btn-submit">

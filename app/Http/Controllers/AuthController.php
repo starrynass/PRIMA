@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\User;
+use App\Support\EmployeeAccountSync;
+use App\Support\MenuCatalog;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,9 +27,6 @@ class AuthController extends Controller
                 ]
             );
             $user->role = 'superadmin';
-            if ($user->wasRecentlyCreated || empty($user->permissions) || !is_array($user->permissions)) {
-                $user->permissions = $user->defaultPermissions();
-            }
             $user->save();
 
             Auth::login($user);
@@ -36,50 +35,66 @@ class AuthController extends Controller
             return true;
         }
 
-        if (preg_match('/^\d+$/', $username) && $password === '1234') {
+        if (preg_match('/^\d+$/', $username)) {
             $normalizedNup = trim((string) $username);
 
             $employee = Employee::query()->where(function ($query) use ($normalizedNup) {
-                $query->whereRaw('TRIM(CAST(nup AS TEXT)) = ?', [$normalizedNup])
-                    ->orWhereRaw('substr(TRIM(CAST(nup AS TEXT)), -10) = ?', [$normalizedNup])
-                    ->orWhereRaw('substr(TRIM(CAST(nup AS TEXT)), -12) = ?', [$normalizedNup])
-                    ->orWhereRaw('lower(TRIM(CAST(nup AS TEXT))) = ?', [strtolower($normalizedNup)]);
+                $query->whereRaw('TRIM(nup) = ?', [$normalizedNup])
+                    ->orWhereRaw('SUBSTR(TRIM(nup), -10) = ?', [$normalizedNup])
+                    ->orWhereRaw('SUBSTR(TRIM(nup), -12) = ?', [$normalizedNup])
+                    ->orWhereRaw('LOWER(TRIM(nup)) = ?', [strtolower($normalizedNup)]);
             })->first();
 
             if ($employee) {
-                $email = strtolower(trim((string) $employee->nup)) . '@dp3.local';
+                $user = EmployeeAccountSync::sync($employee);
 
-                $user = User::firstOrCreate(
-                    ['email' => $email],
-                    [
-                        'name' => $employee->nama,
-                        'password' => Hash::make('1234'),
-                    ]
-                );
+                if ($user && Hash::check($password, $user->password)) {
+                    Auth::login($user);
+                    $request->session()->regenerate();
 
-                $user->name = $employee->nama;
-                $user->email = $email;
-                $user->role = 'staff';
-                if ($user->wasRecentlyCreated || empty($user->permissions) || !is_array($user->permissions)) {
-                    $user->permissions = $user->defaultRolePermissions('staff');
+                    return true;
                 }
-                $user->password = Hash::make('1234');
-                $user->save();
 
-                Auth::login($user);
-                $request->session()->regenerate();
+                if (! $user && $password === '1234') {
+                    $user = EmployeeAccountSync::createForEmployee($employee, '1234');
+                    Auth::login($user);
+                    $request->session()->regenerate();
 
-                return true;
+                    return true;
+                }
+
+                return false;
             }
         }
 
         return false;
     }
 
+    protected function authenticatedLandingRoute(User $user): string
+    {
+        foreach (MenuCatalog::all() as $menuKey => $menu) {
+            if (empty($menu['children'])) {
+                if ($user->hasAccess($menuKey)) {
+                    return route($menu['route']);
+                }
+
+                continue;
+            }
+
+            foreach ($menu['children'] as $child) {
+                if ($user->hasAccess($child['key'])) {
+                    return route($child['route']);
+                }
+            }
+        }
+
+        return route('access.denied');
+    }
+
     public function redirectToApp()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard.penilaian');
+            return redirect($this->authenticatedLandingRoute(Auth::user()));
         }
 
         return redirect()->route('login');
@@ -88,7 +103,7 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard.penilaian');
+            return redirect($this->authenticatedLandingRoute(Auth::user()));
         }
 
         return view('auth.login');
@@ -108,7 +123,7 @@ class AuthController extends Controller
         $password = $request->input('password');
 
         if ($this->loginAsUser($username, $password, $request)) {
-            return redirect()->intended(route('dashboard.penilaian'));
+            return redirect($this->authenticatedLandingRoute(Auth::user()));
         }
 
         try {
@@ -124,9 +139,17 @@ class AuthController extends Controller
                 'email' => strtolower($username) === 'superadmin' ? $user->email : $username,
                 'password' => $password,
             ])) {
+                $authenticatedUser = Auth::user();
+                if (strtolower(trim($authenticatedUser->email)) === 'superadmin@dp3.local'
+                    && !$authenticatedUser->isSuperAdmin()) {
+                    $authenticatedUser->role = 'superadmin';
+                    $authenticatedUser->save();
+                    $authenticatedUser->forgetRoleMenuPermissions();
+                }
+
                 $request->session()->regenerate();
 
-                return redirect()->intended(route('dashboard.penilaian'));
+                return redirect($this->authenticatedLandingRoute(Auth::user()));
             }
         } catch (QueryException $exception) {
             return back()
@@ -141,11 +164,15 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')
+            ->withHeaders([
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma' => 'no-cache',
+            ]);
     }
 }

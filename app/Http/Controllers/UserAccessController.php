@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Role;
+use App\Models\RoleMenuPermission;
 use App\Models\User;
+use App\Support\EmployeeAccountSync;
+use App\Support\MenuCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 
 class UserAccessController extends Controller
 {
@@ -36,195 +40,143 @@ class UserAccessController extends Controller
         ],
     ];
 
-    private array $roleOptions = [
-        'superadmin' => 'Super Admin',
-        'direktur' => 'Direktur',
-        'manager' => 'Manager',
-        'staff' => 'Staff',
-    ];
-
-    private function menuTree(): array
-    {
-        return [
-            'dashboard' => [
-                'label' => 'Dashboard',
-                'url' => 'Dashboard',
-                'children' => [],
-            ],
-            'master' => [
-                'label' => 'Master',
-                'url' => 'Master',
-                'children' => [
-                    ['key' => 'master.skala-predikat', 'label' => 'Skala & Predikat Nilai', 'url' => 'Master/SkalaPredikatNilai'],
-                    ['key' => 'master.template-penilaian', 'label' => 'Template, Fase dan Pertanyaan', 'url' => 'Master/TemplateFaseDanPertanyaan'],
-                ],
-            ],
-            'penilaian' => [
-                'label' => 'Penilaian',
-                'url' => 'Penilaian',
-                'children' => [
-                    ['key' => 'penilaian.periode', 'label' => 'Periode Penilaian', 'url' => 'Penilaian/PeriodePenilaian'],
-                    ['key' => 'penilaian.kelola', 'label' => 'Kelola Penilaian', 'url' => 'Penilaian/KelolaPenilaian'],
-                    ['key' => 'penilaian.verifikasi', 'label' => 'Verifikasi Penilaian', 'url' => 'Penilaian/VerifikasiPenilaian'],
-                    ['key' => 'penilaian.catatan', 'label' => 'Catatan Penilaian', 'url' => 'Penilaian/CatatanPenilaian'],
-                ],
-            ],
-            'laporan' => [
-                'label' => 'Laporan',
-                'url' => 'Laporan',
-                'children' => [
-                    ['key' => 'laporan.tahunan', 'label' => 'Laporan Tahunan', 'url' => 'Laporan/Tahunan'],
-                    ['key' => 'laporan.rekap-nilai', 'label' => 'Laporan Rekap Nilai', 'url' => 'Laporan/RekapNilai'],
-                    ['key' => 'laporan.indeks-unit-kerja', 'label' => 'Laporan Index Unit Kerja', 'url' => 'Laporan/IndeksUnitKerja'],
-                    ['key' => 'laporan.indeks-kompetensi', 'label' => 'Laporan Index Kompetensi', 'url' => 'Laporan/IndexKompetensi'],
-                ],
-            ],
-            'settings' => [
-                'label' => 'Setting',
-                'url' => 'Setting',
-                'children' => [
-                    ['key' => 'settings.hak-akses', 'label' => 'Hak Akses', 'url' => 'Setting/HakAkses'],
-                    ['key' => 'settings.otorisasi-menu', 'label' => 'Otorisasi Menu', 'url' => 'Setting/OtorisasiMenu'],
-                ],
-            ],
-        ];
-    }
-
     public function index(Request $request)
     {
-        $users = User::orderBy('name')->get();
+        $users = User::with('employee')->orderBy('name')->get();
+        foreach ($users as $user) {
+            if ($user->employee) {
+                $syncedUser = EmployeeAccountSync::sync($user->employee);
+                if ($syncedUser) {
+                    $user->email = $syncedUser->email;
+                    $user->name = $syncedUser->name;
+                }
+            }
+        }
+
         $existingEmails = User::query()
             ->pluck('email')
             ->map(fn ($email) => strtolower(trim((string) $email)))
             ->toArray();
 
-        $employees = Employee::orderBy('nama')->get()->filter(function ($employee) use ($existingEmails) {
-            $email = strtolower(trim((string) $employee->nup)) . '@dp3.local';
+        $employees = Employee::with('user')->orderBy('nama')->get()->filter(function ($employee) use ($existingEmails) {
+            $email = EmployeeAccountSync::emailFor($employee);
 
-            return !in_array($email, $existingEmails, true);
+            return ! $employee->user && ! in_array($email, $existingEmails, true);
         });
 
         $selectedUserId = $request->query('user_id');
         $selectedUser = $selectedUserId ? $users->firstWhere('id', (int) $selectedUserId) : $users->first();
+        $selectedUserPassword = $selectedUser?->password_reveal
+            ? Crypt::decryptString($selectedUser->password_reveal)
+            : null;
 
         return view('settings.hak-akses', [
             'users' => $users,
             'employees' => $employees,
             'selectedUser' => $selectedUser,
             'selectedUserId' => $selectedUser?->id,
+            'selectedUserPassword' => $selectedUserPassword,
             'moduleDefinitions' => $this->moduleDefinitions,
-            'roleOptions' => $this->roleOptions,
+            'roleOptions' => User::roleCatalog(),
         ]);
     }
 
     public function otorisasiMenu(Request $request)
     {
-        $selectedRole = (new User())->normalizeRole($request->query('role', 'superadmin'));
+        $roleOptions = User::roleCatalog();
+        unset($roleOptions['superadmin']);
+
+        $defaultRole = array_key_first($roleOptions);
+        $selectedRole = (new User())->normalizeRole($request->query('role', $defaultRole));
+
+        if (!array_key_exists($selectedRole, $roleOptions)) {
+            return redirect()
+                ->route('setting.otorisasi-menu', ['role' => $defaultRole])
+                ->with('info', 'Role Super Admin tidak memerlukan pengaturan otorisasi menu karena selalu memiliki akses penuh.');
+        }
 
         return view('settings.otorisasi-menu', [
-            'roleOptions' => $this->roleOptions,
+            'roleOptions' => $roleOptions,
             'selectedRole' => $selectedRole,
-            'rolePermissions' => User::where('role', $selectedRole)->first()?->permissions ?? (new User())->defaultRolePermissions($selectedRole),
-            'roleUsers' => User::where('role', $selectedRole)->orderBy('name')->get(),
-            'menuTree' => $this->menuTree(),
-            'moduleDefinitions' => $this->moduleDefinitions,
+            'rolePermissions' => RoleMenuPermission::where('role', $selectedRole)->first()?->permissions ?? [],
+            'menuTree' => MenuCatalog::all(),
         ]);
     }
 
     public function saveOtorisasiMenu(Request $request)
     {
         $request->validate([
-            'role' => ['required', 'in:superadmin,direktur,manager,staff'],
+            'role' => ['required', 'exists:roles,slug'],
             'permissions' => ['nullable', 'array'],
         ]);
 
         $role = (new User())->normalizeRole($request->input('role'));
+        if ($role === 'superadmin') {
+            return back()->withErrors([
+                'role' => 'Role Super Admin selalu memiliki akses penuh dan tidak dapat diatur melalui otorisasi menu.',
+            ]);
+        }
+
         $permissions = $request->input('permissions', []);
         $normalized = [];
 
-        foreach ($permissions as $key => $value) {
-            if (!is_array($value)) {
-                continue;
-            }
-
-            $module = $key;
-            if (str_contains($key, '.')) {
-                $module = explode('.', $key, 2)[0];
-            }
-
-            if (!empty($value['view'])) {
-                $normalized[$module]['view'] = true;
-            }
-        }
-
-        foreach ($this->menuTree() as $menuKey => $menu) {
-            if (!isset($normalized[$menuKey]['view']) && !empty($permissions[$menuKey]['view'])) {
-                $normalized[$menuKey]['view'] = true;
-            }
-
+        $menuKeys = array_keys(MenuCatalog::all());
+        foreach (MenuCatalog::all() as $menu) {
             foreach ($menu['children'] as $child) {
-                $childKey = $child['key'];
-                if (!isset($normalized[$childKey]['view']) && !empty($permissions[$childKey]['view'])) {
-                    $normalized[$childKey]['view'] = true;
-                }
-
-                $parentKey = explode('.', $childKey, 2)[0];
-                if (!empty($permissions[$childKey]['view']) || !empty($normalized[$childKey]['view'])) {
-                    $normalized[$parentKey]['view'] = true;
-                }
+                $menuKeys[] = $child['key'];
             }
         }
 
-        foreach ($this->moduleDefinitions as $module => $actions) {
-            $moduleEnabled = !empty($normalized[$module]['view']);
-
-            foreach ($actions as $action => $label) {
-                $normalized[$module][$action] = $moduleEnabled;
+        foreach ($menuKeys as $key) {
+            if (isset($permissions[$key]) && is_array($permissions[$key]) && !empty($permissions[$key]['view'])) {
+                $normalized[$key] = ['view' => true];
             }
         }
 
-        User::where('role', $role)->each(function ($user) use ($normalized) {
-            $user->permissions = $normalized;
-            $user->save();
-        });
+        RoleMenuPermission::updateOrCreate(
+            ['role' => $role],
+            ['permissions' => $normalized]
+        );
 
-        return redirect()->route('setting.otorisasi-menu', ['role' => $role])->with('success', 'Otorisasi menu berhasil diperbarui untuk role ' . ($this->roleOptions[$role] ?? ucfirst($role)) . '.');
+        $currentUser = Auth::user();
+        if ($currentUser && $currentUser->normalizeRole($currentUser->role) === $role) {
+            $currentUser->forgetRoleMenuPermissions();
+        }
+
+        return redirect()->route('setting.otorisasi-menu', ['role' => $role])->with('success', 'Otorisasi menu berhasil diperbarui untuk role ' . (User::roleCatalog()[$role] ?? ucfirst($role)) . '.');
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'employee_id' => ['required', 'exists:employee,pgw_id'],
-            'role' => ['required', 'in:superadmin,direktur,manager,staff'],
+            'role' => ['required', 'exists:roles,slug'],
             'password' => ['nullable', 'string', 'min:4'],
         ]);
 
         $employee = Employee::findOrFail($request->employee_id);
-        $username = trim((string) $employee->nup);
-        $email = $username . '@dp3.local';
-
         $role = (new User())->normalizeRole($request->input('role', 'staff'));
+        $existingAccount = EmployeeAccountSync::sync($employee);
+        if ($existingAccount) {
+            return redirect()->route('setting.hak-akses')
+                ->withErrors(['employee_id' => 'Pegawai tersebut sudah terhubung dengan akun.']);
+        }
 
-        $user = User::firstOrCreate(
-            ['email' => $email],
-            [
-                'name' => $employee->nama,
-                'password' => Hash::make($request->input('password', '1234')),
-                'role' => $role,
-            ]
+        EmployeeAccountSync::createForEmployee(
+            $employee,
+            $request->input('password', '1234'),
+            $role
         );
-
-        $user->name = $employee->nama;
-        $user->role = $role;
-        $user->permissions = $user->defaultRolePermissions($role);
-        $user->password = Hash::make($request->input('password', '1234'));
-        $user->save();
 
         return redirect()->route('setting.hak-akses')->with('success', 'Akun baru berhasil dibuat untuk ' . $employee->nama . '.');
     }
 
     public function update(Request $request, User $user)
     {
+        $request->validate([
+            'role' => ['required', 'exists:roles,slug'],
+        ]);
+
         $permissions = $request->input('permissions', []);
         $normalized = [];
 
@@ -237,17 +189,7 @@ class UserAccessController extends Controller
         $normalizedRole = (new User())->normalizeRole($request->input('role', $user->role ?? 'staff'));
         $user->role = $normalizedRole;
 
-        // Ambil default permissions berdasarkan role baru, lalu timpa dengan nilai dari form ($normalized)
-        $userPermissions = $user->defaultRolePermissions($normalizedRole);
-
-        foreach ($normalized as $module => $actions) {
-            foreach ($actions as $action => $value) {
-                $userPermissions[$module][$action] = (bool) $value;
-            }
-        }
-
-        // Simpan array lokal ke properti model
-        $user->permissions = $userPermissions;
+        $user->permissions = $normalized;
         $user->save();
 
         return redirect()->route('setting.hak-akses')->with('success', 'Hak akses akun berhasil diperbarui.');
@@ -266,5 +208,61 @@ class UserAccessController extends Controller
         $user->delete();
 
         return redirect()->route('setting.hak-akses')->with('success', 'Akun berhasil dihapus.');
+    }
+
+    public function roles()
+    {
+        return view('settings.roles', [
+            'roles' => Role::withCount('users')->orderBy('name')->get(),
+        ]);
+    }
+
+    public function storeRole(Request $request)
+    {
+        $request->merge(['name' => trim((string) $request->input('name'))]);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100', 'unique:roles,name'],
+        ]);
+
+        $slug = \Illuminate\Support\Str::slug($validated['name']);
+        if ($slug === '' || Role::where('slug', $slug)->exists()) {
+            return back()->withErrors(['name' => 'Nama role ini sudah digunakan atau tidak dapat dijadikan kode role.'])->withInput();
+        }
+
+        Role::create([
+            'slug' => $slug,
+            'name' => trim($validated['name']),
+        ]);
+
+        return redirect()->route('setting.roles')->with('success', 'Role berhasil ditambahkan.');
+    }
+
+    public function updateRole(Request $request, Role $role)
+    {
+        $request->merge(['name' => trim((string) $request->input('name'))]);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100', 'unique:roles,name,' . $role->id],
+        ]);
+
+        $role->name = trim($validated['name']);
+        $role->save();
+
+        return redirect()->route('setting.roles')->with('success', 'Nama role berhasil diperbarui.');
+    }
+
+    public function destroyRole(Role $role)
+    {
+        if ($role->slug === 'superadmin') {
+            return redirect()->route('setting.roles')->withErrors(['role' => 'Role Super Admin tidak dapat dihapus.']);
+        }
+
+        if ($role->users()->exists()) {
+            return redirect()->route('setting.roles')->withErrors(['role' => 'Pindahkan semua akun dari role ini sebelum menghapusnya.']);
+        }
+
+        $role->delete();
+        RoleMenuPermission::where('role', $role->slug)->delete();
+
+        return redirect()->route('setting.roles')->with('success', 'Role berhasil dihapus.');
     }
 }

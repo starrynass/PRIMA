@@ -12,6 +12,15 @@
             {{ session('success') }}
         </div>
     @endif
+    @if($errors->any())
+        <div role="alert" style="margin-bottom: 18px; padding: 12px 14px; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; color: #9f1239; font-size: 0.9rem; font-weight: 600;">
+            <ul style="margin:0;padding-left:1.2rem;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <div id="deleteUserModal" style="position: fixed; inset: 0; background: rgba(17, 24, 39, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000;">
         <div style="width: min(92vw, 420px); background: #fff; border-radius: 18px; box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2); padding: 0; overflow: hidden; border: 1px solid #f0d9df;">
@@ -58,8 +67,8 @@
                 </select>
             </div>
             <div>
-                <label style="display: block; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; color: #374151;">Password Default</label>
-                <input type="text" name="password" value="1234" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff;">
+                <label style="display: block; margin-bottom: 8px; font-size: 0.8rem; font-weight: 700; color: #374151;">Password Awal</label>
+                <input type="text" name="password" value="{{ old('password', '1234') }}" minlength="4" required autocomplete="new-password" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff;">
             </div>
             <div>
                 <button type="submit" style="width: 100%; background: #7A1C38; color: #fff; border: none; border-radius: 10px; padding: 11px 16px; font-weight: 700; cursor: pointer;">Buat Akun</button>
@@ -77,7 +86,7 @@
                 <option value="">-- Pilih akun --</option>
                 @foreach($users as $user)
                     <option value="{{ $user->id }}" {{ $selectedUserId == $user->id ? 'selected' : '' }}>
-                        {{ $user->name }} ({{ $user->email }})
+                        {{ $user->name }}{{ $user->employee ? ' (NUP: '.$user->employee->nup.')' : '' }} ({{ $user->email }})
                     </option>
                 @endforeach
             </select>
@@ -99,7 +108,22 @@
                             <tr style="border-bottom: 1px solid #f0f2f5; vertical-align: top;">
                                 <td style="padding: 14px 12px;">
                                     <div style="font-weight: 700; color: #1f2937;">{{ $selectedUser->name }}</div>
+                                    @if($selectedUser->employee)
+                                        <div style="font-size: 0.8rem; color: #6b7280; margin-top: 4px;">NUP pegawai: {{ $selectedUser->employee->nup }}</div>
+                                    @endif
                                     <div style="font-size: 0.8rem; color: #6b7280; margin-top: 4px;">{{ $selectedUser->email }}</div>
+                                    <div style="margin-top: 12px;">
+                                        <label for="storedAccountPassword" style="display:block;margin-bottom:5px;font-size:0.8rem;font-weight:700;color:#374151;">Password akun</label>
+                                        @if($selectedUserPassword !== null)
+                                            <div style="display:flex;gap:8px;max-width:320px;">
+                                                <input id="storedAccountPassword" type="password" value="{{ $selectedUserPassword }}" readonly autocomplete="off" style="flex:1;min-width:0;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;background:#f9fafb;">
+                                                <button type="button" id="toggleAccountPassword" aria-label="Tampilkan password" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;">Lihat</button>
+                                            </div>
+                                            <small style="display:block;margin-top:4px;color:#667085;">Password tersimpan secara terenkripsi agar dapat dilihat kembali.</small>
+                                        @else
+                                            <div style="font-size:0.8rem;color:#667085;">Password akun lama tidak dapat ditampilkan. Hash password tidak dapat diubah kembali menjadi password aslinya.</div>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td style="padding: 14px 12px;">
                                     <select name="role" style="padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; min-width: 180px;">
@@ -142,6 +166,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const storedPassword = document.getElementById('storedAccountPassword');
+        const togglePassword = document.getElementById('toggleAccountPassword');
+        if (storedPassword && togglePassword) {
+            togglePassword.addEventListener('click', function () {
+                const showing = storedPassword.type === 'text';
+                storedPassword.type = showing ? 'password' : 'text';
+                togglePassword.textContent = showing ? 'Lihat' : 'Sembunyikan';
+                togglePassword.setAttribute('aria-label', showing ? 'Tampilkan password' : 'Sembunyikan password');
+            });
+        }
+
         const modal = document.getElementById('deleteUserModal');
         const userNameText = document.getElementById('deleteUserName');
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');

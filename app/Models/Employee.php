@@ -83,4 +83,9 @@ class Employee extends Model
         // Parameter: (ModelTujuan, Foreign_Key_di_Dp3TransPenilaian, Primary_Key_di_Employee)
         return $this->hasMany(Dp3TransPenilaian::class, 'pegawai_id', 'pgw_id');
     }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'employee_id', 'pgw_id');
+    }
 }

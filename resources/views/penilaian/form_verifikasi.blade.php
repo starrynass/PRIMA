@@ -405,9 +405,10 @@
                 <a href="{{ route('verifikasi-penilaian.index', ['periode_id' => $penilaian->periode_id]) }}" class="btn-top-action btn-back-gray">
                     <i class="fas fa-arrow-left"></i> Kembali
                 </a>
-                <button type="button" id="btnPreview" class="btn-top-action btn-preview-cyan">
-                    <i class="fas fa-eye"></i> Preview
-                </button>
+               <a href="{{ route('verifikasi.preview', $penilaian->penilaian_id) }}"
+                            class="btn-top-action btn-preview-cyan">
+                            <i class="fas fa-eye me-1"></i> Preview 
+                        </a>
                 <button type="button" id="btnSimpanKoreksi" class="btn-top-action btn-kor-amber">
                     <i class="fas fa-save"></i> Simpan Koreksi
                 </button>

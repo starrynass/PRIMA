@@ -20,7 +20,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'employee_id',
         'password',
+        'password_reveal',
         'role',
         'permissions',
     ];
@@ -32,6 +34,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'password_reveal',
         'remember_token',
     ];
 
@@ -45,14 +48,27 @@ class User extends Authenticatable
         'permissions' => 'array',
     ];
 
+    private ?string $loadedMenuRole = null;
+
+    private array $loadedMenuPermissions = [];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id', 'pgw_id');
+    }
+
     public static function roleCatalog(): array
     {
-        return [
-            'superadmin' => 'Super Admin',
-            'direktur' => 'Direktur',
-            'manager' => 'Manager',
-            'staff' => 'Staff',
-        ];
+        if (!\Illuminate\Support\Facades\Schema::hasTable('roles')) {
+            return [
+                'superadmin' => 'Super Admin',
+                'direktur' => 'Direktur',
+                'manager' => 'Manager',
+                'staff' => 'Staff',
+            ];
+        }
+
+        return Role::orderBy('name')->pluck('name', 'slug')->all();
     }
 
     public function normalizeRole(?string $role): string
@@ -61,16 +77,16 @@ class User extends Authenticatable
 
         return match ($normalized) {
             'employee', 'staff', 'karyawan', 'pegawai' => 'staff',
-            'superadmin', 'super_admin' => 'superadmin',
+            'superadmin', 'super_admin', 'super admin', 'super-admin' => 'superadmin',
             'direktur', 'director' => 'direktur',
             'manager', 'manajer' => 'manager',
-            default => array_key_exists($normalized, self::roleCatalog()) ? $normalized : 'staff',
+            default => $normalized,
         };
     }
 
     public function roleDisplayName(): string
     {
-        return self::roleCatalog()[ $this->normalizeRole($this->role) ] ?? 'Staff';
+        return self::roleCatalog()[ $this->normalizeRole($this->role) ] ?? ucfirst($this->normalizeRole($this->role));
     }
 
     public function levelForRole(?string $role): int
@@ -80,7 +96,7 @@ class User extends Authenticatable
             'manager' => 2,
             'direktur' => 3,
             'superadmin' => 4,
-            default => 0,
+            default => 1,
         };
     }
 
@@ -89,66 +105,8 @@ class User extends Authenticatable
         return $this->normalizeRole($this->role) === 'superadmin';
     }
 
-    public function defaultPermissions(): array
-    {
-        return [
-            'dashboard' => ['view' => true],
-            'master' => ['view' => true, 'create' => true, 'update' => true, 'delete' => true],
-            'penilaian' => ['view' => true, 'create' => true, 'update' => true, 'delete' => true, 'verify' => true],
-            'laporan' => ['view' => true],
-            'settings' => ['view' => true, 'manage' => true],
-        ];
-    }
-
-    public function defaultDirekturPermissions(): array
-    {
-        return [
-            'dashboard' => ['view' => true],
-            'master' => ['view' => true, 'create' => false, 'update' => false, 'delete' => false],
-            'penilaian' => ['view' => true, 'create' => true, 'update' => true, 'delete' => false, 'verify' => true],
-            'laporan' => ['view' => true],
-            'settings' => ['view' => true, 'manage' => false],
-        ];
-    }
-
-    public function defaultManagerPermissions(): array
-    {
-        return [
-            'dashboard' => ['view' => true],
-            'master' => ['view' => true, 'create' => true, 'update' => true, 'delete' => false],
-            'penilaian' => ['view' => true, 'create' => true, 'update' => true, 'delete' => false, 'verify' => true],
-            'laporan' => ['view' => true],
-            'settings' => ['view' => false, 'manage' => false],
-        ];
-    }
-
-    public function defaultEmployeePermissions(): array
-    {
-        return [
-            'dashboard' => ['view' => true],
-            'master' => ['view' => false, 'create' => false, 'update' => false, 'delete' => false],
-            'penilaian' => ['view' => true, 'create' => true, 'update' => false, 'delete' => false, 'verify' => false],
-            'laporan' => ['view' => false],
-            'settings' => ['view' => false, 'manage' => false],
-        ];
-    }
-
-    public function defaultRolePermissions(?string $role): array
-    {
-        $normalized = $this->normalizeRole($role);
-
-        return match ($normalized) {
-            'superadmin' => $this->defaultPermissions(),
-            'direktur' => $this->defaultDirekturPermissions(),
-            'manager' => $this->defaultManagerPermissions(),
-            'staff' => $this->defaultEmployeePermissions(),
-            default => $this->defaultEmployeePermissions(),
-        };
-    }
-
     public function effectivePermissions(): array
     {
-        $base = $this->defaultRolePermissions($this->normalizeRole($this->role));
         $customPermissions = $this->permissions;
 
         if (!is_array($customPermissions)) {
@@ -159,30 +117,72 @@ class User extends Authenticatable
             $customPermissions = [];
         }
 
+        $permissions = [];
+
         foreach ($customPermissions as $module => $actions) {
             if (!is_array($actions)) {
                 continue;
             }
 
-            if (!isset($base[$module]) || !is_array($base[$module])) {
-                $base[$module] = [];
-            }
-
             foreach ($actions as $action => $value) {
-                $base[$module][$action] = (bool) $value;
+                $permissions[$module][$action] = (bool) $value;
             }
         }
 
-        return $base;
+        return $permissions;
+    }
+
+    public function roleMenuPermissions(): array
+    {
+        $role = $this->normalizeRole($this->role);
+
+        if ($this->loadedMenuRole !== $role) {
+            $this->loadedMenuRole = $role;
+            $permissions = RoleMenuPermission::where('role', $role)->first()?->permissions ?? [];
+            $this->loadedMenuPermissions = is_array($permissions) ? $permissions : [];
+        }
+
+        return $this->loadedMenuPermissions;
+    }
+
+    public function forgetRoleMenuPermissions(): void
+    {
+        $this->loadedMenuRole = null;
+        $this->loadedMenuPermissions = [];
     }
 
     public function hasAccess(string $module): bool
     {
-        return (bool) ($this->effectivePermissions()[$module]['view'] ?? false);
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        $permissions = $this->roleMenuPermissions();
+
+        if (str_contains($module, '.')) {
+            [$parent] = explode('.', $module, 2);
+
+            return (bool) ($permissions[$parent]['view'] ?? false)
+                && (bool) ($permissions[$module]['view'] ?? false);
+        }
+
+        if (array_key_exists($module, $permissions)) {
+            return (bool) ($permissions[$module]['view'] ?? false);
+        }
+
+        return false;
     }
 
     public function hasAction(string $module, string $action): bool
     {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        if ($action === 'view') {
+            return $this->hasAccess($module);
+        }
+
         return (bool) ($this->effectivePermissions()[$module][$action] ?? false);
     }
 

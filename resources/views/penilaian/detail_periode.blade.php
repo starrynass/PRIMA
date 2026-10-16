@@ -118,6 +118,89 @@
         opacity: 0.96;
     }
 
+    .detail-toolbar-actions,
+    .detail-bulk-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .detail-toolbar-actions .detail-toolbar-action,
+    .detail-bulk-actions .detail-toolbar-action {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.76rem;
+    }
+
+    .detail-toolbar-action.secondary {
+        color: var(--maroon-primary);
+        background: #fff;
+        border: 1px solid var(--maroon-border);
+        box-shadow: none;
+    }
+
+    .detail-toolbar-action.danger {
+        background: #b4233c;
+    }
+
+    .detail-card-header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    .detail-notice {
+        margin: 0 0 1rem;
+        padding: 0.85rem 1rem;
+        border-radius: 0.65rem;
+        border: 1px solid var(--border-color);
+        background: #f8fafc;
+    }
+
+    .detail-notice.success { color: #065f46; background: #ecfdf5; border-color: #a7f3d0; }
+    .detail-notice.error { color: #9f1239; background: #fff1f2; border-color: #fecdd3; }
+
+    .period-dialog {
+        width: min(640px, calc(100% - 2rem));
+        max-height: 90vh;
+        padding: 0;
+        border: 0;
+        border-radius: 1rem;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+    }
+
+    .period-dialog::backdrop { background: rgba(15, 23, 42, 0.5); }
+    .period-dialog-content { padding: 1.4rem; }
+    .period-dialog h2 { margin: 0 0 0.45rem; font-size: 1.2rem; }
+    .period-dialog p { color: var(--text-secondary); }
+    .period-dialog label { display: block; margin: 0.8rem 0 0.35rem; font-weight: 700; }
+    .period-dialog input,
+    .period-dialog select,
+    .period-dialog textarea {
+        width: 100%;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+    }
+    .period-dialog-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1rem; }
+    .employee-search-results { margin-top: 0.5rem; max-height: 220px; overflow-y: auto; }
+    .employee-search-result {
+        display: block;
+        width: 100%;
+        padding: 0.65rem;
+        text-align: left;
+        border: 0;
+        border-bottom: 1px solid var(--border-color);
+        background: #fff;
+        cursor: pointer;
+    }
+    .employee-search-result:hover,
+    .employee-search-result.selected { background: var(--maroon-soft); }
+    .selection-checkbox { width: 1rem; height: 1rem; cursor: pointer; }
+
     .detail-toolbar-meta {
         font-size: 0.7rem;
         color: var(--text-secondary);
@@ -557,6 +640,22 @@
 </style>
 
 <div class="detail-page">
+    @if(session('success'))
+        <div class="detail-notice success" role="status">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="detail-notice error" role="alert">{{ session('error') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="detail-notice error" role="alert">
+            <ul style="margin:0;padding-left:1.2rem;">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="detail-toolbar">
         <div class="detail-toolbar-left">
             <div class="toolbar-icon-wrapper">
@@ -570,12 +669,24 @@
             </div>
         </div>
 
-        <a href="{{ route('periode-penilaian.index') }}" class="detail-toolbar-action">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M19 12H5M12 19l-7-7 7-7"></path>
-            </svg>
-            Kembali
-        </a>
+        <div class="detail-toolbar-actions">
+            <button type="button" class="detail-toolbar-action secondary" data-open-dialog="evaluatorDialog">Set Penilai</button>
+            <form method="POST" action="{{ route('periode.evaluators.automatic', $periode->periode_id) }}" id="automaticEvaluatorForm">
+                @csrf
+                <div class="selected-entries"></div>
+                <button type="submit" class="detail-toolbar-action secondary" data-require-selection>Kembalikan ke Otomatis</button>
+            </form>
+            <button type="button" class="detail-toolbar-action secondary" data-open-dialog="updateEmployeesDialog">Set Pegawai</button>
+            <button type="button" class="detail-toolbar-action" data-open-dialog="addEmployeeDialog">Tambah Pegawai</button>
+            <button type="button" class="detail-toolbar-action danger" data-open-dialog="deactivateEmployeesDialog">Nonaktif</button>
+            <a href="{{ route('periode.export', array_merge(['id' => $periode->periode_id], request()->query())) }}" class="detail-toolbar-action secondary">Export Excel</a>
+            <a href="{{ route('periode-penilaian.index') }}" class="detail-toolbar-action">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+                Kembali
+            </a>
+        </div>
     </div>
 
     <div class="stats-grid">
@@ -599,6 +710,33 @@
                 <div class="stat-icon bg-secondary-light">
                     <i class="fas fa-clock"></i>
                 </div>
+            </div>
+        </div>
+        <div class="card-stat">
+            <div class="stat-body">
+                <div>
+                    <div class="stat-label">Tanpa Penilai</div>
+                    <div class="stat-value text-danger">{{ $stats['tanpa_penilai'] }}</div>
+                </div>
+                <div class="stat-icon bg-danger-light"><i class="fas fa-user-slash"></i></div>
+            </div>
+        </div>
+        <div class="card-stat">
+            <div class="stat-body">
+                <div>
+                    <div class="stat-label">Penilai Manual</div>
+                    <div class="stat-value" style="color:#7A1C38;">{{ $stats['penilai_manual'] }}</div>
+                </div>
+                <div class="stat-icon bg-primary-light"><i class="fas fa-user-edit"></i></div>
+            </div>
+        </div>
+        <div class="card-stat">
+            <div class="stat-body">
+                <div>
+                    <div class="stat-label">Perlu Ditinjau</div>
+                    <div class="stat-value" style="color:#d97706;">{{ $stats['perlu_ditinjau'] }}</div>
+                </div>
+                <div class="stat-icon bg-warning-light"><i class="fas fa-eye"></i></div>
             </div>
         </div>
         <div class="card-stat">
@@ -638,8 +776,13 @@
 
     <div class="card-box">
         <div class="card-header-daftarpegawai">
-            <div class="card-title-daftarpegawai">
-                <i class="fas fa-list me-2"></i> Daftar Pegawai Penilaian
+            <div class="detail-card-header-actions">
+                <div class="card-title-daftarpegawai">
+                    <i class="fas fa-list me-2"></i> Daftar Pegawai Penilaian
+                </div>
+                <div class="detail-bulk-actions">
+                    <span id="selectionCount" aria-live="polite">0 dipilih</span>
+                </div>
             </div>
         </div>
 
@@ -673,7 +816,7 @@
                     </div>
 
                     <div>
-                        <select name="subdept_id" class="form-select-custom">
+                        <select name="kode_unit_kerja" class="form-select-custom">
                             <option value="">- Semua Unit Kerja -</option>
                             @foreach($unitKerjaList as $uk)
                                 <option value="{{ $uk->kode_unit_kerja }}" {{ request('kode_unit_kerja') == $uk->kode_unit_kerja ? 'selected' : '' }}>
@@ -718,6 +861,7 @@
                 <table class="table-custom">
                     <thead>
                         <tr>
+                            <th width="40"><input type="checkbox" id="selectAllRows" class="selection-checkbox" aria-label="Pilih semua pegawai di halaman"></th>
                             <th width="40">NO</th>
                             <th>NUP</th>
                             <th>NAMA</th>
@@ -742,6 +886,7 @@
                                 $predikat = data_get($row, 'predikat', 'Mengecewakan');
                             @endphp
                             <tr>
+                                <td><input type="checkbox" class="selection-checkbox period-row-checkbox" value="{{ data_get($row, 'penilaian_id') }}" aria-label="Pilih {{ data_get($row, 'nama', 'pegawai') }}"></td>
                                 <td>{{ (($penilaianList->currentPage() - 1) * $penilaianList->perPage()) + $loop->iteration }}</td>
                                 <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
                                 <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
@@ -802,7 +947,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="14" class="text-center py-4 text-muted">Belum ada data pegawai yang di-generate untuk periode ini.</td>
+                                <td colspan="15" class="text-center py-4 text-muted">Belum ada data pegawai aktif pada periode ini.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -862,4 +1007,257 @@
         @endif
     </div>
 </div>
+
+<dialog id="addEmployeeDialog" class="period-dialog">
+    <div class="period-dialog-content">
+        <h2>Tambah Pegawai ke Periode</h2>
+        <p>Cari pegawai menggunakan nama atau NUP, minimal 3 karakter. Pegawai tanpa template tetap dapat ditambahkan, tetapi daftar pertanyaannya akan kosong.</p>
+        <form method="POST" action="{{ route('periode.employees.add', $periode->periode_id) }}" id="addEmployeeForm">
+            @csrf
+            <label for="employeeSearch">Cari Nama atau NUP</label>
+            <input type="search" id="employeeSearch" autocomplete="off" placeholder="Ketik minimal 3 karakter">
+            <div id="employeeSearchResults" class="employee-search-results" aria-live="polite"></div>
+            <input type="hidden" name="pegawai_id" id="selectedEmployeeId">
+            <div id="selectedEmployeeLabel" class="detail-notice" hidden></div>
+            <div class="period-dialog-actions">
+                <button type="button" class="detail-toolbar-action secondary" data-close-dialog>Batalkan</button>
+                <button type="submit" class="detail-toolbar-action">Tambahkan</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<dialog id="updateEmployeesDialog" class="period-dialog">
+    <div class="period-dialog-content">
+        <h2>Set Data Pegawai</h2>
+        <p>Perubahan hanya berlaku pada data pegawai di periode ini. Kosongkan isian yang tidak ingin diubah.</p>
+        <form method="POST" action="{{ route('periode.employees.update', $periode->periode_id) }}" data-selected-form>
+            @csrf
+            <div class="selected-entries"></div>
+            <label for="bulkOccupation">Jabatan</label>
+            <select name="occ_id" id="bulkOccupation">
+                <option value="">- Tidak diubah -</option>
+                @foreach($occupations as $occupation)
+                    <option value="{{ $occupation->occ_id }}">{{ $occupation->occ_name }}</option>
+                @endforeach
+            </select>
+            <label for="bulkDepartment">Departemen</label>
+            <select name="dept_id" id="bulkDepartment">
+                <option value="">- Tidak diubah -</option>
+                @foreach($departments as $department)
+                    <option value="{{ $department->dept_id }}">{{ $department->dept_name }}</option>
+                @endforeach
+            </select>
+            <label for="bulkSubDepartment">Sub Departemen</label>
+            <select name="subdept_id" id="bulkSubDepartment">
+                <option value="">- Tidak diubah -</option>
+                @foreach($subDepartments as $subDepartment)
+                    <option value="{{ $subDepartment->subdept_id }}">{{ $subDepartment->subdept_name }}</option>
+                @endforeach
+            </select>
+            <label for="bulkOffice">Penempatan</label>
+            <select name="off_id" id="bulkOffice">
+                <option value="">- Tidak diubah -</option>
+                @foreach($offices as $office)
+                    <option value="{{ $office->off_id }}">{{ $office->off_name }}</option>
+                @endforeach
+            </select>
+            <label for="bulkSatker">Satker</label>
+            <input type="text" name="kode_satker" id="bulkSatker" maxlength="255" placeholder="Kode satuan kerja">
+            <label for="bulkUnitKerja">Unit Kerja</label>
+            <select name="kode_unit_kerja" id="bulkUnitKerja">
+                <option value="">- Tidak diubah -</option>
+                @foreach($unitKerjaList as $unitKerja)
+                    <option value="{{ $unitKerja->kode_unit_kerja }}">{{ $unitKerja->nama_unit_kerja }}</option>
+                @endforeach
+            </select>
+            <div class="period-dialog-actions">
+                <button type="button" class="detail-toolbar-action secondary" data-close-dialog>Batalkan</button>
+                <button type="submit" class="detail-toolbar-action">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<dialog id="evaluatorDialog" class="period-dialog">
+    <div class="period-dialog-content">
+        <h2>Set Penilai</h2>
+        <p>Penilai yang dipilih akan ditetapkan sebagai penilai manual untuk semua pegawai terpilih.</p>
+        <form method="POST" action="{{ route('periode.evaluators.assign', $periode->periode_id) }}" data-selected-form>
+            @csrf
+            <div class="selected-entries"></div>
+            <label for="bulkEvaluator">Penilai</label>
+            <select name="penilai_id" id="bulkEvaluator" required>
+                <option value="">- Pilih Penilai -</option>
+                @foreach($employees as $employee)
+                    <option value="{{ $employee->pgw_id }}">{{ $employee->nama }}{{ $employee->nup ? ' ('.$employee->nup.')' : '' }}</option>
+                @endforeach
+            </select>
+            <div class="period-dialog-actions">
+                <button type="button" class="detail-toolbar-action secondary" data-close-dialog>Batalkan</button>
+                <button type="submit" class="detail-toolbar-action">Tetapkan Penilai</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<dialog id="deactivateEmployeesDialog" class="period-dialog">
+    <div class="period-dialog-content">
+        <h2>Nonaktifkan Pegawai</h2>
+        <p>Pegawai terpilih tidak lagi ditampilkan sebagai peserta aktif pada periode ini. Data penilaian tetap tersimpan.</p>
+        <form method="POST" action="{{ route('periode.employees.deactivate', $periode->periode_id) }}" data-selected-form>
+            @csrf
+            <div class="selected-entries"></div>
+            <label for="deactivationReason">Alasan nonaktif <span aria-hidden="true">*</span></label>
+            <textarea name="reason" id="deactivationReason" rows="3" maxlength="255" required placeholder="Masukkan alasan (maksimal 255 karakter)"></textarea>
+            <div class="period-dialog-actions">
+                <button type="button" class="detail-toolbar-action secondary" data-close-dialog>Batalkan</button>
+                <button type="submit" class="detail-toolbar-action danger">Nonaktifkan</button>
+            </div>
+        </form>
+    </div>
+</dialog>
+
+<script>
+(() => {
+    const checkboxes = Array.from(document.querySelectorAll('.period-row-checkbox'));
+    const selectAll = document.getElementById('selectAllRows');
+    const selectionCount = document.getElementById('selectionCount');
+
+    function selectedIds() {
+        return checkboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
+    }
+
+    function syncSelection() {
+        const selected = selectedIds();
+        selectionCount.textContent = `${selected.length} dipilih`;
+        if (selectAll) {
+            selectAll.checked = checkboxes.length > 0 && selected.length === checkboxes.length;
+            selectAll.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
+        }
+    }
+
+    function addSelectedIds(form) {
+        const container = form.querySelector('.selected-entries');
+        if (!container) return;
+        container.replaceChildren();
+        selectedIds().forEach((id) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'penilaian_ids[]';
+            input.value = id;
+            container.appendChild(input);
+        });
+    }
+
+    document.querySelectorAll('[data-open-dialog]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const dialog = document.getElementById(button.dataset.openDialog);
+            if (dialog.id !== 'addEmployeeDialog' && selectedIds().length === 0) {
+                window.alert('Pilih setidaknya satu pegawai terlebih dahulu.');
+                return;
+            }
+            if (dialog.querySelector('[data-selected-form]')) {
+                addSelectedIds(dialog.querySelector('[data-selected-form]'));
+            }
+            dialog.showModal();
+        });
+    });
+
+    document.querySelectorAll('[data-close-dialog]').forEach((button) => {
+        button.addEventListener('click', () => button.closest('dialog').close());
+    });
+
+    document.querySelectorAll('[data-selected-form]').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            addSelectedIds(form);
+            if (selectedIds().length === 0) {
+                event.preventDefault();
+                window.alert('Pilih setidaknya satu pegawai terlebih dahulu.');
+            }
+        });
+    });
+
+    const automaticForm = document.getElementById('automaticEvaluatorForm');
+    if (automaticForm) {
+        automaticForm.addEventListener('submit', (event) => {
+            addSelectedIds(automaticForm);
+            if (selectedIds().length === 0) {
+                event.preventDefault();
+                window.alert('Pilih setidaknya satu pegawai terlebih dahulu.');
+            }
+        });
+    }
+
+    checkboxes.forEach((checkbox) => checkbox.addEventListener('change', syncSelection));
+    if (selectAll) {
+        selectAll.addEventListener('change', () => {
+            checkboxes.forEach((checkbox) => { checkbox.checked = selectAll.checked; });
+            syncSelection();
+        });
+    }
+    syncSelection();
+
+    const searchInput = document.getElementById('employeeSearch');
+    if (!searchInput) return;
+    const results = document.getElementById('employeeSearchResults');
+    const selectedEmployeeId = document.getElementById('selectedEmployeeId');
+    const selectedEmployeeLabel = document.getElementById('selectedEmployeeLabel');
+    let searchTimer;
+
+    searchInput.addEventListener('input', () => {
+        window.clearTimeout(searchTimer);
+        selectedEmployeeId.value = '';
+        selectedEmployeeLabel.hidden = true;
+        const term = searchInput.value.trim();
+        results.replaceChildren();
+        if (term.length < 3) {
+            results.textContent = term.length ? 'Masukkan minimal 3 karakter.' : '';
+            return;
+        }
+
+        results.textContent = 'Mencari pegawai...';
+        searchTimer = window.setTimeout(async () => {
+            try {
+                const url = new URL(@json(route('periode.employees.search', $periode->periode_id)), window.location.origin);
+                url.searchParams.set('q', term);
+                const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                const employees = await response.json();
+                if (!response.ok) throw new Error(employees.message || 'Pencarian pegawai gagal.');
+                results.replaceChildren();
+                if (!employees.length) {
+                    results.textContent = 'Pegawai tidak ditemukan atau sudah terdaftar pada periode.';
+                    return;
+                }
+                employees.forEach((employee) => {
+                    const option = document.createElement('button');
+                    option.type = 'button';
+                    option.className = 'employee-search-result';
+                    const templateStatus = employee.has_template
+                        ? 'Template tersedia'
+                        : 'Tanpa template (pertanyaan kosong)';
+                    option.textContent = `${employee.nama} — NUP: ${employee.nup || '-'} — ${templateStatus}`;
+                    option.addEventListener('click', () => {
+                        selectedEmployeeId.value = employee.pgw_id;
+                        selectedEmployeeLabel.textContent = `Terpilih: ${employee.nama} (${employee.nup || 'tanpa NUP'})`;
+                        selectedEmployeeLabel.hidden = false;
+                        results.querySelectorAll('.employee-search-result').forEach((item) => item.classList.remove('selected'));
+                        option.classList.add('selected');
+                    });
+                    results.appendChild(option);
+                });
+            } catch (error) {
+                results.textContent = error.message || 'Pencarian pegawai gagal.';
+            }
+        }, 250);
+    });
+
+    document.getElementById('addEmployeeForm').addEventListener('submit', (event) => {
+        if (!selectedEmployeeId.value) {
+            event.preventDefault();
+            window.alert('Pilih pegawai dari hasil pencarian terlebih dahulu.');
+        }
+    });
+})();
+</script>
 @endsection

@@ -249,119 +249,38 @@
     <div class="sidebar" id="sidebar">
 
         <ul class="nav-menu">
-            <!-- 1. Dashboard -->
-            <li class="nav-item">
-                <a href="{{ route('dashboard.penilaian') }}" class="nav-link menu-item">
-                    <i class="fa-solid fa-house nav-icon"></i>
-                    <span class="menu-text">Dashboard</span>
-                </a>
-            </li>
+            @foreach(\App\Support\MenuCatalog::all() as $menuKey => $menu)
+                @if(count($menu['children']) === 0)
+                    @if(Auth::check() && Auth::user()->hasAccess($menuKey))
+                        <li class="nav-item">
+                            <a href="{{ route($menu['route']) }}" class="nav-link menu-item">
+                                <i class="fa-solid {{ $menu['icon'] }} nav-icon"></i>
+                                <span class="menu-text">{{ $menu['label'] }}</span>
+                            </a>
+                        </li>
+                    @endif
+                @elseif(Auth::check() && Auth::user()->hasAccess($menuKey))
+                    <li class="nav-item">
+                        <div class="nav-link dropdown-toggle">
+                            <i class="fa-solid {{ $menu['icon'] }} nav-icon"></i>
+                            <span class="menu-text">{{ $menu['label'] }}</span>
+                            <i class="fa-solid fa-chevron-left arrow"></i>
+                        </div>
+                        <ul class="submenu">
+                            @foreach($menu['children'] as $child)
+                                @if(Auth::user()->hasAccess($child['key']))
+                                    <li class="submenu-item">
+                                        <a href="{{ route($child['route']) }}" class="submenu-link menu-item">
+                                            <span class="menu-text">{{ $child['label'] }}</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </li>
+                @endif
+            @endforeach
 
-            <!-- 2. Master -->
-            <li class="nav-item">
-                <div class="nav-link dropdown-toggle">
-                    <i class="fa-solid fa-pen-to-square nav-icon"></i>
-                    <span class="menu-text">Master</span>
-                    <i class="fa-solid fa-chevron-left arrow"></i>
-                </div>
-                <ul class="submenu">
-                    <li class="submenu-item">
-                        <a href="{{ route('skala-predikat.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Skala & Predikat Nilai</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('template-penilaian.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Template, Fase dan Pertanyaan</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <!-- 3. Penilaian -->
-            <li class="nav-item">
-                <div class="nav-link dropdown-toggle">
-                    <i class="fa-solid fa-users nav-icon"></i>
-                    <span class="menu-text">Penilaian</span>
-                    <i class="fa-solid fa-chevron-left arrow"></i>
-                </div>
-                <ul class="submenu">
-                    <li class="submenu-item">
-                        <a href="{{ route('periode-penilaian.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Periode Penilaian</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('kelola-penilaian.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Kelola Penilaian</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('verifikasi-penilaian.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Verifikasi Penilaian</span>
-                        </a>
-                    </li>
-                    <li class="submenu-item">
-                        <a href="{{ route('catatan-penilaian.index') }}" class="submenu-link menu-item">
-                            <span class="menu-text">Catatan Penilaian</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            @if(Auth::check() && Auth::user()->hasAccess('laporan'))
-                <li class="nav-item">
-                    <div class="nav-link dropdown-toggle">
-                        <i class="fa-solid fa-file-lines nav-icon"></i>
-                        <span class="menu-text">Laporan</span>
-                        <i class="fa-solid fa-chevron-left arrow"></i>
-                    </div>
-                    <ul class="submenu">
-                        <li class="submenu-item">
-                            <a href="{{ route('laporan.tahunan.index') }}" class="submenu-link menu-item">
-                                <span class="menu-text">Laporan Tahunan</span>
-                            </a>
-                        </li>
-                        <li class="submenu-item">
-                            <a href="{{ route('laporan.rekap-nilai.index') }}" class="submenu-link menu-item">
-                                <span class="menu-text">Laporan Rekap Nilai</span>
-                            </a>
-                        </li>
-                        <li class="submenu-item">
-                            <a href="{{ route('laporan.indeks-unit-kerja.index') }}" class="submenu-link menu-item">
-                                <span class="menu-text">Laporan Index Unit Kerja</span>
-                            </a>
-                        </li>
-                        <li class="submenu-item">
-                            <a href="{{ route('laporan.indeks-kompetensi.index') }}" class="submenu-link menu-item">
-                                <span class="menu-text">Laporan Index Kompetensi</span>
-                            </a>
-                        </li>
-                    </ul> 
-                </li>
-            @endif
-
-            @if(Auth::check() && Auth::user()->isSuperAdmin())
-                <li class="nav-item">
-                    <div class="nav-link dropdown-toggle">
-                        <i class="fa-solid fa-gear nav-icon"></i>
-                        <span class="menu-text">Setting</span>
-                        <i class="fa-solid fa-chevron-left arrow"></i>
-                    </div>
-                    <ul class="submenu">
-                        <li class="submenu-item">
-                            <a href="{{ route('setting.hak-akses') }}" class="submenu-link menu-item">
-                                <span class="menu-text">Hak Akses</span>
-                            </a>
-                        </li>
-                        <li class="submenu-item">
-                            <a href="{{ route('setting.otorisasi-menu') }}" class="submenu-link menu-item">
-                                <span class="menu-text">Otorisasi Menu</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            @endif
         </ul>
     </div>
 
@@ -375,9 +294,9 @@
                 <div class="header-title">(DP3) Penilaian Kinerja</div>
             </div>
 
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+            <form method="POST" action="{{ route('logout') }}" style="margin: 0;" aria-label="Keluar dari akun">
                 @csrf
-                <button type="submit" class="hamburger-btn" title="Keluar" style="padding: 6px 10px; font-size: 14px; border-radius: 10px;">
+                <button type="submit" class="hamburger-btn" title="Keluar" aria-label="Keluar" style="padding: 6px 10px; font-size: 14px; border-radius: 10px;">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
             </form>

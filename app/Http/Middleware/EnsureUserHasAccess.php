@@ -14,7 +14,8 @@ class EnsureUserHasAccess
             abort(401);
         }
 
-        if (!Auth::user()->canAccessModule($module, $action)) {
+        $user = Auth::user();
+        if (!$user->isSuperAdmin() && !$user->canAccessModule($module, $action)) {
             abort(403, 'Anda tidak memiliki izin untuk mengakses fitur ini.');
         }
 

@@ -1037,7 +1037,7 @@
                                                     <i class="fas fa-edit"></i>
                                                 </a>
 
-                                                <a href="{{ route('penilaian.form', ['penilaian_id' => data_get($row, 'penilaian_id')]) }}"
+                                                <a href="{{ route('penilaian.preview', ['id' => data_get($row, 'penilaian_id')]) }}"
                                                 class="btn-action-icon btn-info" 
                                                 title="Lihat Detail" 
                                                 aria-label="Lihat Detail">

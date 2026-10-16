@@ -1079,7 +1079,7 @@
                                         <td class="text-center table-action-cell">
                                             <div class="detail-action-group">
                                                 <!-- Tombol 1: Preview Form / Detail -->
-                                                <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}" 
+                                                <a href="{{ route('verifikasi.preview', $penilaianId) }}" 
                                                    class="btn-action-icon" 
                                                    title="Lihat Detail" 
                                                    aria-label="Lihat Detail">

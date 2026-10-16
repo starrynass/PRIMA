@@ -207,6 +207,11 @@
 <body>
     <div class="login-shell">
         <div class="login-card">
+                @if(session('status'))
+                    <div role="status" style="margin-bottom: 16px; padding: 12px; border: 1px solid #efd2dc; border-radius: 10px; color: #7A1C38; background: #f8eaf0;">
+                        {{ session('status') }}
+                    </div>
+                @endif
             <div class="brand-wrap">
                 <div class="brand-badge">
                     <i class="fa-solid fa-chart-column"></i>
