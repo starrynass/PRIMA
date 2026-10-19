@@ -116,8 +116,8 @@ class PeriodePenilaianController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_deadline' => $request->tanggal_deadline,
             'status' => $request->status ?? 'LOCKED' ,
-            'dibuka_oleh_admin' => auth()->user()->name ?? 'Admin',
-            'created_by' => auth()->user()->username ?? 'System',
+            'dibuka_oleh_admin' => 'Ya',
+            'created_by' => auth()->user()?->email ?? 'System',
         ]);
 
         return redirect()->back()->with('success', 'Periode penilaian berhasil ditambahkan!');
@@ -409,7 +409,10 @@ class PeriodePenilaianController extends Controller
 
         $search = trim($validated['q']);
         $employees = DB::table('employee as e')
-            ->where('e.is_hapus', 0)
+            ->where(function ($query) {
+                $query->whereNull('e.is_hapus')
+                    ->orWhere('e.is_hapus', 0);
+            })
             ->whereNotExists(function ($query) use ($id) {
                 $query->selectRaw('1')
                     ->from('dp3_trans_penilaian as tp')

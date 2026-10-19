@@ -52,6 +52,7 @@ class Dp3TransPenilaian extends Model
         'catatan_verifikator',
         'catatan',
         'status_nilai',
+        'status_verifikator',
         'status_verifitor',
         'tanggal_submit',
         'tanggal_verifikasi',
@@ -61,11 +62,14 @@ class Dp3TransPenilaian extends Model
 
     public function getStatusVerifikatorAttribute(): ?string
     {
-        return $this->attributes['status_verifitor'] ?? null;
+        return $this->attributes['status_verifikator']
+            ?? $this->attributes['status_verifitor']
+            ?? null;
     }
 
     public function setStatusVerifikatorAttribute($value): void
     {
+        $this->attributes['status_verifikator'] = $value;
         $this->attributes['status_verifitor'] = $value;
     }
 

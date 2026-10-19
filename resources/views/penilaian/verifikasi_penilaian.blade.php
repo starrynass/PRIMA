@@ -1018,7 +1018,7 @@
                                     @php
                                         $penilaianId = data_get($row, 'penilaian_id', $row->id ?? '');
                                         $statusPenilaian = strtoupper((string) data_get($row, 'status_nilai', 'BELUM DIISI'));
-                                        $statusVerifikator = strtoupper((string) data_get($row, 'status_verifikator', ''));
+                                        $statusVerifikator = strtoupper((string) data_get($row, 'status_verifikator_display', data_get($row, 'status_verifikator', '')));
                                         $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
                                         $predikat = data_get($row, 'predikat', 'Mengecewakan');
                                     @endphp
@@ -1047,8 +1047,10 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED']))
-                                                <span class="badge-status-success">Diajukan</span>
+                                            @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI']))
+                                                <span class="badge-status-success">Menunggu Verifikasi</span>
+                                            @elseif(in_array($statusPenilaian, ['VERIFIED', 'TERVERIFIKASI']))
+                                                <span class="badge-status-success">Verified</span>
                                             @elseif($statusPenilaian === 'DIKEMBALIKAN')
                                                 <span class="badge-status-danger">Dikembalikan</span>
                                             @elseif($statusPenilaian === 'DRAFT')
@@ -1072,6 +1074,8 @@
                                                 <span class="badge-status-danger">Ada Koreksi</span>
                                             @elseif(in_array($statusVerifikator, ['REVISI', 'DIKEMBALIKAN']))
                                                 <span class="badge-status-warning">Revisi</span>
+                                            @elseif(in_array($statusVerifikator, ['', 'BELUM VERIFIKASI', 'UNVERIFIED']))
+                                                <span class="badge-status-gray">Menunggu Verifikasi</span>
                                             @else
                                                 <span class="badge-status-gray">{{ $statusVerifikator ?: 'BELUM VERIFIKASI' }}</span>
                                             @endif

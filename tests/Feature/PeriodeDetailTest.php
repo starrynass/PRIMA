@@ -64,6 +64,24 @@ class PeriodeDetailTest extends TestCase
         ], 'penilaian_id');
     }
 
+    public function test_period_can_be_created_and_marks_admin_as_opening_period(): void
+    {
+        $response = $this->post(route('periode.store'), [
+            'bulan' => 10,
+            'tahun' => 2026,
+            'tanggal_mulai' => '2026-10-01',
+            'tanggal_deadline' => '2026-10-31',
+            'status' => 'LOCKED',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('dp3_trans_periode_penilaian', [
+            'periode_id' => 'PER202610',
+            'dibuka_oleh_admin' => 'Ya',
+            'created_by' => $this->user->email,
+        ]);
+    }
+
     public function test_manual_evaluator_can_be_assigned_and_cleared_and_deactivation_requires_reason(): void
     {
         $employeeId = $this->createEmployee('Pegawai Peserta', 'NUP-001');
