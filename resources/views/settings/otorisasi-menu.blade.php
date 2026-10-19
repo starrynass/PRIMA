@@ -29,10 +29,6 @@
                         <option value="{{ $value }}" {{ $selectedRole === $value ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
-                <p class="permission-help">
-                    Pilihan di bawah langsung menentukan menu sidebar dan halaman yang dapat dibuka oleh semua pengguna dengan role ini.
-                    Aktifkan menu yang diperlukan, lalu tekan <strong>Simpan Otorisasi</strong>. Role Super Admin tidak ditampilkan karena selalu memiliki akses penuh.
-                </p>
             </div>
         </div>
 

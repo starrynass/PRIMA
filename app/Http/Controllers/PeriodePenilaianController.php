@@ -261,7 +261,9 @@ class PeriodePenilaianController extends Controller
         try {
             // 4. Ambil seluruh pegawai untuk snapshot periode.
             // Semua pegawai tetap masuk ke periode agar data penilaian konsisten dengan total pegawai yang dikelola.
-            $pegawaiAktif = DB::table('employee')->get();
+            $pegawaiAktif = DB::table('employee')
+                ->where('is_hapus', 0)
+                ->get();
 
             if ($pegawaiAktif->isEmpty()) {
                 return redirect()->back()->with('warning', 'Tidak ada data pegawai untuk di-generate.');
@@ -295,10 +297,7 @@ class PeriodePenilaianController extends Controller
                         'pgw_id_subdept_name' => $namaSubDepartemen,
                         'pgw_off_id' => $pgw->off_id,
                         'pgw_off_name' => $namaOffice,
-                        
-                        // SESUAIKAN MENJADI PGW_KODE_UNIT_KERJA
                         'pgw_kode_unit_kerja' => $pgw->kode_unit_kerja,
-                        
                         'pgw_kode_satker' => $pgw->off_id ?? $pgw->dept_id,
                         'status_nilai' => 'Belum Diisi',
                         'total_nilai' => 0.00,
@@ -410,6 +409,7 @@ class PeriodePenilaianController extends Controller
 
         $search = trim($validated['q']);
         $employees = DB::table('employee as e')
+            ->where('e.is_hapus', 0)
             ->whereNotExists(function ($query) use ($id) {
                 $query->selectRaw('1')
                     ->from('dp3_trans_penilaian as tp')

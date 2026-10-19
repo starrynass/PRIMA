@@ -77,7 +77,7 @@ return new class extends Migration
 
         // Flag Status Sistem
         $table->tinyInteger('is_pensiun')->nullable()->comment('1=Pensiun, 0=Aktif');
-        $table->tinyInteger('is_hapus')->nullable();
+        $table->tinyInteger('is_hapus')->nullable()->comment('1=Dihapus, 0=Aktif');
         $table->smallInteger('is_absen_webview')->nullable();
         $table->string('app_version', 10)->nullable();
 

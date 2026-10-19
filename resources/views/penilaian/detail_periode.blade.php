@@ -794,28 +794,6 @@
                     </div>
 
                     <div>
-                        <select name="dept_id" class="form-select-custom">
-                            <option value="">- Semua Departemen -</option>
-                            @foreach($departments as $dept)
-                                <option value="{{ $dept->dept_id }}" {{ request('dept_id') == $dept->dept_id ? 'selected' : '' }}>
-                                    {{ $dept->dept_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <select name="subdept_id" class="form-select-custom">
-                            <option value="">- Semua Sub Dept -</option>
-                            @foreach($subDepartments as $subDept)
-                                <option value="{{ $subDept->subdept_id }}" {{ request('subdept_id') == $subDept->subdept_id ? 'selected' : '' }}>
-                                    {{ $subDept->subdept_name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
                         <select name="kode_unit_kerja" class="form-select-custom">
                             <option value="">- Semua Unit Kerja -</option>
                             @foreach($unitKerjaList as $uk)
@@ -868,8 +846,6 @@
                             <th>UNIT KERJA</th> <!-- Kolom Baru -->
                             <th>PENEMPATAN</th>
                             <th>JABATAN</th>
-                            <th>DEPARTEMEN</th>
-                            <th>SUB DEPARTEMEN</th>
                             <th>PENILAI</th>
                             <th>VERIFIKATOR</th>
                             <th>STATUS</th>
@@ -893,8 +869,6 @@
                                 <td>{{ data_get($row, 'unit_kerja', '-') }}</td> <!-- Tampilkan Unit Kerja -->
                                 <td>{{ data_get($row, 'penempatan', '-') }}</td>
                                 <td>{{ data_get($row, 'jabatan', '-') }}</td>
-                                <td>{{ data_get($row, 'departemen', '-') }}</td>
-                                <td>{{ data_get($row, 'sub_departemen', '-') }}</td>
                                 <td>
                                     @if(data_get($row, 'nama_penilai'))
                                         {{ data_get($row, 'nama_penilai') }}
