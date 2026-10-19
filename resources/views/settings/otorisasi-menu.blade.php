@@ -334,7 +334,7 @@
         }
 
         .menu-access-table th,
-        .menu-access-table td {
+        .menu-access-table td { 
             padding: 10px 10px;
         }
 

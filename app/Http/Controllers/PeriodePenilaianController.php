@@ -408,11 +408,14 @@ class PeriodePenilaianController extends Controller
         ]);
 
         $search = trim($validated['q']);
+
         $employees = DB::table('employee as e')
             ->where(function ($query) {
                 $query->whereNull('e.is_hapus')
                     ->orWhere('e.is_hapus', 0);
-            })
+            });
+            
+        $employees = DB::table('employee as e') 
             ->whereNotExists(function ($query) use ($id) {
                 $query->selectRaw('1')
                     ->from('dp3_trans_penilaian as tp')

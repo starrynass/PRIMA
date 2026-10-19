@@ -1035,14 +1035,16 @@
                 @foreach($offices as $office)
                     <option value="{{ $office->off_id }}">{{ $office->off_name }}</option>
                 @endforeach
-            </select>
+            </select>   
+
             <label for="bulkSatker">Satker</label>
             <input type="text" name="kode_satker" id="bulkSatker" maxlength="255" placeholder="Kode satuan kerja">
+
             <label for="bulkUnitKerja">Unit Kerja</label>
             <select name="kode_unit_kerja" id="bulkUnitKerja">
                 <option value="">- Tidak diubah -</option>
-                @foreach($unitKerjaList as $unitKerja)
-                    <option value="{{ $unitKerja->kode_unit_kerja }}">{{ $unitKerja->nama_unit_kerja }}</option>
+                @foreach($unitKerjaList as $uk)
+                    <option value="{{ $uk->kode_unit_kerja }}">{{ $uk->nama_unit_kerja }}</option>
                 @endforeach
             </select>
             <div class="period-dialog-actions">
