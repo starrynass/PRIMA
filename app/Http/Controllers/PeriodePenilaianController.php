@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dp3TransPeriodePenilaian;
+use App\Models\Employee;
 use App\Exports\PeriodePenilaianExport;
+use App\Support\EmployeeAssessmentPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -574,6 +576,13 @@ class PeriodePenilaianController extends Controller
         $validated = $request->validate([
             'penilai_id' => ['required', 'integer', 'exists:employee,pgw_id'],
         ]);
+        $evaluator = Employee::query()->findOrFail($validated['penilai_id']);
+
+        foreach ($entries as $entry) {
+            abort_unless(in_array(strtoupper(trim((string) $entry->status_nilai)), ['', 'BELUM DIISI', 'DRAFT'], true), 422);
+            $target = Employee::query()->find($entry->pegawai_id);
+            abort_unless(EmployeeAssessmentPolicy::canEmployeeEvaluate($evaluator, $target), 422);
+        }
 
         DB::table('dp3_trans_penilaian')
             ->where('periode_id', $id)
@@ -594,6 +603,9 @@ class PeriodePenilaianController extends Controller
         }
 
         $entries = $this->selectedActiveEntries($request, $id);
+        foreach ($entries as $entry) {
+            abort_unless(in_array(strtoupper(trim((string) $entry->status_nilai)), ['', 'BELUM DIISI', 'DRAFT'], true), 422);
+        }
 
         DB::table('dp3_trans_penilaian')
             ->where('periode_id', $id)

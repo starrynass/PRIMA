@@ -10,6 +10,7 @@ use App\Models\MasterSkalaNilai;
 use App\Models\MasterPredikatNilai;
 use App\Models\Office;
 use App\Models\UnitKerja;
+use App\Support\EmployeeAssessmentPolicy;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -73,6 +74,13 @@ class VerifikasiPenilaianController extends Controller
                         'penilai.nama as nama_penilai',
                         'verifikator.nama as nama_verifikator'
                     );
+                EmployeeAssessmentPolicy::applyVerificationListScope($queryPenilaian, $request->user());
+                $scopedStatistics = DB::table('dp3_trans_penilaian as tp')
+                    ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
+                    ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
+                    ->where('tp.periode_id', $selectedPeriodeId)
+                    ->where('tp.is_active', true);
+                EmployeeAssessmentPolicy::applyVerificationListScope($scopedStatistics, $request->user());
 
                 // Filter Pencarian (Nama / NUP)
                 if ($request->filled('search')) {
@@ -164,33 +172,29 @@ class VerifikasiPenilaianController extends Controller
                 $penilaians = $queryPenilaian->paginate(25)->appends($request->query());
 
                 // 2. Perhitungan Kartu Ringkasan Statistik
-                $menungguVerifikasi = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-                    ->where('is_active', true)
-                    ->whereIn(DB::raw('UPPER(status_nilai)'), ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'])
-                    ->where(function($q) {
-                        $q->whereIn(DB::raw("UPPER(COALESCE(NULLIF(status_verifikator, ''), status_verifitor, ''))"), ['BELUM VERIFIKASI', 'UNVERIFIED'])
-                            ->orWhereRaw("COALESCE(NULLIF(status_verifikator, ''), status_verifitor, '') = ''");
-                    })->count();
-
-                $sudahVerified = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-                    ->where('is_active', true)
-                    ->whereIn(DB::raw("UPPER(COALESCE(NULLIF(status_verifikator, ''), status_verifitor, ''))"), ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'])
+                $menungguVerifikasi = (clone $scopedStatistics)
+                    ->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'])
+                    ->where(function ($query) {
+                        $query->whereIn(DB::raw("UPPER(COALESCE(NULLIF(tp.status_verifikator, ''), tp.status_verifitor, ''))"), ['BELUM VERIFIKASI', 'UNVERIFIED'])
+                            ->orWhereRaw("COALESCE(NULLIF(tp.status_verifikator, ''), tp.status_verifitor, '') = ''");
+                    })
                     ->count();
 
-                $adaKoreksi = DB::table('dp3_trans_penilaian_detail as tpd')
-                    ->join('dp3_trans_penilaian as tp', 'tp.penilaian_id', '=', 'tpd.penilaian_id')
-                    ->where('tp.periode_id', $selectedPeriodeId)
-                    ->where('tp.is_active', true)
+                $sudahVerified = (clone $scopedStatistics)
+                    ->whereIn(DB::raw("UPPER(COALESCE(NULLIF(tp.status_verifikator, ''), tp.status_verifitor, ''))"), ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'])
+                    ->count();
+
+                $adaKoreksi = (clone $scopedStatistics)
+                    ->join('dp3_trans_penilaian_detail as tpd', 'tp.penilaian_id', '=', 'tpd.penilaian_id')
                     ->whereNotNull('tpd.verif_nilai_angka')
                     ->whereNotNull('tpd.nilai_angka')
                     ->whereColumn('tpd.verif_nilai_angka', '<>', 'tpd.nilai_angka')
                     ->count();
 
-                $dikembalikan = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
-                    ->where('is_active', true)
-                    ->where(function ($q) {
-                        $q->whereIn(DB::raw('UPPER(status_nilai)'), ['DIKEMBALIKAN', 'REVISI'])
-                            ->orWhereIn(DB::raw("UPPER(COALESCE(NULLIF(status_verifikator, ''), status_verifitor, ''))"), ['DIKEMBALIKAN', 'REVISI']);
+                $dikembalikan = (clone $scopedStatistics)
+                    ->where(function ($query) {
+                        $query->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['DIKEMBALIKAN', 'REVISI'])
+                            ->orWhereIn(DB::raw("UPPER(COALESCE(NULLIF(tp.status_verifikator, ''), tp.status_verifitor, ''))"), ['DIKEMBALIKAN', 'REVISI']);
                     })->count();
             }
         }
@@ -218,6 +222,8 @@ class VerifikasiPenilaianController extends Controller
         $penilaian = Dp3TransPenilaian::with(['periode', 'pegawai', 'details'])
             ->where('penilaian_id', $penilaian_id)
             ->firstOrFail();
+        abort_unless(EmployeeAssessmentPolicy::canVerify(auth()->user(), $penilaian)
+            && $this->isVerifiable($penilaian), 403);
 
         // 2. Pemetaan Nilai dan Catatan (Gunakan Koreksi Verifikator jika ada, jika belum gunakan nilai dari Penilai Awal)
         $existingJawaban = [];
@@ -274,6 +280,15 @@ class VerifikasiPenilaianController extends Controller
     public function storeForm(Request $request, $penilaian_id)
     {
         $penilaian = Dp3TransPenilaian::where('penilaian_id', $penilaian_id)->firstOrFail();
+        abort_unless(EmployeeAssessmentPolicy::canVerify($request->user(), $penilaian)
+            && $this->isVerifiable($penilaian), 403);
+        $actorEmployeeId = (int) ($request->user()->employee_id ?? 0);
+        if (!$request->user()->isSuperAdmin()
+            && !empty($penilaian->verifikator_id)
+            && (int) $penilaian->verifikator_id !== $actorEmployeeId
+            && (int) $penilaian->verifikator_id !== (int) $request->user()->id) {
+            abort(403);
+        }
         
         $validated = $request->validate([
             'status_aksi' => ['nullable', 'in:koreksi,verified,revisi'],
@@ -289,7 +304,7 @@ class VerifikasiPenilaianController extends Controller
         $catatanVerifikator = $request->input('catatan_verifikator', []);
         $catatanUmum = $request->input('catatan_umum_verifikator');
 
-        DB::transaction(function () use ($penilaian, $statusAksi, $jawaban, $catatanVerifikator, $catatanUmum, $request) {
+        DB::transaction(function () use ($penilaian, $statusAksi, $jawaban, $catatanVerifikator, $catatanUmum, $request, $actorEmployeeId) {
             
             // 1. Simpan Detail Koreksi Per Pertanyaan ke Tabel Detail
             foreach ($jawaban as $pertanyaanId => $skalaVal) {
@@ -311,7 +326,7 @@ class VerifikasiPenilaianController extends Controller
                         'verif_nilai_sebelumnya' => $isCorrected ? (string) $detail->nilai_angka : null,
                         'verif_alasan_koreksi' => $isCorrected ? ($catatanVerifikator[$pertanyaanId] ?? null) : null,
                         'verif_status'      => $isCorrected ? 'KOREKSI' : 'VERIFIED',
-                        'verifikator_id'    => auth()->id() ?? $penilaian->verifikator_id,
+                        'verifikator_id'    => $actorEmployeeId ?: $penilaian->verifikator_id,
                         'verif_tanggal'     => now(),
                     ]);
                 $detail->save();
@@ -324,7 +339,7 @@ class VerifikasiPenilaianController extends Controller
             $penilaian->total_nilai_verifikator = $totalNilai;
             $penilaian->predikat_verifikator    = $predikatNama;
             $penilaian->catatan_verifikator     = $catatanUmum;
-            $penilaian->verifikator_id          = auth()->id() ?? $penilaian->verifikator_id;
+            $penilaian->verifikator_id          = $actorEmployeeId ?: $penilaian->verifikator_id;
 
             // 3. Tentukan Status Akhir Berdasarkan Tombol Aksi yang Ditekan
             if ($statusAksi === 'verified') {
@@ -355,5 +370,16 @@ class VerifikasiPenilaianController extends Controller
 
         return redirect()->route('verifikasi-penilaian.index', ['periode_id' => $penilaian->periode_id])
             ->with('success', $messages[$statusAksi] ?? 'Data berhasil diproses');
+    }
+
+    private function isVerifiable(Dp3TransPenilaian $penilaian): bool
+    {
+        return (bool) $penilaian->is_active
+            && in_array(strtoupper(trim((string) $penilaian->status_nilai)), [
+                'SUBMIT',
+                'SUBMITTED',
+                'DIAJUKAN',
+                'MENUNGGU VERIFIKASI',
+            ], true);
     }
 }

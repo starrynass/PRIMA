@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Dp3TransPenilaian;
 use App\Models\MasterSkalaNilai;
 use App\Models\MasterTemplate;
+use App\Support\EmployeeAssessmentPolicy;
 
 class PreviewVerifikasiController extends Controller
 {
@@ -24,6 +25,7 @@ class PreviewVerifikasiController extends Controller
             'unitkerja',
             'details'
         ])->where('penilaian_id', $id)->firstOrFail();
+        abort_unless(EmployeeAssessmentPolicy::canVerify(auth()->user(), $penilaian), 403);
 
         // 2. Ambil Template terkait
         $templateId = $penilaian->template_id;

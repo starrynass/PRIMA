@@ -1094,15 +1094,17 @@
                                                 </a>
 
                                                 <!-- Tombol 2: Verifikasi Penilaian (Mengarah ke Form Verifikasi) -->
-                                                <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}" 
-                                                   class="btn-action-icon" 
-                                                   title="Verifikasi Penilaian" 
-                                                   aria-label="Verifikasi Penilaian">
-                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
-                                                        <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
-                                                    </svg>
-                                                </a>
+                                                @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'], true))
+                                                    <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}"
+                                                       class="btn-action-icon"
+                                                       title="Verifikasi Penilaian"
+                                                       aria-label="Verifikasi Penilaian">
+                                                        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
+                                                            <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
+                                                        </svg>
+                                                    </a>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>

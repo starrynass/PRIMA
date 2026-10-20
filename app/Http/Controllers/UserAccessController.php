@@ -9,8 +9,10 @@ use App\Models\User;
 use App\Support\EmployeeAccountSync;
 use App\Support\MenuCatalog;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class UserAccessController extends Controller
 {
@@ -66,9 +68,16 @@ class UserAccessController extends Controller
 
         $selectedUserId = $request->query('user_id');
         $selectedUser = $selectedUserId ? $users->firstWhere('id', (int) $selectedUserId) : $users->first();
-        $selectedUserPassword = $selectedUser?->password_reveal
-            ? Crypt::decryptString($selectedUser->password_reveal)
-            : null;
+        $selectedUserPassword = null;
+        if ($selectedUser?->password_reveal) {
+            try {
+                $selectedUserPassword = Crypt::decryptString($selectedUser->password_reveal);
+            } catch (DecryptException $exception) {
+                Log::warning('Unable to decrypt stored account password reveal.', [
+                    'user_id' => $selectedUser->id,
+                ]);
+            }
+        }
 
         return view('settings.hak-akses', [
             'users' => $users,
@@ -86,7 +95,9 @@ class UserAccessController extends Controller
         $roleOptions = User::roleCatalog();
         unset($roleOptions['superadmin']);
 
-        $defaultRole = array_key_first($roleOptions);
+        $defaultRole = array_key_exists('direktur', $roleOptions)
+            ? 'direktur'
+            : array_key_first($roleOptions);
         $selectedRole = (new User())->normalizeRole($request->query('role', $defaultRole));
 
         if (!array_key_exists($selectedRole, $roleOptions)) {

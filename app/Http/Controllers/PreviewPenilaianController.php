@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Dp3TransPenilaian;
 use App\Models\MasterSkalaNilai;
 use App\Models\MasterTemplate;
+use App\Support\EmployeeAssessmentPolicy;
 
 class PreviewPenilaianController extends Controller
 {
@@ -24,6 +25,7 @@ class PreviewPenilaianController extends Controller
             'unitkerja',
             'details'
         ])->where('penilaian_id', $id)->firstOrFail();
+        abort_unless(EmployeeAssessmentPolicy::canViewEvaluation(auth()->user(), $penilaian), 403);
 
         // 2. Tentukan Template ID yang digunakan (bisa dari kolom template_id di transaksi atau via jabatan/default)
         $templateId = $penilaian->template_id;
