@@ -844,6 +844,1287 @@
 @media (max-width: 1200px) { .widget-row { grid-template-columns: 1fr; } }
 @media (max-width: 992px) { .dash-cards-row-top, .dash-cards-row-bottom { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 576px) { .dash-cards-row-top, .dash-cards-row-bottom { grid-template-columns: 1fr; } }
+
+/* Styling Widget Progress per Unit Kerja */
+.unit-progress-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    margin-top: 1.5rem;
+    overflow: hidden;
+}
+
+.unit-card-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.unit-header-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.unit-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.unit-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.8125rem;
+}
+
+.unit-table th {
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.unit-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+}
+
+.unit-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.unit-table-scroll-container {
+    max-height: 420px; /* Batasi tinggi card agar bisa di-scroll */
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* Kustomisasi Scrollbar agar mirip dengan widget sebelumnya */
+.unit-table-scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+.unit-table-scroll-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.unit-table-scroll-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.unit-table-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Membuat Header Tabel tetap menempel di atas saat di-scroll (Sticky Header) */
+.unit-table thead th {
+    position: sticky;
+    top: 0;
+    background: #f8fafc;
+    z-index: 10;
+    box-shadow: inset 0 -1px 0 #e2e8f0;
+}
+
+.badge-komposisi {
+    background: #f1f5f9;
+    color: #334155;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid #e2e8f0;
+}
+
+.badge-komposisi span {
+    color: #0284c7;
+    font-weight: 700;
+}
+
+.unit-progress-bar-bg {
+    width: 100%;
+    background: #e2e8f0;
+    height: 6px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 0.35rem;
+}
+
+.unit-progress-bar-fill {
+    background: #0284c7;
+    height: 100%;
+    border-radius: 999px;
+}
+
+.badge-status-atrisk {
+    background: #fee2e2;
+    color: #991b1b;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+}
+
+.badge-status-aman {
+    background: #dcfce7;
+    color: #166534;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+}
+
+/* Wrapper Kolom Unit Kerja */
+.unit-cell-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    gap: 0.75rem;
+}
+
+/* Kotak Ikon Gedung */
+.unit-icon-box {
+    width: 34px;
+    height: 34px;
+    border-radius: 0.5rem;
+    background-color: #ffe4e6; /* Merah muda lembut */
+    color: #9f1239;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Mencegah ikon tertekan/gepeng */
+    font-size: 0.875rem;
+}
+
+/* Teks Nama Unit Kerja */
+.unit-text-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.unit-name-text {
+    font-size: 0.8125rem;
+    line-height: 1.25;
+    color: #0f172a;
+}
+
+.unit-sub-text {
+    font-size: 0.7rem;
+    line-height: 1.2;
+    margin-top: 0.15rem;
+}
+
+/* Container Utama Widget Distribusi Predikat */
+.distribusi-predikat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    margin-top: 1.5rem;
+    overflow: hidden;
+}
+
+.distribusi-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(360px, 1fr);
+    gap: 0;
+    padding: 0;
+}
+
+.distribusi-grid > * {
+    min-width: 0;
+}
+
+@media (max-width: 992px) {
+    .distribusi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ranking-panel {
+        border-left: 0;
+        border-top: 1px solid #e2e8f0;
+    }
+}
+
+.overall-average-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 84px;
+    margin: 0 0 1.25rem;
+    padding: 1.15rem 1.25rem;
+    background: linear-gradient(110deg, #fff7f7, #ffffff 80%);
+    border: 1px solid #f3d5da;
+    border-radius: 0.875rem;
+}
+
+.overall-average-label {
+    color: #475569;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.overall-average-note {
+    margin-top: 0.3rem;
+    color: #64748b;
+    font-size: 0.75rem;
+}
+
+.overall-average-value {
+    flex-shrink: 0;
+    color: #801b2b;
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    font-weight: 900;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.distribution-panel {
+    min-width: 0;
+    padding: 1.25rem 1.5rem 1.5rem;
+}
+
+/* Legend Komposisi Predikat */
+.predikat-legend-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    font-size: 0.725rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.predikat-legend-items {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.legend-item-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+}
+
+.dot-p {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+}
+.dot-luar-biasa   { background-color: #15803d; } /* Hijau tua */
+.dot-di-atas      { background-color: #22c55e; } /* Hijau terang */
+.dot-sesuai       { background-color: #2563eb; } /* Biru */
+.dot-di-bawah     { background-color: #d97706; } /* Oranye */
+.dot-mengecewakan { background-color: #dc2626; } /* Merah */
+
+/* Scroll Container Sisi Kiri (Bar Chart Unit) */
+.distribusi-left-scroll {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+}
+
+.distribusi-left-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+.distribusi-left-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.distribusi-left-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* Bar Item Per Unit Kerja */
+.unit-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.unit-bar-info {
+    width: 180px;
+    min-width: 0;
+    flex: 0 1 180px;
+}
+
+.unit-bar-name {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.unit-bar-sub {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 0.15rem;
+}
+
+.badge-unit-aktif {
+    font-size: 0.675rem;
+    background: #fbf6f6;
+    color: #9f1239
+}
+
+.stacked-bar-container {
+    flex-grow: 1;
+    min-width: 0;
+    height: 12px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+    display: flex;
+}
+
+.stacked-bar-seg {
+    height: 100%;
+    transition: width 0.4s ease;
+}
+
+.bg-luar-biasa   { background-color: #15803d; }
+.bg-di-atas      { background-color: #22c55e; }
+.bg-sesuai       { background-color: #2563eb; }
+.bg-di-bawah     { background-color: #d97706; }
+.bg-mengecewakan { background-color: #dc2626; }
+
+.unit-bar-avg {
+    width: 42px;
+    text-align: right;
+    font-size: 0.825rem;
+    font-weight: 800;
+    color: #0f172a;
+    flex-shrink: 0;
+}
+
+/* Panel Sisi Kanan (Peringkat Rata-Rata) */
+.ranking-panel {
+    min-width: 0;
+    background: #ffffff;
+    border-left: 1px solid #e2e8f0;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.ranking-panel-title {
+    margin-bottom: 0.75rem;
+    color: #334155;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.ranking-panel-title i {
+    margin-right: 0.35rem;
+    color: #801b2b;
+}
+
+@media (max-width: 576px) {
+    .overall-average-card {
+        padding: 1rem;
+    }
+
+    .distribution-panel,
+    .ranking-panel {
+        padding: 1rem;
+    }
+
+    .ranking-panel {
+        border-left: 0;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .predikat-legend-bar {
+        align-items: flex-start;
+    }
+
+    .unit-bar-item {
+        gap: 0.6rem;
+    }
+
+    .unit-bar-info {
+        flex-basis: 130px;
+    }
+
+    .overall-average-value {
+        font-size: 2rem;
+    }
+}
+
+.ranking-list-scroll {
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ranking-list-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+.ranking-list-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.modal-question-correction {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    color: #9a3412;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    font-size: 0.67rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.ranking-list-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 0.6rem;
+    padding: 0.6rem 0.75rem;
+}
+
+.ranking-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 0.4rem;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.725rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ranking-unit-name {
+    font-size: 0.775rem;
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ranking-unit-sub {
+    font-size: 0.675rem;
+    color: #64748b;
+}
+
+.ranking-score {
+    font-size: 0.8125rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+/* Container Dua Kolom Widget Predikat Terendah */
+.low-performance-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .low-performance-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.low-card {
+    min-width: 0;
+    min-height: 292px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.low-card-header {
+    padding: 1.15rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: nowrap;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.low-card-header-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.low-card-header-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.65rem;
+}
+
+.low-card-header-copy {
+    min-width: 0;
+}
+
+.low-card-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.low-card-description {
+    margin: 0.15rem 0 0;
+    color: #64748b;
+    font-size: 0.725rem;
+    line-height: 1.35;
+}
+
+.low-card-count {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.725rem;
+    padding: 0.35rem 0.75rem;
+    white-space: nowrap;
+}
+
+/* Container Scroll Vertikal List Pegawai */
+.low-list-container {
+    flex: 1;
+    min-height: 160px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.low-list-container > .text-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.low-list-container::-webkit-scrollbar {
+    width: 6px;
+}
+.low-list-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.low-list-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+/* Item Card Pegawai Terendah */
+.low-emp-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.875rem;
+    padding: 0.85rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.low-emp-card:hover {
+    border-color: #fca5a5;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.05);
+}
+
+.low-emp-info {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.low-emp-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 0.6rem;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.low-emp-avatar-placeholder {
+    width: 42px;
+    height: 42px;
+    border-radius: 0.6rem;
+    background: #f1f5f9;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.low-emp-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.low-emp-name {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.low-emp-sub {
+    font-size: 0.725rem;
+    color: #64748b;
+    margin-top: 0.15rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.low-emp-score-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    margin-left: 0.75rem;
+}
+
+@media (max-width: 576px) {
+    .low-card-header {
+        align-items: flex-start;
+        padding: 1rem;
+        gap: 0.6rem;
+    }
+
+    .low-card-header-main {
+        gap: 0.6rem;
+    }
+
+    .low-card-title {
+        font-size: 0.85rem;
+    }
+
+    .low-card-description {
+        font-size: 0.68rem;
+    }
+
+    .low-card-count {
+        padding: 0.3rem 0.55rem;
+        font-size: 0.65rem;
+    }
+
+    .low-list-container {
+        padding: 0.85rem;
+    }
+
+    .low-emp-card {
+        padding: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .low-emp-sub {
+        max-width: 14rem;
+    }
+}
+
+.low-emp-score {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.badge-predikat-dibawah {
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 0.675rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+.badge-predikat-mengecewakan {
+    background: #ffe4e6;
+    color: #9f1239;
+    font-size: 0.675rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+/* Styling Widget Monitoring Detail Pegawai */
+.mon-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    margin-top: 1.5rem;
+    overflow: hidden;
+}
+
+.mon-card,
+.mon-table-wrapper {
+    min-width: 0;
+}
+
+.mon-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.mon-header-main {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+}
+
+.mon-header-icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.mon-header-copy {
+    min-width: 0;
+}
+
+.mon-header-title {
+    margin: 0 0 0.2rem;
+    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.mon-header-description {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.78rem;
+}
+
+.mon-header-count {
+    flex-shrink: 0;
+    padding: 0.45rem 0.8rem;
+    color: #334155;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+/* Tab Navigasi Status */
+.mon-tabs-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+    overflow-x: auto;
+}
+
+.mon-tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: 0.85rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mon-tab-btn:hover {
+    color: #0f172a;
+}
+
+.mon-tab-btn.active {
+    color: #801B2B;
+    border-bottom-color: #801B2B;
+}
+
+/* Tabel Monitoring */
+.mon-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.mon-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    text-align: left;
+    min-width: 1120px;
+}
+
+.mon-table th {
+    background: #ffffff;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.mon-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+}
+
+.mon-table tbody tr:hover {
+    background: #fafafa;
+}
+
+/* Badge Status pada Tabel */
+.badge-status-custom {
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.7rem;
+    display: inline-block;
+}
+.st-belum { background: #f1f5f9; color: #475569; }
+.st-draft { background: #e0f2fe; color: #0369a1; }
+.st-submit { background: #fef3c7; color: #b45309; }
+.st-verified { background: #dcfce7; color: #166534; }
+.st-returned { background: #fee2e2; color: #991b1b; }
+.st-correction { background: #f3e8ff; color: #7e22ce; }
+
+/* Tombol Aksi Mata */
+.btn-action-eye {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-action-eye:hover {
+    background: #801B2B;
+    color: #ffffff;
+    border-color: #801B2B;
+}
+
+/* Modal Popup Detail Styling */
+.modal-detail-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.modal-detail-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.modal-detail-content {
+    background: #ffffff;
+    width: 100%;
+    max-width: 960px;
+    max-height: 92vh;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #334155;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+}
+
+.modal-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+}
+
+.modal-detail-heading {
+    min-width: 0;
+}
+
+.modal-detail-title {
+    margin: 0 0 0.25rem;
+    color: #1e293b;
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.modal-detail-subtitle {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.78rem;
+}
+
+.modal-detail-close,
+.modal-detail-footer button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.75rem;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #dbe3ee;
+    border-radius: 0.55rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.modal-detail-close:hover,
+.modal-detail-footer button:hover {
+    color: #801b2b;
+    border-color: #e8c5cc;
+    background: #fff7f7;
+}
+
+.modal-detail-body {
+    padding: 1.25rem 1.5rem;
+    overflow-y: auto;
+    flex-grow: 1;
+    background: #ffffff;
+}
+
+.modal-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.modal-summary-card {
+    min-width: 0;
+    min-height: 76px;
+    padding: 0.85rem 1rem;
+    background: #ffffff;
+    border: 1px solid #dbe3ee;
+    border-radius: 0.7rem;
+}
+
+.modal-summary-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #64748b;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.modal-summary-value {
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.modal-info-table {
+    width: 100%;
+    margin-bottom: 1.25rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.65rem;
+    overflow: hidden;
+    font-size: 0.78rem;
+}
+
+.modal-info-table td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-info-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.modal-info-label {
+    width: 17%;
+    color: #64748b;
+    background: #f8fafc;
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.modal-info-value {
+    width: 33%;
+    color: #334155;
+}
+
+.modal-detail-tab-pane[hidden] {
+    display: none !important;
+}
+
+.modal-detail-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.modal-detail-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid #dbe3ee;
+    margin-bottom: 1rem;
+}
+
+.modal-detail-tab {
+    padding: 0.75rem 0.9rem;
+    color: #64748b;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.modal-detail-tab:hover {
+    color: #801b2b;
+}
+
+.modal-detail-tab.active {
+    color: #801b2b;
+    border-bottom-color: #801b2b;
+}
+
+.modal-question-category {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+}
+
+.modal-question-category-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    color: #1e293b;
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.modal-question-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.modal-question-card {
+    min-width: 0;
+    padding: 0.85rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.65rem;
+    background: #ffffff;
+}
+
+.modal-question-title {
+    color: #1e293b;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.modal-question-description,
+.modal-question-note {
+    color: #64748b;
+    font-size: 0.72rem;
+}
+
+.modal-question-score {
+    margin-top: 0.65rem;
+    padding: 0.65rem;
+    border: 1px solid #dbeafe;
+    border-radius: 0.5rem;
+    background: #f8fbff;
+    color: #334155;
+    font-size: 0.75rem;
+}
+
+.modal-question-note strong {
+    color: #475569;
+}
+
+.modal-summary-alert {
+    margin: 0;
+    padding: 0.8rem 0.9rem;
+    color: #365879;
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    border-radius: 0.4rem;
+    font-size: 0.78rem;
+}
+
+@media (max-width: 767px) {
+    .mon-header {
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    .mon-header-main {
+        align-items: flex-start;
+    }
+
+    .mon-tabs-bar {
+        padding: 0 0.5rem;
+    }
+
+    .mon-tab-btn {
+        padding: 0.75rem 0.6rem;
+    }
+
+    .modal-detail-body {
+        padding: 1rem;
+    }
+
+    .modal-detail-header,
+    .modal-detail-footer {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+    .modal-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .modal-info-table,
+    .modal-info-table tbody,
+    .modal-info-table tr,
+    .modal-info-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .modal-info-table tr {
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .modal-info-table tr:last-child {
+        border-bottom: 0;
+    }
+
+    .modal-info-table td {
+        padding: 0.55rem 0.7rem;
+        border: 0;
+    }
+
+    .modal-info-label {
+        padding-bottom: 0.1rem !important;
+    }
+
+    .modal-info-value {
+        padding-top: 0.1rem !important;
+    }
+
+    .modal-question-grid {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 
 <div class="dashboard-container">
@@ -1128,8 +2409,392 @@
             @endif
         </div>
     </div>
-@endif
 
+    <!-- WIDGET: Progress Penilaian per Unit Kerja -->
+    <div class="unit-progress-card">
+        <!-- Header Card yang Dirapikan -->
+        <div class="unit-card-header">
+            <div class="unit-header-title-wrapper">
+                <div class="widget-icon-box" style="background: #ffe4e6; color: #9f1239; width: 42px; height: 42px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-chart-bar" style="font-size: 1.1rem;"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-1" style="font-size: 1rem; line-height: 1.2;">Progress Penilaian per Unit Kerja</h6>
+                    <p class="text-muted small mb-0" style="line-height: 1.3;">Ringkasan Komposisi Pegawai, Status Pengisian, dan Progres Verifikasi</p>
+                </div>
+            </div>
+            <span class="badge bg-light text-dark border px-3 py-2 fw-bold badge-unit-aktif" style="border-radius: 999px; font-size: 0.75rem;">
+                {{ $totalUnitAktif ?? 0 }} Unit Kerja
+            </span>
+        </div>
+
+        <!-- Container Tabel dengan Fitur Scroll Vertikal -->
+        <div class="unit-table-scroll-container">
+            <table class="unit-table">
+                <thead>
+                    <tr>
+                        <th>Unit Kerja</th>
+                        <th>Komposisi</th>
+                        <th style="min-width: 180px;">Progress Penilaian</th>
+                        <th class="text-center">Draft</th>
+                        <th>Submitted</th>
+                        <th>Verifikasi</th>
+                        <th class="text-center">Koreksi</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($progressPerUnitKerja as $row)
+                        <tr>
+                            <td>
+                                <div class="unit-cell-wrapper">
+                                    <div class="unit-icon-box">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="unit-text-box">
+                                        <div class="fw-bold text-dark unit-name-text">{{ $row->nama_unit }}</div>
+                                        <div class="text-muted unit-sub-text">{{ $row->total_pegawai }} Pegawai</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @forelse($row->komposisi as $jabatan => $jumlah)
+                                        <span class="badge-komposisi">
+                                            {{ $jabatan }} : <span>{{ $jumlah }}</span>
+                                        </span>
+                                    @empty
+                                        <span class="text-muted small">-</span>
+                                    @endforelse
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-between align-items-center mb-1" style="font-size: 0.75rem;">
+                                    <span class="fw-bold text-dark">{{ $row->progress_count }}/{{ $row->total_pegawai }} Submit/Verifikasi</span>
+                                    <span class="fw-bold text-primary">{{ $row->progress_percent }}%</span>
+                                </div>
+                                <div class="unit-progress-bar-bg">
+                                    <div class="unit-progress-bar-fill" style="width: {{ $row->progress_percent }}%;"></div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="fw-bold text-secondary">{{ $row->draft_count }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-primary">{{ $row->submit_count }} Submit</span>
+                            </td>
+                            <td>
+                                <div style="font-size: 0.75rem;">
+                                    <span class="text-muted">Verified</span> <span class="fw-bold text-dark">{{ $row->verified_count }}/{{ $row->total_pegawai }}</span><br>
+                                    <span class="text-muted">Persen</span> <span class="fw-bold text-success">{{ $row->percent }}%</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="fw-bold text-dark">{{ $row->koreksi_count }}</span>
+                            </td>
+                            <td class="text-center">
+                                @if($row->is_at_risk)
+                                    <span class="badge-status-atrisk">At Risk</span>
+                                @else
+                                    <span class="badge-status-aman">Aman</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                Tidak ada unit kerja yang memiliki data penilaian pada periode ini[cite: 11].
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- WIDGET: Distribusi Predikat Kinerja & Rata-Rata Nilai per Unit Kerja -->
+    <div class="distribusi-predikat-card">
+        <!-- Header Card -->
+        <div class="unit-card-header">
+            <div class="unit-header-title-wrapper">
+                <div class="widget-icon-box" style="background: #f3e8ff; color: #7e22ce; width: 42px; height: 42px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="fas fa-chart-line" style="font-size: 1.1rem;"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold text-dark mb-1" style="font-size: 1rem; line-height: 1.2;">Distribusi Predikat Kinerja</h6>
+                    <p class="text-muted small mb-0" style="line-height: 1.3;">Perbandingan Predikat dan Rata-Rata Nilai Setiap Unit Kerja</p>
+                </div>
+            </div>
+            <span class="badge text-purple bg-purple-soft border border-purple-subtle px-3 py-2 fw-bold" style="border-radius: 999px; font-size: 0.75rem; background: #faf5ff; color: #6b21a8;">
+                {{ $totalPegawaiBernilai ?? 0 }} Pegawai Bernilai
+            </span>
+        </div>
+
+        <!-- Body Grid (Kiri Bar Chart, Kanan Ranking) -->
+        <div class="distribusi-grid">
+            <!-- Bagian Kiri: Komposisi Predikat -->
+            <div class="distribution-panel">
+                <!-- Legend Warna Predikat -->
+                <div class="predikat-legend-bar">
+                    <span class="fw-bold text-dark me-2">Komposisi Predikat per Unit Kerja</span>
+                    <div class="predikat-legend-items">
+                        <span class="legend-item-dot"><span class="dot-p dot-luar-biasa"></span> Luar Biasa</span>
+                        <span class="legend-item-dot"><span class="dot-p dot-di-atas"></span> Diatas Ekspektasi</span>
+                        <span class="legend-item-dot"><span class="dot-p dot-sesuai"></span> Sesuai Ekspektasi</span>
+                        <span class="legend-item-dot"><span class="dot-p dot-di-bawah"></span> Dibawah Ekspektasi</span>
+                        <span class="legend-item-dot"><span class="dot-p dot-mengecewakan"></span> Mengecewakan</span>
+                    </div>
+                </div>
+
+                <!-- List Bar Chart per Unit (Scrollable) -->
+                <div class="distribusi-left-scroll">
+                    @forelse($distribusiUnitList as $item)
+                        <div class="unit-bar-item">
+                            <div class="unit-bar-info">
+                                <div class="unit-bar-name" title="{{ $item->nama_unit }}">{{ $item->nama_unit }}</div>
+                                <div class="unit-bar-sub">{{ $item->jumlah_bernilai }} Pegawai</div>
+                            </div>
+
+                            <!-- Stacked Segment Bar -->
+                            <div class="stacked-bar-container">
+                                @if($item->pct_luar_biasa > 0)
+                                    <div class="stacked-bar-seg bg-luar-biasa" style="width: {{ $item->pct_luar_biasa }}%;" title="Luar Biasa: {{ $item->pct_luar_biasa }}%"></div>
+                                @endif
+                                @if($item->pct_di_atas > 0)
+                                    <div class="stacked-bar-seg bg-di-atas" style="width: {{ $item->pct_di_atas }}%;" title="Di Atas Ekspektasi: {{ $item->pct_di_atas }}%"></div>
+                                @endif
+                                @if($item->pct_sesuai > 0)
+                                    <div class="stacked-bar-seg bg-sesuai" style="width: {{ $item->pct_sesuai }}%;" title="Sesuai Ekspektasi: {{ $item->pct_sesuai }}%"></div>
+                                @endif
+                                @if($item->pct_di_bawah > 0)
+                                    <div class="stacked-bar-seg bg-di-bawah" style="width: {{ $item->pct_di_bawah }}%;" title="Di Bawah Ekspektasi: {{ $item->pct_di_bawah }}%"></div>
+                                @endif
+                                @if($item->pct_mengecewakan > 0)
+                                    <div class="stacked-bar-seg bg-mengecewakan" style="width: {{ $item->pct_mengecewakan }}%;" title="Mengecewakan: {{ $item->pct_mengecewakan }}%"></div>
+                                @endif
+                            </div>
+
+                            <!-- Nilai Rata-Rata -->
+                            <div class="unit-bar-avg">{{ $item->rata_rata }}</div>
+                        </div>
+                    @empty
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-chart-pie fs-3 mb-2 opacity-50"></i>
+                            <p class="mb-0 small">Belum ada pegawai yang nilainya disubmit / diverifikasi pada periode ini[cite: 16].</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <!-- Bagian Kanan: Ranking Rata-Rata Nilai -->
+            <div class="ranking-panel">
+                <div class="overall-average-card">
+                    <div>
+                        <div class="overall-average-value">{{ $rataRataKeseluruhan }}</div>
+                        <div class="overall-average-note">Rata-Rata Nilai Keseluruhan</div>
+                    </div>
+                    <div class="p-2.5 rounded-3" style="background: #fff1f2; color: #801B2B;">
+                        <i class="fas fa-arrow-trend-up fs-5"></i>
+                    </div>
+                </div>
+
+                <div class="ranking-panel-title">
+                    <i class="fas fa-ranking-star" aria-hidden="true"></i>
+                    Peringkat Rata-Rata Unit Kerja
+                </div>
+
+                <!-- List Peringkat Unit Kerja (Scrollable) -->
+                <div class="ranking-list-scroll">
+                    @forelse($rankingUnits as $idx => $rk)
+                        <div class="ranking-item">
+                            <div class="d-flex align-items-center gap-2.5 overflow-hidden me-2">
+                                <div class="ranking-badge">{{ $idx + 1 }}</div>
+                                <div class="overflow-hidden">
+                                    <div class="ranking-unit-name" title="{{ $rk->nama_unit }}">{{ $rk->nama_unit }}</div>
+                                    <div class="ranking-unit-sub">{{ $rk->jumlah_bernilai }} Pegawai Bernilai</div>
+                                </div>
+                            </div>
+                            <div class="ranking-score">{{ $rk->rata_rata }}</div>
+                        </div>
+                    @empty
+                        <div class="text-center py-4 text-muted small">
+                            Tidak ada data peringkat[cite: 16].
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WIDGET: Predikat Terendah Bulan Ini & Terendah 3 Bulan Berturut-turut -->
+    <div class="low-performance-row">
+        <!-- Kiri: Predikat Terendah Bulan Ini -->
+        <div class="low-card">
+            <div class="low-card-header">
+                <div class="low-card-header-main">
+                    <div class="low-card-header-icon" style="background: #fff7ed; color: #c2410c;">
+                        <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 1rem;"></i>
+                    </div>
+                    <div class="low-card-header-copy">
+                        <h6 class="low-card-title">Predikat Terendah Bulan Ini</h6>
+                        <p class="low-card-description">Pegawai dengan Nilai Terendah Periode Aktif</p>
+                    </div>
+                </div>
+                <span class="badge low-card-count" style="background: #ffedd5; color: #9a3412;">
+                    {{ $totalTerendahBulanIni ?? 0 }} Pegawai
+                </span>
+            </div>
+
+            <div class="low-list-container">
+                @forelse($terendahBulanIni as $emp)
+                    <div class="low-emp-card">
+                        <div class="low-emp-info">
+                            @if(!empty($emp->foto))
+                                <img src="{{ asset('storage/' . $emp->foto) }}" class="low-emp-avatar" alt="{{ $emp->nama }}">
+                            @else
+                                <div class="low-emp-avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            @endif
+                            <div class="low-emp-details">
+                                <span class="low-emp-name" title="{{ $emp->nama }}">{{ $emp->nama }}</span>
+                                <span class="low-emp-sub" title="{{ $emp->nup }} &bull; {{ $emp->unit_kerja }} &bull; {{ $emp->jabatan }}">
+                                    {{ $emp->nup }} &bull; {{ $emp->unit_kerja }} &bull; {{ $emp->jabatan }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="low-emp-score-box">
+                            <span class="low-emp-score">{{ $emp->total_nilai }}</span>
+                            @if(str_contains(strtolower($emp->predikat), 'mengecewakan'))
+                                <span class="badge-predikat-mengecewakan">{{ $emp->predikat }}</span>
+                            @else
+                                <span class="badge-predikat-dibawah">{{ $emp->predikat }}</span>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-check-circle text-success fs-3 mb-2 opacity-50"></i>
+                        <p class="mb-0 small">Tidak ada pegawai berpredikat rendah pada periode aktif ini[cite: 18].</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Kanan: Terendah 3 Bulan Berturut-turut -->
+        <div class="low-card">
+            <div class="low-card-header">
+                <div class="low-card-header-main">
+                    <div class="low-card-header-icon" style="background: #ffe4e6; color: #9f1239;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 1rem;"></i>
+                    </div>
+                    <div class="low-card-header-copy">
+                        <h6 class="low-card-title">Terendah 3 Bulan Berturut-turut</h6>
+                        <p class="low-card-description">Kandidat yang Membutuhkan Pembinaan atau Evaluasi</p>
+                    </div>
+                </div>
+                <span class="badge low-card-count" style="background: #ffe4e6; color: #881337;">
+                    {{ $totalTerendahTigaBulan ?? 0 }} Pegawai
+                </span>
+            </div>
+
+            <div class="low-list-container">
+                @forelse($terendahTigaBulan as $emp)
+                    <div class="low-emp-card">
+                        <div class="low-emp-info">
+                            @if(!empty($emp->foto))
+                                <img src="{{ asset('storage/' . $emp->foto) }}" class="low-emp-avatar" alt="{{ $emp->nama }}">
+                            @else
+                                <div class="low-emp-avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            @endif
+                            <div class="low-emp-details">
+                                <span class="low-emp-name" title="{{ $emp->nama }}">{{ $emp->nama }}</span>
+                                <span class="low-emp-sub" title="{{ $emp->nup }} &bull; {{ $emp->unit_kerja }} &bull; {{ $emp->jabatan }}">
+                                    {{ $emp->nup }} &bull; {{ $emp->unit_kerja }} &bull; {{ $emp->jabatan }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="low-emp-score-box">
+                            <span class="low-emp-score">{{ $emp->total_nilai }}</span>
+                            @if(str_contains(strtolower($emp->predikat), 'mengecewakan'))
+                                <span class="badge-predikat-mengecewakan">{{ $emp->predikat }}</span>
+                            @else
+                                <span class="badge-predikat-dibawah">{{ $emp->predikat }}</span>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-5 text-muted">
+                        <p class="mb-0 small" style="color: #64748b;">Tidak ada pegawai pada kategori ini[cite: 18].</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+
+    <!-- WIDGET: Monitoring Detail Pegawai -->
+    <div class="mon-card">
+        <div class="mon-header">
+                <div class="mon-header-main">
+                    <div class="mon-header-icon">
+                    <i class="fas fa-users" style="font-size: 1.1rem;"></i>
+                </div>
+                    <div class="mon-header-copy">
+                        <h6 class="mon-header-title">Monitoring Detail Pegawai</h6>
+                        <p class="mon-header-description">Daftar Status Penilaian Untuk Tindak Lanjut Operasional</p>
+                </div>
+            </div>
+                <span id="totalDataBadge" class="mon-header-count">
+                0 Data
+            </span>
+        </div>
+
+        <!-- Tab Navigasi Filter Status[cite: 19] -->
+        <div class="mon-tabs-bar">
+            <button type="button" class="mon-tab-btn active" onclick="switchMonTab('semua', this)">Semua</button>
+            <button type="button" class="mon-tab-btn" onclick="switchMonTab('belum_dinilai', this)">Belum Dinilai</button>
+            <button type="button" class="mon-tab-btn" onclick="switchMonTab('draft', this)">Draft</button>
+            <button type="button" class="mon-tab-btn" onclick="switchMonTab('menunggu', this)">Belum Verifikasi</button>
+            <button type="button" class="mon-tab-btn" onclick="switchMonTab('returned', this)">Returned</button>
+            <button type="button" class="mon-tab-btn" onclick="switchMonTab('verified', this)">Verified</button>
+            <button type="button" class="mon-tab-btn" onclick="switchMonTab('koreksi', this)">Ada Koreksi</button>
+        </div>
+
+        <!-- Data Table Container[cite: 19] -->
+        <div class="mon-table-wrapper">
+            <table class="mon-table">
+                <thead>
+                    <tr>
+                        <th>Pegawai</th>
+                        <th>Unit Kerja / Jabatan</th>
+                        <th>Status</th>
+                        <th>Nilai</th>
+                        <th>Penilai</th>
+                        <th>Submit</th>
+                        <th>Verifikator</th>
+                        <th>Verified</th>
+                        <th>Koreksi</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="monTableBody">
+                    <tr>
+                        <td colspan="10" class="text-center py-4 text-muted">Memuat data...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="monPagination" class="d-flex justify-content-between align-items-center gap-2 px-3 py-3 border-top">
+            <span id="monPageInfo" class="small text-muted"></span>
+            <div class="d-flex gap-2">
+                <button type="button" id="monPrevPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage - 1)">Sebelumnya</button>
+                <button type="button" id="monNextPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage + 1)">Berikutnya</button>
+            </div>
+        </div>
+    </div>
+@endif
   
 <!-- POP-UP MODAL DETAIL DATA PEGAWAI -->
 <div class="assessment-modal" id="dashDetailModal" aria-hidden="true">
@@ -1166,6 +2831,86 @@
             <button type="button" class="btn btn-secondary btn-sm px-4 fw-bold" onclick="closeDetailModal()">Tutup</button>
         </footer>
     </section>
+</div>
+
+<div class="modal-detail-backdrop" id="pegawaiDetailModal">
+    <div class="modal-detail-content">
+        <div class="modal-detail-header">
+            <div class="modal-detail-heading">
+                <h5 class="modal-detail-title" id="modalEmpTitle">Detail Penilaian</h5>
+                <p class="modal-detail-subtitle" id="modalEmpSub">-</p>
+            </div>
+            <button type="button" class="modal-detail-close" aria-label="Tutup detail" onclick="closePegawaiModal()">&times;</button>
+        </div>
+
+        <div class="modal-detail-body">
+            <div class="modal-summary-grid">
+                <div class="modal-summary-card">
+                    <span class="modal-summary-label">Status</span>
+                    <span id="modalStatusBadge" class="badge-status-custom st-belum">Belum Dinilai</span>
+                </div>
+                <div class="modal-summary-card">
+                    <span class="modal-summary-label">Nilai Akhir</span>
+                    <div class="modal-summary-value" id="modalNilaiAkhir">-</div>
+                </div>
+                <div class="modal-summary-card">
+                    <span class="modal-summary-label">Predikat</span>
+                    <div class="modal-summary-value modal-summary-predikat" id="modalPredikat">-</div>
+                </div>
+                <div class="modal-summary-card">
+                    <span class="modal-summary-label">Koreksi</span>
+                    <span id="modalKoreksiBadge" class="badge-status-custom st-belum">Tidak Ada</span>
+                </div>
+            </div>
+
+            <table class="modal-info-table">
+                <tr>
+                    <td class="modal-info-label">Pegawai</td>
+                    <td class="modal-info-value" id="mNamaNup">-</td>
+                    <td class="modal-info-label">Satker</td>
+                    <td class="modal-info-value" id="mSatker">-</td>
+                </tr>
+                <tr>
+                    <td class="modal-info-label">Jabatan</td>
+                    <td class="modal-info-value" id="mJabatan">-</td>
+                    <td class="modal-info-label">Penempatan</td>
+                    <td class="modal-info-value" id="mPenempatan">-</td>
+                </tr>
+                <tr>
+                    <td class="modal-info-label">Dinilai Oleh</td>
+                    <td class="modal-info-value" id="mPenilai">-</td>
+                    <td class="modal-info-label">Tgl Submit</td>
+                    <td class="modal-info-value" id="mTglSubmit">-</td>
+                </tr>
+                <tr>
+                    <td class="modal-info-label">Diverifikasi Oleh</td>
+                    <td class="modal-info-value" id="mVerifikator">-</td>
+                    <td class="modal-info-label">Tgl Verified</td>
+                    <td class="modal-info-value" id="mTglVerified">-</td>
+                </tr>
+            </table>
+
+            <div class="modal-detail-tabs" role="tablist">
+                <button type="button" class="modal-detail-tab active" id="ringkasanTab" data-modal-tab="ringkasanContent" role="tab" aria-controls="ringkasanContent" aria-selected="true">Ringkasan</button>
+                <button type="button" class="modal-detail-tab" id="pertanyaanTab" data-modal-tab="pertanyaanContent" role="tab" aria-controls="pertanyaanContent" aria-selected="false">Hasil Penilaian per Pertanyaan</button>
+            </div>
+
+            <div id="modalTabContent">
+                <div class="modal-detail-tab-pane" id="ringkasanContent" role="tabpanel" aria-labelledby="ringkasanTab">
+                    <div class="modal-summary-alert">
+                        <i class="fas fa-info-circle me-1"></i> <span id="modalInfoText">Pegawai ini masuk dalam daftar monitoring penilaian operasional.</span>
+                    </div>
+                </div>
+                <div class="modal-detail-tab-pane" id="pertanyaanContent" role="tabpanel" aria-labelledby="pertanyaanTab" hidden>
+                    <div id="modalQuestionsList" class="small text-muted">Belum ada rincian penilaian untuk periode ini.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-detail-footer">
+            <button type="button" onclick="closePegawaiModal()">Tutup</button>
+        </div>
+    </div>
 </div>
 
 <!-- JAVASCRIPT FETCH DATA AJAX (FIXED ROUTE & DATA CHECK) -->
@@ -1315,6 +3060,293 @@ function toggleOverdueAlert() {
         body.style.display = 'none';
         icon.className = 'fas fa-chevron-down';
     }
+}
+</script>
+
+<script>
+let currentMonTab = 'semua';
+let currentMonPage = 1;
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadMonitoringTable(currentMonTab);
+
+    const periodeDropdown = document.getElementById('periodeSelect');
+    if (periodeDropdown) {
+        periodeDropdown.addEventListener('change', () => loadMonitoringTable(currentMonTab, 1));
+    }
+
+    document.querySelectorAll('.modal-detail-tab').forEach(button => {
+        button.addEventListener('click', function () {
+            const selectedPanelId = this.dataset.modalTab;
+            document.querySelectorAll('.modal-detail-tab').forEach(tab => {
+                tab.classList.remove('active');
+                tab.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.modal-detail-tab-pane').forEach(panel => {
+                panel.hidden = panel.id !== selectedPanelId;
+                panel.classList.remove('d-none');
+            });
+
+            this.classList.add('active');
+            this.setAttribute('aria-selected', 'true');
+        });
+    });
+
+    const detailModal = document.getElementById('pegawaiDetailModal');
+    if (detailModal) {
+        detailModal.addEventListener('click', event => {
+            if (event.target === detailModal) closePegawaiModal();
+        });
+    }
+});
+
+function switchMonTab(tabName, btnElement) {
+    currentMonTab = tabName;
+    currentMonPage = 1;
+    document.querySelectorAll('.mon-tab-btn').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+    loadMonitoringTable(tabName, 1);
+}
+
+function escapeDashboardHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    })[character]);
+}
+
+function dashboardDate(value) {
+    if (!value) return '-';
+    const date = new Date(`${String(value).slice(0, 10)}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+}
+
+function monitoringStatus(item) {
+    const nilai = String(item.status_nilai || '').trim().toUpperCase();
+    const verifikator = String(item.status_verifikator || item.status_verifitor || '').trim().toUpperCase();
+    if (['DIKEMBALIKAN', 'REVISI'].includes(nilai) || ['DIKEMBALIKAN', 'REVISI'].includes(verifikator)) {
+        return { label: 'Dikembalikan', style: 'st-returned' };
+    }
+    if (['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(verifikator) ||
+        ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(nilai)) {
+        return { label: 'Verified', style: 'st-verified' };
+    }
+    if (['DRAFT', 'SIMPAN', 'SAVED'].includes(nilai)) {
+        return { label: 'Draft', style: 'st-draft' };
+    }
+    if (['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI', 'MENUNGGU'].includes(nilai)) {
+        return { label: 'Menunggu Verifikasi', style: 'st-submit' };
+    }
+    if (['KOREKSI', 'PERLU DITINJAU'].includes(verifikator)) {
+        return { label: 'Menunggu Verifikasi', style: 'st-submit' };
+    }
+    return { label: 'Belum Dinilai', style: 'st-belum' };
+}
+
+async function loadMonitoringTable(tab, page = 1) {
+    const periodeSelect = document.getElementById('periodeSelect');
+    const periodeId = periodeSelect ? periodeSelect.value : '';
+    const tbody = document.getElementById('monTableBody');
+    const badge = document.getElementById('totalDataBadge');
+    const pageInfo = document.getElementById('monPageInfo');
+    const previousButton = document.getElementById('monPrevPage');
+    const nextButton = document.getElementById('monNextPage');
+
+    if (!tbody || !periodeId) return;
+    tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
+    currentMonPage = page;
+
+    const params = new URLSearchParams({ periode_id: periodeId, tab, page: String(page) });
+
+    try {
+        const response = await fetch(`{{ route('dashboard.monitoring.data') }}?${params.toString()}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const result = await response.json();
+        const data = result.data || [];
+        badge.innerText = `${result.total ?? 0} Data`;
+        pageInfo.innerText = result.total
+            ? `Menampilkan ${result.from}–${result.to} dari ${result.total} pegawai`
+            : 'Tidak ada data';
+        previousButton.disabled = !result.prev_page_url;
+        nextButton.disabled = !result.next_page_url;
+
+        if (data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada data pegawai pada kategori ini untuk periode yang dipilih.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = data.map(item => {
+            const status = monitoringStatus(item);
+            const correctionCount = Number(item.koreksi_count || 0);
+            const hasCorrection = correctionCount > 0 || status.label === 'Ada Koreksi';
+            const correctionLabel = hasCorrection
+                ? `Ada Koreksi${correctionCount > 0 ? ` (${correctionCount})` : ''}`
+                : 'Tidak Ada';
+            const scoreValue = item.total_nilai_verifikator ?? item.total_nilai;
+            const score = scoreValue === null || scoreValue === '' ? '-' : Number(scoreValue).toFixed(2);
+            return `
+                <tr>
+                    <td>
+                        <div class="fw-bold text-dark">${escapeDashboardHtml(item.nama || '-')}</div>
+                        <div class="text-muted small">${escapeDashboardHtml(item.nup || '-')}</div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-dark">${escapeDashboardHtml(item.unit_kerja || '-')}</div>
+                        <div class="text-muted small">${escapeDashboardHtml(item.jabatan || '-')}</div>
+                    </td>
+                    <td><span class="badge-status-custom ${status.style}">${status.label}</span></td>
+                    <td>
+                        <div class="fw-bold">${score}</div>
+                        <div class="text-muted small">${escapeDashboardHtml(item.predikat_verifikator || item.predikat || '')}</div>
+                    </td>
+                    <td>${escapeDashboardHtml(item.penilai_nama || '-')}</td>
+                    <td>${dashboardDate(item.tanggal_submit)}</td>
+                    <td>${escapeDashboardHtml(item.verifikator_nama || '-')}</td>
+                    <td>${dashboardDate(item.tanggal_verifikasi)}</td>
+                    <td><span class="${hasCorrection ? 'badge-status-custom st-correction' : 'badge bg-light text-dark'}">${correctionLabel}</span></td>
+                    <td class="text-center">
+                        <button type="button" class="btn-action-eye" aria-label="Lihat detail ${escapeDashboardHtml(item.nama || 'pegawai')}" onclick="openPegawaiModal('${encodeURIComponent(item.pgw_id)}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>`;
+        }).join('');
+    } catch (error) {
+        console.error('Gagal memuat data monitoring:', error);
+        badge.innerText = 'Data tidak tersedia';
+        pageInfo.innerText = '';
+        previousButton.disabled = true;
+        nextButton.disabled = true;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger">Gagal memuat data monitoring. Silakan muat ulang atau coba lagi.</td></tr>`;
+    }
+}
+
+function renderQuestionDetails(categories) {
+    const container = document.getElementById('modalQuestionsList');
+    if (!categories || categories.length === 0) {
+        container.innerHTML = '<div class="alert alert-light border mb-0">Belum ada rincian penilaian per pertanyaan untuk pegawai ini pada periode tersebut.</div>';
+        return;
+    }
+
+    container.innerHTML = categories.map((category, categoryIndex) => `
+        <section class="modal-question-category">
+            <div class="modal-question-category-title">
+                <span><span class="badge bg-danger-subtle text-danger me-2">${categoryIndex + 1}</span>${escapeDashboardHtml(category.nama_kategori)}</span>
+                <span class="badge bg-light text-secondary">Bobot ${escapeDashboardHtml(category.bobot_kategori ?? 0)}%</span>
+            </div>
+            <div class="modal-question-grid">
+                ${(category.pertanyaans || []).map((question, questionIndex) => {
+                    const penilaiScore = question.nilai_angka ?? question.nilai_akhir;
+                    const verifierScore = question.verif_nilai_angka ?? question.verif_nilai_akhir;
+                    const hasVerifierValue = verifierScore !== null && verifierScore !== undefined;
+                    const isCorrected = String(question.verif_status || '').trim().toUpperCase() === 'KOREKSI' ||
+                        (hasVerifierValue && penilaiScore !== null && penilaiScore !== undefined &&
+                            Number(verifierScore) !== Number(penilaiScore));
+                    return `
+                        <article class="modal-question-card">
+                            <div class="d-flex justify-content-between gap-2">
+                                <div class="modal-question-title">${questionIndex + 1}. ${escapeDashboardHtml(question.pertanyaan || 'Pertanyaan')}</div>
+                                <span class="badge bg-light text-secondary flex-shrink-0">${escapeDashboardHtml(question.bobot_pertanyaan_persen ?? 0)}%</span>
+                            </div>
+                            ${isCorrected ? '<div class="mt-2"><span class="modal-question-correction"><i class="fas fa-pen" aria-hidden="true"></i> Nilai dikoreksi verifikator</span></div>' : ''}
+                            ${question.deskripsi ? `<p class="modal-question-description mt-2 mb-0">${escapeDashboardHtml(question.deskripsi)}</p>` : ''}
+                            <div class="modal-question-score">
+                                <div><strong>Nilai Penilai:</strong> ${escapeDashboardHtml(question.nama_nilai || '-')} ${penilaiScore !== null && penilaiScore !== undefined ? `(${escapeDashboardHtml(penilaiScore)})` : ''}</div>
+                                ${isCorrected || hasVerifierValue || question.verif_nama_nilai ? `<div class="mt-1"><strong>Nilai Verifikator:</strong> ${escapeDashboardHtml(question.verif_nama_nilai || '-')} ${verifierScore !== null && verifierScore !== undefined ? `(${escapeDashboardHtml(verifierScore)})` : ''}</div>` : ''}
+                            </div>
+                            <div class="modal-question-note mt-2"><strong>Catatan penilai:</strong> ${escapeDashboardHtml(question.catatan || 'Tidak ada catatan.')}</div>
+                            ${question.verif_catatan ? `<div class="modal-question-note mt-1"><strong>Catatan verifikator:</strong> ${escapeDashboardHtml(question.verif_catatan)}</div>` : ''}
+                        </article>`;
+                }).join('')}
+            </div>
+        </section>`).join('');
+}
+
+async function openPegawaiModal(pgwId) {
+    const periodeSelect = document.getElementById('periodeSelect');
+    const periodeId = periodeSelect ? periodeSelect.value : '';
+    const modal = document.getElementById('pegawaiDetailModal');
+    const title = document.getElementById('modalEmpTitle');
+    title.innerText = 'Memuat Detail Penilaian...';
+    document.getElementById('modalQuestionsList').innerHTML = '<div class="text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i>Memuat hasil penilaian...</div>';
+    modal.classList.add('show');
+
+    try {
+        const params = new URLSearchParams({ pgw_id: decodeURIComponent(pgwId), periode_id: periodeId });
+        const response = await fetch(`{{ route('dashboard.pegawai.detail') }}?${params.toString()}`, {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const result = await response.json();
+        const employee = result.employee || {};
+        const transaction = result.trans || {};
+        const status = monitoringStatus(transaction);
+        const correctionCount = (result.pertanyaan || []).flatMap(category => category.pertanyaans || [])
+            .filter(question => {
+                const penilaiScore = question.nilai_angka ?? question.nilai_akhir;
+                const verifierScore = question.verif_nilai_angka ?? question.verif_nilai_akhir;
+                return String(question.verif_status || '').trim().toUpperCase() === 'KOREKSI' ||
+                    (verifierScore !== null && verifierScore !== undefined &&
+                        penilaiScore !== null && penilaiScore !== undefined &&
+                        Number(verifierScore) !== Number(penilaiScore));
+            }).length;
+        const hasCorrection = correctionCount > 0 ||
+            Number(transaction.koreksi_count || 0) > 0 ||
+            ['KOREKSI', 'PERLU DITINJAU'].includes(
+                String(transaction.status_verifikator || transaction.status_verifitor || '').trim().toUpperCase()
+            );
+
+        title.innerText = `Detail Penilaian — ${employee.nama || '-'}`;
+        document.getElementById('modalEmpSub').innerText = `${employee.nup || '-'} · ${employee.unit_kerja || '-'} · ${employee.jabatan || '-'}`;
+        document.getElementById('mNamaNup').innerText = `${employee.nama || '-'} / ${employee.nup || '-'}`;
+        document.getElementById('mSatker').innerText = employee.satker || '-';
+        document.getElementById('mJabatan').innerText = employee.jabatan || '-';
+        document.getElementById('mPenempatan').innerText = employee.penempatan || '-';
+        document.getElementById('mPenilai').innerText = transaction.nama_penilai || '-';
+        document.getElementById('mVerifikator').innerText = transaction.nama_verifikator || '-';
+        document.getElementById('mTglSubmit').innerText = dashboardDate(transaction.tanggal_submit);
+        document.getElementById('mTglVerified').innerText = dashboardDate(transaction.tanggal_verifikasi);
+        const finalScore = transaction.total_nilai_verifikator ?? transaction.total_nilai;
+        document.getElementById('modalNilaiAkhir').innerText = finalScore === null || finalScore === undefined
+            ? '-' : Number(finalScore).toFixed(2);
+        document.getElementById('modalPredikat').innerText = transaction.predikat_verifikator || transaction.predikat || '-';
+        document.getElementById('modalStatusBadge').innerText = status.label;
+        document.getElementById('modalStatusBadge').className = `badge-status-custom ${status.style}`;
+        const correctionBadge = document.getElementById('modalKoreksiBadge');
+        correctionBadge.innerText = hasCorrection
+            ? `Ada Koreksi${correctionCount ? ` (${correctionCount} pertanyaan)` : ''}`
+            : 'Tidak Ada';
+        correctionBadge.className = `badge-status-custom ${hasCorrection ? 'st-correction' : 'st-belum'}`;
+        document.getElementById('modalInfoText').innerText = transaction.catatan || 'Tidak ada catatan atau risiko waktu pada data ini.';
+        renderQuestionDetails(result.pertanyaan);
+
+        document.querySelectorAll('.modal-detail-tab').forEach((tab, index) => {
+            tab.classList.toggle('active', index === 0);
+            tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+        });
+        document.querySelectorAll('.modal-detail-tab-pane').forEach((panel, index) => {
+            panel.hidden = index !== 0;
+            panel.classList.remove('d-none');
+        });
+    } catch (error) {
+        console.error('Gagal memuat detail penilaian:', error);
+        title.innerText = 'Detail Penilaian Tidak Tersedia';
+        document.getElementById('modalQuestionsList').innerHTML = '<div class="alert alert-danger mb-0">Gagal memuat detail pegawai. Silakan tutup dan coba lagi.</div>';
+    }
+}
+
+function closePegawaiModal() {
+    document.getElementById('pegawaiDetailModal').classList.remove('show');
 }
 </script>
 

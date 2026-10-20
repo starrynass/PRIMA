@@ -44,7 +44,10 @@ class KelolaPenilaianController extends Controller
             if ($selectedPeriode) {
                 $hasPeriodeSelected = true;
 
-                $totalPegawai = Employee::count();
+                $activeEntries = Dp3TransPenilaian::query()
+                    ->where('periode_id', $selectedPeriodeId)
+                    ->where('is_active', true);
+                $totalPegawai = (clone $activeEntries)->distinct('pegawai_id')->count('pegawai_id');
 
                 $queryPenilaian = DB::table('dp3_trans_penilaian as tp')
                 ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')

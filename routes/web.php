@@ -55,6 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:dashboard,view')->group(function () {
         Route::get('/dashboard-penilaian', [DashboardController::class, 'index'])->name('dashboard.penilaian');
         Route::get('/dashboard-penilaian/modal-detail', [DashboardController::class, 'getModalDetail'])->name('dashboard.modal-detail');
+        Route::get('/dashboard-penilaian/monitoring-data', [DashboardController::class, 'getMonitoringData'])->name('dashboard.monitoring.data');
+        Route::get('/dashboard-penilaian/pegawai-detail', [DashboardController::class, 'getPegawaiDetailModal'])->name('dashboard.pegawai.detail');
     });
 
     Route::middleware('permission:master.skala-predikat,view')->group(function () {
