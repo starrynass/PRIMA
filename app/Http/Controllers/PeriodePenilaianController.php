@@ -61,14 +61,14 @@ class PeriodePenilaianController extends Controller
         // Kalkulasi dinamis per baris data
         $periodeList->getCollection()->transform(function (Dp3TransPeriodePenilaian $periode) {
             // 1. Hitung Satker Unik yang terlibat dalam periode ini
-            $totalSatker = DB::table('dp3_trans_penilaian')
+            $totalUnitKerja = DB::table('dp3_trans_penilaian')
                 ->where('periode_id', $periode->periode_id) 
-                ->whereNotNull('pgw_kode_satker')
-                ->where('pgw_kode_satker', '!=', '')
+                ->whereNotNull('pgw_kode_unit_kerja')
+                ->where('pgw_kode_unit_kerja', '!=', '')
                 ->distinct()
-                ->count('pgw_kode_satker');
+                ->count('pgw_kode_unit_kerja');
 
-            $periode->total_satker = $totalSatker;
+            $periode->total_unit_kerja = $totalUnitKerja;
 
             // 2. Hitung persentase progress verifikasi (mencegah Divide by Zero)
             $totalPegawai = (int) $periode->total_pegawai;
@@ -760,43 +760,81 @@ class PeriodePenilaianController extends Controller
         }
 
         $query = DB::table('dp3_trans_penilaian as tp')
-            ->leftJoin('office as o', 'tp.pgw_off_id', '=', 'o.off_id')
-            ->leftJoin('occupation as occ', 'tp.pgw_id_jabatan', '=', 'occ.occ_id')
-            ->leftJoin('department as d', 'tp.pgw_id_dept', '=', 'd.dept_id')
-            ->leftJoin('department_sub as sd', 'tp.pgw_id_subdept', '=', 'sd.subdept_id')
-            ->leftJoin('unit_kerja as uk', 'tp.pgw_kode_unit_kerja', '=', 'uk.kode_unit_kerja')
+            ->leftJoin('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
+            ->leftJoin('office as o', function ($join) {
+                $join->on('o.off_id', '=', DB::raw('COALESCE(e.off_id, tp.pgw_off_id)'));
+            })
+            ->leftJoin('occupation as occ', function ($join) {
+                $join->on('occ.occ_id', '=', DB::raw('COALESCE(e.occ_id, tp.pgw_id_jabatan)'));
+            })
+            ->leftJoin('department as d', function ($join) {
+                $join->on('d.dept_id', '=', DB::raw('COALESCE(e.dept_id, tp.pgw_id_dept)'));
+            })
+            ->leftJoin('department_sub as sd', function ($join) {
+                $join->on('sd.subdept_id', '=', DB::raw('COALESCE(e.subdept_id, tp.pgw_id_subdept)'));
+            })
+            ->leftJoin('unit_kerja as uk', function ($join) {
+                $join->on('uk.kode_unit_kerja', '=', DB::raw('COALESCE(e.kode_unit_kerja, tp.pgw_kode_unit_kerja)'));
+            })
             ->leftJoin('employee as penilai', 'tp.penilai_id', '=', 'penilai.pgw_id')
             ->leftJoin('employee as verifikator', 'tp.verifikator_id', '=', 'verifikator.pgw_id')
+            ->leftJoin('dp3_master_predikat_nilai as mp', function ($join) {
+                $join->on(DB::raw('COALESCE(tp.total_nilai_verifikator, tp.total_nilai, 0)'), '>=', 'mp.nilai_min')
+                     ->on(DB::raw('COALESCE(tp.total_nilai_verifikator, tp.total_nilai, 0)'), '<=', 'mp.nilai_max');
+            })
             ->where('tp.periode_id', $id)
             ->where('tp.is_active', true)
             ->select(
                 'tp.*',
-                'tp.pgw_nup as nup',
-                'tp.pgw_nama as nama',
-                DB::raw('COALESCE(tp.pgw_off_name, o.off_name) as penempatan'),
-                DB::raw('COALESCE(tp.pgw_jabatan, occ.occ_name) as jabatan'),
-                DB::raw('COALESCE(tp.pgw_dept_name, d.dept_name) as departemen'),
-                DB::raw('COALESCE(tp.pgw_id_subdept_name, sd.subdept_name) as sub_departemen'),
-                'uk.nama_unit_kerja as unit_kerja',
+                DB::raw('COALESCE(e.nup, tp.pgw_nup, "-") as nup'),
+                DB::raw('COALESCE(e.nama, tp.pgw_nama, "-") as nama'),
+                DB::raw('COALESCE(o.off_name, tp.pgw_off_name, "-") as penempatan'),
+                DB::raw('COALESCE(occ.occ_name, tp.pgw_jabatan, "-") as jabatan'),
+                DB::raw('COALESCE(d.dept_name, tp.pgw_dept_name, "-") as departemen'),
+                DB::raw('COALESCE(sd.subdept_name, tp.pgw_id_subdept_name, "-") as sub_departemen'),
+                DB::raw("COALESCE(uk.nama_unit_kerja, e.kode_unit_kerja, tp.pgw_kode_unit_kerja, '-') as unit_kerja"),
                 'tp.status_nilai as status_penilaian',
-                'tp.total_nilai as nilai_akhir',
+                DB::raw("COALESCE(NULLIF(tp.status_verifikator, ''), tp.status_verifitor, '') as status_verifikator"),
+                DB::raw('COALESCE(tp.total_nilai_verifikator, tp.total_nilai, 0) as nilai_akhir'),
+                DB::raw('COALESCE(mp.predikat, tp.predikat, "Mengecewakan") as predikat'),
                 'penilai.nama as nama_penilai',
                 'verifikator.nama as nama_verifikator'
             );
 
-        // Filter Search Text
+        // Filter Search Text (Nama / NUP)
         if ($request->filled('search')) {
             $search = trim($request->search);
             $query->where(function ($q) use ($search) {
-                $q->where('tp.pgw_nama', 'like', "%{$search}%")
-                ->orWhere('tp.pgw_nup', 'like', "%{$search}%");
+                $q->where('e.nama', 'like', "%{$search}%")
+                  ->orWhere('e.nup', 'like', "%{$search}%")
+                  ->orWhere('tp.pgw_nama', 'like', "%{$search}%")
+                  ->orWhere('tp.pgw_nup', 'like', "%{$search}%");
             });
         }
 
         // Filter Status
         if ($request->filled('status')) {
             $status = strtoupper((string) $request->status);
-            $query->whereRaw('UPPER(COALESCE(tp.status_nilai, "BELUM DIISI")) = ?', [$status]);
+            if ($status === 'SUBMIT' || $status === 'DIAJUKAN') {
+                $query->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['SUBMIT', 'SUBMITTED', 'DIAJUKAN']);
+            } elseif ($status === 'VERIFIKASI' || $status === 'VERIFIED') {
+                $query->where(function ($q) {
+                    $q->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['VERIFIKASI', 'VERIFIED', 'SELESAI', 'APPROVED'])
+                      ->orWhereIn(DB::raw("UPPER(COALESCE(NULLIF(tp.status_verifikator, ''), tp.status_verifitor, ''))"), ['VERIFIKASI', 'VERIFIED', 'SELESAI', 'APPROVED']);
+                });
+            } elseif ($status === 'DIKEMBALIKAN' || $status === 'REVISI') {
+                $query->where(function ($q) {
+                    $q->whereIn(DB::raw('UPPER(tp.status_nilai)'), ['DIKEMBALIKAN', 'REVISI', 'PERLU DITINJAU'])
+                      ->orWhereIn(DB::raw("UPPER(COALESCE(NULLIF(tp.status_verifikator, ''), tp.status_verifitor, ''))"), ['DIKEMBALIKAN', 'REVISI', 'KOREKSI', 'PERLU DITINJAU']);
+                });
+            } elseif ($status === 'DRAFT') {
+                $query->whereRaw('UPPER(tp.status_nilai) = ?', ['DRAFT']);
+            } elseif ($status === 'BELUM DIISI') {
+                $query->where(function ($q) {
+                    $q->whereNull('tp.status_nilai')
+                      ->orWhereRaw('UPPER(tp.status_nilai) IN (?, ?)', ['BELUM DIISI', '']);
+                });
+            }
         }
 
         // Filter Departemen
@@ -804,7 +842,8 @@ class PeriodePenilaianController extends Controller
             $deptId = (string) $request->dept_id;
             $query->where(function ($q) use ($deptId) {
                 $q->where('d.dept_id', $deptId)
-                ->orWhere('tp.pgw_id_dept', $deptId);
+                  ->orWhere('e.dept_id', $deptId)
+                  ->orWhere('tp.pgw_id_dept', $deptId);
             });
         }
 
@@ -813,16 +852,18 @@ class PeriodePenilaianController extends Controller
             $subDeptId = (string) $request->subdept_id;
             $query->where(function ($q) use ($subDeptId) {
                 $q->where('sd.subdept_id', $subDeptId)
-                ->orWhere('tp.pgw_id_subdept', $subDeptId);
+                  ->orWhere('e.subdept_id', $subDeptId)
+                  ->orWhere('tp.pgw_id_subdept', $subDeptId);
             });
         }
 
-        // FILTER BARU: Unit Kerja
+        // Filter Unit Kerja
         if ($request->filled('kode_unit_kerja')) {
             $kodeUnit = (string) $request->kode_unit_kerja;
             $query->where(function ($q) use ($kodeUnit) {
                 $q->where('uk.kode_unit_kerja', $kodeUnit)
-                ->orWhere('tp.pgw_kode_unit_kerja', $kodeUnit);
+                  ->orWhere('e.kode_unit_kerja', $kodeUnit)
+                  ->orWhere('tp.pgw_kode_unit_kerja', $kodeUnit);
             });
         }
 
@@ -830,20 +871,20 @@ class PeriodePenilaianController extends Controller
         $sort = $request->get('sort', 'nama_asc');
         switch ($sort) {
             case 'nama_desc':
-                $query->orderBy('tp.pgw_nama', 'desc');
+                $query->orderBy(DB::raw('COALESCE(e.nama, tp.pgw_nama)'), 'desc');
                 break;
             case 'nilai_desc':
-                $query->orderBy('tp.total_nilai', 'desc');
+                $query->orderByRaw('COALESCE(tp.total_nilai_verifikator, tp.total_nilai, 0) DESC');
                 break;
             case 'nilai_asc':
-                $query->orderBy('tp.total_nilai', 'asc');
+                $query->orderByRaw('COALESCE(tp.total_nilai_verifikator, tp.total_nilai, 0) ASC');
                 break;
             case 'status':
                 $query->orderBy('tp.status_nilai', 'asc');
                 break;
             case 'nama_asc':
             default:
-                $query->orderBy('tp.pgw_nama', 'asc');
+                $query->orderBy(DB::raw('COALESCE(e.nama, tp.pgw_nama)'), 'asc');
                 break;
         }
 
@@ -852,23 +893,9 @@ class PeriodePenilaianController extends Controller
         $penilaianList->getCollection()->transform(function ($row) {
             $data = is_object($row) ? (array) $row : $row;
             $data['status_penilaian'] = strtoupper((string) ($data['status_penilaian'] ?? $data['status_nilai'] ?? 'BELUM DIISI'));
+            $data['status_verifikator'] = strtoupper((string) ($data['status_verifikator'] ?? ''));
             $data['nilai_akhir'] = is_numeric($data['nilai_akhir'] ?? null) ? (float) $data['nilai_akhir'] : 0.0;
             $data['predikat'] = ! empty($data['predikat']) ? $data['predikat'] : 'Mengecewakan';
-
-            $occId = (int) ($data['pgw_id_jabatan'] ?? 0);
-            $unitCode = $data['pgw_kode_unit_kerja'] ?? null;
-
-            if (empty($data['nama_penilai']) || empty($data['nama_verifikator'])) {
-                $auto = self::getAutoAssignees($occId, $unitCode);
-                if (empty($data['nama_penilai']) && ! empty($auto['penilai'])) {
-                    $data['nama_penilai'] = $auto['penilai']->nama;
-                    $data['penilai_id'] = $auto['penilai']->pgw_id;
-                }
-                if (empty($data['nama_verifikator']) && ! empty($auto['verifikator'])) {
-                    $data['nama_verifikator'] = $auto['verifikator']->nama;
-                    $data['verifikator_id'] = $auto['verifikator']->pgw_id;
-                }
-            }
 
             return (object) $data;
         });
@@ -894,13 +921,30 @@ class PeriodePenilaianController extends Controller
 
         $stats = [
             'total_pegawai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->count(),
-            'belum_diisi'    => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Belum Diisi')->count(),
-            'draft'          => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Draft')->count(),
-            'submit'         => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Submit')->count(),
-            'verifikasi'     => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Verifikasi')->count(),
-            'tanpa_penilai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->whereNull('penilai_id')->count(),
-            'penilai_manual' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('penilai_manual', 1)->count(),
-            'perlu_ditinjau' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->where('status_nilai', 'Perlu Ditinjau')->count(),
+            'belum_diisi'    => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)
+                ->where(function ($q) {
+                    $q->whereNull('status_nilai')->orWhereRaw('UPPER(status_nilai) IN (?, ?)', ['BELUM DIISI', '']);
+                })->count(),
+            'draft'          => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)
+                ->whereRaw('UPPER(status_nilai) = ?', ['DRAFT'])->count(),
+            'submit'         => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)
+                ->whereRaw('UPPER(status_nilai) IN (?, ?, ?)', ['SUBMIT', 'SUBMITTED', 'DIAJUKAN'])->count(),
+            'verifikasi'     => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)
+                ->where(function ($q) {
+                    $q->whereIn(DB::raw("UPPER(COALESCE(NULLIF(status_verifikator, ''), status_verifitor, ''))"), ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'])
+                      ->orWhereIn(DB::raw('UPPER(status_nilai)'), ['VERIFIED', 'VERIFIKASI']);
+                })->count(),
+            'tanpa_penilai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)
+                ->where(function ($q) {
+                    $q->whereNull('penilai_id')->orWhere('penilai_id', 0);
+                })->count(),
+            'penilai_manual' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)
+                ->where('penilai_manual', true)->count(),
+            'perlu_ditinjau' => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)
+                ->where(function ($query) {
+                    $query->whereIn(DB::raw('UPPER(status_nilai)'), ['DIKEMBALIKAN', 'REVISI', 'PERLU DITINJAU'])
+                          ->orWhereIn(DB::raw("UPPER(COALESCE(NULLIF(status_verifikator, ''), status_verifitor, ''))"), ['DIKEMBALIKAN', 'REVISI', 'KOREKSI', 'PERLU DITINJAU']);
+                })->count(),
         ];
 
         return view('penilaian.detail_periode', compact(

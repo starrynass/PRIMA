@@ -809,9 +809,9 @@
                             <option value="">- Semua Status -</option>
                             <option value="BELUM DIISI" {{ request('status') === 'BELUM DIISI' ? 'selected' : '' }}>Belum Diisi</option>
                             <option value="DRAFT" {{ request('status') === 'DRAFT' ? 'selected' : '' }}>Draft</option>
-                            <option value="SUBMIT" {{ request('status') === 'SUBMIT' ? 'selected' : '' }}>Submit</option>
-                            <option value="DIAJUKAN" {{ request('status') === 'DIAJUKAN' ? 'selected' : '' }}>Diajukan</option>
-                            <option value="VERIFIKASI" {{ request('status') === 'VERIFIKASI' ? 'selected' : '' }}>Verifikasi</option>
+                            <option value="SUBMIT" {{ in_array(request('status'), ['SUBMIT', 'DIAJUKAN']) ? 'selected' : '' }}>Submit / Diajukan</option>
+                            <option value="VERIFIKASI" {{ in_array(request('status'), ['VERIFIKASI', 'VERIFIED']) ? 'selected' : '' }}>Verified / Terverifikasi</option>
+                            <option value="DIKEMBALIKAN" {{ in_array(request('status'), ['DIKEMBALIKAN', 'REVISI']) ? 'selected' : '' }}>Dikembalikan (Revisi)</option>
                         </select>
                     </div>
 
@@ -843,9 +843,9 @@
                             <th width="40">NO</th>
                             <th>NUP</th>
                             <th>NAMA</th>
-                            <th>UNIT KERJA</th> <!-- Kolom Baru -->
                             <th>PENEMPATAN</th>
                             <th>JABATAN</th>
+                            <th>UNIT KERJA</th>
                             <th>PENILAI</th>
                             <th>VERIFIKATOR</th>
                             <th>STATUS</th>
@@ -858,6 +858,7 @@
                         @forelse($penilaianList as $index => $row)
                             @php
                                 $statusPenilaian = strtoupper((string) data_get($row, 'status_penilaian', data_get($row, 'status_nilai', 'BELUM DIISI')));
+                                $statusVerifikator = strtoupper((string) data_get($row, 'status_verifikator', ''));
                                 $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
                                 $predikat = data_get($row, 'predikat', 'Mengecewakan');
                             @endphp
@@ -873,9 +874,9 @@
                                 <td>{{ (($penilaianList->currentPage() - 1) * $penilaianList->perPage()) + $loop->iteration }}</td>
                                 <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
                                 <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
-                                <td>{{ data_get($row, 'unit_kerja', '-') }}</td> <!-- Tampilkan Unit Kerja -->
                                 <td>{{ data_get($row, 'penempatan', '-') }}</td>
                                 <td>{{ data_get($row, 'jabatan', '-') }}</td>
+                                <td>{{ data_get($row, 'unit_kerja', '-') }}</td>
                                 <td>
                                     @if(data_get($row, 'nama_penilai'))
                                         {{ data_get($row, 'nama_penilai') }}
@@ -891,9 +892,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($statusPenilaian === 'DIAJUKAN')
-                                        <span class="badge-status-success">Diajukan</span>
-                                    @elseif($statusPenilaian === 'DIKEMBALIKAN')
+                                    @if(in_array($statusVerifikator, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI'], true) || in_array($statusPenilaian, ['VERIFIED', 'VERIFIKASI'], true))
+                                        <span class="badge-status-success" style="background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;">Verified</span>
+                                    @elseif(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED'], true))
+                                        <span class="badge-status-success">Submit</span>
+                                    @elseif(in_array($statusPenilaian, ['DIKEMBALIKAN', 'REVISI'], true) || in_array($statusVerifikator, ['DIKEMBALIKAN', 'REVISI'], true))
                                         <span class="badge-status-danger">Dikembalikan</span>
                                     @elseif($statusPenilaian === 'DRAFT')
                                         <span class="badge-status-warning">Draft</span>
@@ -903,20 +906,33 @@
                                 </td>
                                 <td>{{ number_format($nilaiAkhir, 2) }}</td>
                                 <td>
-                                    @if(!empty($predikat))
-                                        <span class="badge-status-gray">{{ $predikat }}</span>
-                                    @else
-                                        <span class="badge-status-danger">Mengecewakan</span>
-                                    @endif
+                                    @php
+                                        if ($nilaiAkhir >= 90) {
+                                            $predikatStyle = 'background-color: #D1FAE5; color: #065F46; border: 1px solid #10B981;';
+                                        } elseif ($nilaiAkhir >= 80) {
+                                            $predikatStyle = 'background-color: #DBEAFE; color: #1E40AF; border: 1px solid #3B82F6;';
+                                        } elseif ($nilaiAkhir >= 70) {
+                                            $predikatStyle = 'background-color: #FEF3C7; color: #92400E; border: 1px solid #F59E0B;';
+                                        } elseif ($nilaiAkhir >= 60) {
+                                            $predikatStyle = 'background-color: #FFEDD5; color: #9A3412; border: 1px solid #F97316;';
+                                        } elseif ($nilaiAkhir > 0) {
+                                            $predikatStyle = 'background-color: #FFE4E6; color: #9F1239; border: 1px solid #F43F5E;';
+                                        } else {
+                                            $predikatStyle = 'background-color: #F1F5F9; color: #475569; border: 1px solid #CBD5E1;';
+                                        }
+                                    @endphp
+                                    <span class="badge" style="padding: 0.35rem 0.65rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; {{ $predikatStyle }}">
+                                        {{ $predikat }}
+                                    </span>
                                 </td>
                                 <td class="text-center table-action-cell">
                                     <div class="detail-action-group" style="justify-content:center;">
-                                        <button class="btn-action-icon" type="button" title="Lihat Detail / Preview" aria-label="Lihat Detail">
+                                        <a href="{{ route('penilaian.preview', data_get($row, 'penilaian_id')) }}" class="btn-action-icon" title="Lihat Detail / Preview" aria-label="Lihat Detail">
                                             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
                                                 <circle cx="12" cy="12" r="3"></circle>
                                             </svg>
-                                        </button>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
