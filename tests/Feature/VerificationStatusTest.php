@@ -6,7 +6,6 @@ use App\Models\Dp3TransPeriodePenilaian;
 use App\Models\Dp3TransPenilaian;
 use App\Models\Dp3TransPenilaianDetail;
 use App\Models\MasterSkalaNilai;
-use App\Models\RoleMenuPermission;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -21,28 +20,8 @@ class VerificationStatusTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutExceptionHandling();
 
-        DB::table('unit_kerja')->insert([
-            'kode_unit_kerja' => 'UK-VERIFY',
-            'nama_unit_kerja' => 'Unit Verifikasi',
-        ]);
-        DB::table('employee')->insert([
-            ['pgw_id' => 1, 'nup' => 'NUP-VERIFY-1', 'nama' => 'Pegawai Verifikasi', 'occ_id' => 9, 'kode_unit_kerja' => 'UK-VERIFY', 'is_hapus' => 0],
-            ['pgw_id' => 2, 'nup' => 'NUP-VERIFY-2', 'nama' => 'Asmen Verifikasi', 'occ_id' => 6, 'kode_unit_kerja' => 'UK-VERIFY', 'is_hapus' => 0],
-            ['pgw_id' => 3, 'nup' => 'NUP-VERIFY-3', 'nama' => 'Manager Verifikasi', 'occ_id' => 5, 'kode_unit_kerja' => 'UK-VERIFY', 'is_hapus' => 0],
-        ]);
-        $this->verifier = User::factory()->create([
-            'role' => 'manager',
-            'employee_id' => 3,
-        ]);
-        RoleMenuPermission::updateOrCreate(
-            ['role' => 'manager'],
-            ['permissions' => [
-                'penilaian' => ['view' => true],
-                'penilaian.verifikasi' => ['view' => true],
-            ]]
-        );
+        $this->verifier = User::factory()->create(['role' => 'superadmin']);
         $this->actingAs($this->verifier);
 
         Dp3TransPeriodePenilaian::create([
@@ -52,6 +31,12 @@ class VerificationStatusTest extends TestCase
             'status' => 'OPEN',
         ]);
 
+        DB::table('employee')->insert([
+            'pgw_id' => 1,
+            'nup' => 'NUP-VERIFY-1',
+            'nama' => 'Pegawai Verifikasi',
+        ]);
+
         DB::table('dp3_trans_penilaian')->insert([
             'penilaian_id' => 1,
             'kode' => 'VERIFY-TEST-1',
@@ -59,7 +44,6 @@ class VerificationStatusTest extends TestCase
             'pegawai_id' => '1',
             'pgw_nup' => 'NUP-VERIFY-1',
             'pgw_nama' => 'Pegawai Verifikasi',
-            'penilai_id' => 2,
             'status_nilai' => 'SUBMIT',
             'status_verifikator' => null,
             'status_verifitor' => 'BELUM VERIFIKASI',

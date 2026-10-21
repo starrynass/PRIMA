@@ -19,17 +19,13 @@ class PeriodeDetailTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create(['role' => 'manager']);
-        DB::table('unit_kerja')->insert([
-            'kode_unit_kerja' => 'UNIT-TEST',
-            'nama_unit_kerja' => 'Unit Test',
-        ]);
-        RoleMenuPermission::updateOrCreate(
-            ['role' => 'manager'],
-            ['permissions' => [
+        RoleMenuPermission::create([
+            'role' => 'manager',
+            'permissions' => [
                 'penilaian' => ['view' => true],
                 'penilaian.periode' => ['view' => true],
-            ]]
-        );
+            ],
+        ]);
 
         DB::table('dp3_trans_periode_penilaian')->insert([
             'periode_id' => 'PERIODE-TEST',
@@ -49,8 +45,6 @@ class PeriodeDetailTest extends TestCase
             'nama' => $name,
             'nup' => $nup,
             'occ_id' => $occupationId,
-            'kode_unit_kerja' => 'UNIT-TEST',
-            'is_hapus' => 0,
             'created_at' => now(),
             'updated_at' => now(),
         ], 'pgw_id');
@@ -90,8 +84,8 @@ class PeriodeDetailTest extends TestCase
 
     public function test_manual_evaluator_can_be_assigned_and_cleared_and_deactivation_requires_reason(): void
     {
-        $employeeId = $this->createEmployee('Pegawai Peserta', 'NUP-001', 9);
-        $evaluatorId = $this->createEmployee('Pegawai Penilai', 'NUP-002', 6);
+        $employeeId = $this->createEmployee('Pegawai Peserta', 'NUP-001');
+        $evaluatorId = $this->createEmployee('Pegawai Penilai', 'NUP-002');
         $entryId = $this->addPeriodEntry($employeeId);
 
         $this->post(route('periode.evaluators.assign', 'PERIODE-TEST'), [

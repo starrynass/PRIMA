@@ -1294,20 +1294,6 @@
 .ranking-list-scroll::-webkit-scrollbar-track {
     background: #f1f5f9;
 }
-
-.modal-question-correction {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.25rem 0.55rem;
-    color: #9a3412;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 999px;
-    font-size: 0.67rem;
-    font-weight: 800;
-    white-space: nowrap;
-}
 .ranking-list-scroll::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 4px;
@@ -1389,54 +1375,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     border-bottom: 1px solid #f1f5f9;
-}
-
-.low-card-header-main {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.low-card-header-icon {
-    width: 38px;
-    height: 38px;
-    flex: 0 0 38px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.65rem;
-}
-
-.low-card-header-copy {
-    min-width: 0;
-}
-
-.low-card-title {
-    margin: 0;
-    color: #0f172a;
-    font-size: 0.95rem;
-    font-weight: 800;
-    line-height: 1.25;
-}
-
-.low-card-description {
-    margin: 0.15rem 0 0;
-    color: #64748b;
-    font-size: 0.725rem;
-    line-height: 1.35;
-}
-
-.low-card-count {
-    flex: 0 0 auto;
-    border-radius: 999px;
-    font-weight: 700;
-    font-size: 0.725rem;
-    padding: 0.35rem 0.75rem;
-    white-space: nowrap;
 }
 
 /* Container Scroll Vertikal List Pegawai */
@@ -1554,24 +1494,6 @@
     .low-card-header {
         align-items: flex-start;
         padding: 1rem;
-        gap: 0.6rem;
-    }
-
-    .low-card-header-main {
-        gap: 0.6rem;
-    }
-
-    .low-card-title {
-        font-size: 0.85rem;
-    }
-
-    .low-card-description {
-        font-size: 0.68rem;
-    }
-
-    .low-card-count {
-        padding: 0.3rem 0.55rem;
-        font-size: 0.65rem;
     }
 
     .low-list-container {
@@ -1755,6 +1677,108 @@
     background: #fafafa;
 }
 
+.mon-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    padding: 0.8rem 0 0;
+    border-top: 1px solid #dfe4ea;
+    background: transparent;
+}
+
+.mon-pagination[hidden] {
+    display: none;
+}
+
+.mon-pagination-label {
+    margin: 0;
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.mon-pagination-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin-left: auto;
+}
+
+.mon-page-arrow,
+.mon-page-number,
+.mon-page-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
+}
+
+.mon-page-arrow {
+    width: 2.6rem;
+    height: 2.5rem;
+    border: 1px solid #dfe4ea;
+    border-radius: 0.35rem;
+    background: #ffffff;
+    color: #7a838f;
+    font-size: 2rem;
+    font-weight: 400;
+    padding: 0;
+}
+
+.mon-page-number {
+    width: 2.45rem;
+    height: 2.5rem;
+    border: 1px solid #dfe4ea;
+    border-radius: 0.35rem;
+    background: #ffffff;
+    color: #2f3746;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 0;
+}
+
+.mon-page-number.active {
+    background: #edf2ff;
+    border-color: #2d6cdf;
+    color: #1d4ed8;
+}
+
+.mon-page-arrow.disabled {
+    color: #a9b3c0;
+    background: #f8fafc;
+    pointer-events: none;
+}
+
+.mon-page-number:hover,
+.mon-page-arrow:hover {
+    text-decoration: none;
+}
+
+.mon-page-ellipsis {
+    width: 1.3rem;
+    height: 2.5rem;
+    color: #67748a;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.mon-page-arrow:disabled {
+    cursor: default;
+}
+
+@media (max-width: 768px) {
+    .mon-pagination {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
 /* Badge Status pada Tabel */
 .badge-status-custom {
     padding: 0.3rem 0.75rem;
@@ -1915,6 +1939,11 @@
     line-height: 1.2;
 }
 
+.modal-summary-predikat {
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
 .modal-info-table {
     width: 100%;
     margin-bottom: 1.25rem;
@@ -2009,6 +2038,38 @@
     font-weight: 800;
 }
 
+.modal-question-category-label,
+.modal-question-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.modal-question-index,
+.modal-question-weight {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0.2rem 0.45rem;
+    color: #475569;
+    background: #f1f5f9;
+    border-radius: 0.4rem;
+    font-size: 0.68rem;
+    font-weight: 800;
+}
+
+.modal-question-index {
+    min-width: 1.6rem;
+    color: #9f1239;
+    background: #ffe4e6;
+}
+
+.modal-question-weight {
+    background: #f1f5f9;
+}
+
 .modal-question-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2029,10 +2090,21 @@
     font-weight: 700;
 }
 
+.modal-question-heading {
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 0.45rem;
+}
+
 .modal-question-description,
 .modal-question-note {
     color: #64748b;
     font-size: 0.72rem;
+}
+
+.modal-question-description {
+    margin: 0.5rem 0 0;
+    line-height: 1.45;
 }
 
 .modal-question-score {
@@ -2043,6 +2115,23 @@
     background: #f8fbff;
     color: #334155;
     font-size: 0.75rem;
+}
+
+.modal-question-score-row + .modal-question-score-row {
+    margin-top: 0.3rem;
+}
+
+.modal-question-notes {
+    margin-top: 0.55rem;
+}
+
+.modal-question-note {
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.modal-question-note + .modal-question-note {
+    margin-top: 0.25rem;
 }
 
 .modal-question-note strong {
@@ -2086,6 +2175,15 @@
     .modal-detail-footer {
         padding-right: 1rem;
         padding-left: 1rem;
+    }
+
+    .modal-detail-content {
+        max-height: 94vh;
+        border-radius: 0.8rem;
+    }
+
+    .modal-detail-title {
+        font-size: 0.95rem;
     }
 
     .modal-summary-grid {
@@ -2631,16 +2729,16 @@
         <!-- Kiri: Predikat Terendah Bulan Ini -->
         <div class="low-card">
             <div class="low-card-header">
-                <div class="low-card-header-main">
-                    <div class="low-card-header-icon" style="background: #fff7ed; color: #c2410c;">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div class="widget-icon-box" style="background: #fff7ed; color: #c2410c; width: 38px; height: 38px; border-radius: 0.65rem; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 1rem;"></i>
                     </div>
-                    <div class="low-card-header-copy">
-                        <h6 class="low-card-title">Predikat Terendah Bulan Ini</h6>
-                        <p class="low-card-description">Pegawai dengan Nilai Terendah Periode Aktif</p>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Predikat Terendah Bulan Ini</h6>
+                        <p class="text-muted small mb-0" style="font-size: 0.725rem;">Pegawai dengan Nilai Terendah Periode Aktif</p>
                     </div>
                 </div>
-                <span class="badge low-card-count" style="background: #ffedd5; color: #9a3412;">
+                <span class="badge" style="background: #ffedd5; color: #9a3412; border-radius: 999px; font-weight: 700; font-size: 0.725rem; padding: 0.35rem 0.75rem;">
                     {{ $totalTerendahBulanIni ?? 0 }} Pegawai
                 </span>
             </div>
@@ -2684,16 +2782,16 @@
         <!-- Kanan: Terendah 3 Bulan Berturut-turut -->
         <div class="low-card">
             <div class="low-card-header">
-                <div class="low-card-header-main">
-                    <div class="low-card-header-icon" style="background: #ffe4e6; color: #9f1239;">
+                <div class="d-flex align-items-center gap-2.5">
+                    <div class="widget-icon-box" style="background: #ffe4e6; color: #9f1239; width: 38px; height: 38px; border-radius: 0.65rem; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 1rem;"></i>
                     </div>
-                    <div class="low-card-header-copy">
-                        <h6 class="low-card-title">Terendah 3 Bulan Berturut-turut</h6>
-                        <p class="low-card-description">Kandidat yang Membutuhkan Pembinaan atau Evaluasi</p>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Terendah 3 Bulan Berturut-turut</h6>
+                        <p class="text-muted small mb-0" style="font-size: 0.725rem;">Kandidat yang Membutuhkan Pembinaan atau Evaluasi</p>
                     </div>
                 </div>
-                <span class="badge low-card-count" style="background: #ffe4e6; color: #881337;">
+                <span class="badge" style="background: #ffe4e6; color: #881337; border-radius: 999px; font-weight: 700; font-size: 0.725rem; padding: 0.35rem 0.75rem;">
                     {{ $totalTerendahTigaBulan ?? 0 }} Pegawai
                 </span>
             </div>
@@ -2737,16 +2835,16 @@
     <!-- WIDGET: Monitoring Detail Pegawai -->
     <div class="mon-card">
         <div class="mon-header">
-                <div class="mon-header-main">
-                    <div class="mon-header-icon">
-                    <i class="fas fa-users" style="font-size: 1.1rem;"></i>
+            <div class="mon-header-main">
+                <div class="mon-header-icon">
+                    <i class="fas fa-users" aria-hidden="true"></i>
                 </div>
-                    <div class="mon-header-copy">
-                        <h6 class="mon-header-title">Monitoring Detail Pegawai</h6>
-                        <p class="mon-header-description">Daftar Status Penilaian Untuk Tindak Lanjut Operasional</p>
+                <div class="mon-header-copy">
+                    <h6 class="mon-header-title">Monitoring Detail Pegawai</h6>
+                    <p class="mon-header-description">Daftar Status Penilaian Untuk Tindak Lanjut Operasional</p>
                 </div>
             </div>
-                <span id="totalDataBadge" class="mon-header-count">
+            <span id="totalDataBadge" class="mon-header-count">
                 0 Data
             </span>
         </div>
@@ -2786,12 +2884,9 @@
                 </tbody>
             </table>
         </div>
-        <div id="monPagination" class="d-flex justify-content-between align-items-center gap-2 px-3 py-3 border-top">
-            <span id="monPageInfo" class="small text-muted"></span>
-            <div class="d-flex gap-2">
-                <button type="button" id="monPrevPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage - 1)">Sebelumnya</button>
-                <button type="button" id="monNextPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage + 1)">Berikutnya</button>
-            </div>
+        <div id="monPagination" class="mon-pagination" hidden>
+            <p id="monPageInfo" class="mon-pagination-label"></p>
+            <nav id="monPaginationNav" class="mon-pagination-nav" aria-label="Pagination tabel monitoring"></nav>
         </div>
     </div>
 @endif
@@ -2834,7 +2929,7 @@
 </div>
 
 <div class="modal-detail-backdrop" id="pegawaiDetailModal">
-    <div class="modal-detail-content">
+    <div class="modal-detail-content" role="dialog" aria-modal="true" aria-labelledby="modalEmpTitle" aria-describedby="modalEmpSub">
         <div class="modal-detail-header">
             <div class="modal-detail-heading">
                 <h5 class="modal-detail-title" id="modalEmpTitle">Detail Penilaian</h5>
@@ -3075,20 +3170,29 @@ document.addEventListener("DOMContentLoaded", function () {
         periodeDropdown.addEventListener('change', () => loadMonitoringTable(currentMonTab, 1));
     }
 
+    const paginationNav = document.getElementById('monPaginationNav');
+    if (paginationNav) {
+        paginationNav.addEventListener('click', event => {
+            const pageButton = event.target.closest('[data-page]');
+            if (pageButton && !pageButton.disabled) {
+                loadMonitoringTable(currentMonTab, Number(pageButton.dataset.page));
+            }
+        });
+    }
+
     document.querySelectorAll('.modal-detail-tab').forEach(button => {
         button.addEventListener('click', function () {
-            const selectedPanelId = this.dataset.modalTab;
             document.querySelectorAll('.modal-detail-tab').forEach(tab => {
                 tab.classList.remove('active');
                 tab.setAttribute('aria-selected', 'false');
             });
             document.querySelectorAll('.modal-detail-tab-pane').forEach(panel => {
-                panel.hidden = panel.id !== selectedPanelId;
-                panel.classList.remove('d-none');
+                panel.hidden = true;
             });
 
             this.classList.add('active');
             this.setAttribute('aria-selected', 'true');
+            document.getElementById(this.dataset.modalTab).hidden = false;
         });
     });
 
@@ -3098,6 +3202,12 @@ document.addEventListener("DOMContentLoaded", function () {
             if (event.target === detailModal) closePegawaiModal();
         });
     }
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && detailModal?.classList.contains('show')) {
+            closePegawaiModal();
+        }
+    });
 });
 
 function switchMonTab(tabName, btnElement) {
@@ -3130,13 +3240,17 @@ function dashboardDate(value) {
 
 function monitoringStatus(item) {
     const nilai = String(item.status_nilai || '').trim().toUpperCase();
-    const verifikator = String(item.status_verifikator || item.status_verifitor || '').trim().toUpperCase();
-    if (['DIKEMBALIKAN', 'REVISI'].includes(nilai) || ['DIKEMBALIKAN', 'REVISI'].includes(verifikator)) {
-        return { label: 'Dikembalikan', style: 'st-returned' };
-    }
+    const verifikator = String(item.status_verifikator || '').trim().toUpperCase();
+
     if (['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(verifikator) ||
         ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(nilai)) {
         return { label: 'Verified', style: 'st-verified' };
+    }
+    if (['DIKEMBALIKAN', 'REVISI'].includes(nilai) || ['DIKEMBALIKAN', 'REVISI'].includes(verifikator)) {
+        return { label: 'Returned', style: 'st-returned' };
+    }
+    if (['KOREKSI', 'PERLU DITINJAU'].includes(verifikator)) {
+        return { label: 'Ada Koreksi', style: 'st-correction' };
     }
     if (['DRAFT', 'SIMPAN', 'SAVED'].includes(nilai)) {
         return { label: 'Draft', style: 'st-draft' };
@@ -3144,10 +3258,54 @@ function monitoringStatus(item) {
     if (['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI', 'MENUNGGU'].includes(nilai)) {
         return { label: 'Menunggu Verifikasi', style: 'st-submit' };
     }
-    if (['KOREKSI', 'PERLU DITINJAU'].includes(verifikator)) {
-        return { label: 'Menunggu Verifikasi', style: 'st-submit' };
-    }
     return { label: 'Belum Dinilai', style: 'st-belum' };
+}
+
+function renderMonitoringPagination(result) {
+    const pagination = document.getElementById('monPagination');
+    const pageInfo = document.getElementById('monPageInfo');
+    const nav = document.getElementById('monPaginationNav');
+    const currentPage = Number(result.current_page || 1);
+    const lastPage = Number(result.last_page || 1);
+
+    if (lastPage <= 1) {
+        pagination.hidden = true;
+        nav.innerHTML = '';
+        return;
+    }
+
+    pagination.hidden = false;
+    pageInfo.innerText = `Menampilkan ${result.from ?? 0} sampai ${result.to ?? 0} dari ${result.total ?? 0} data`;
+
+    let pageNumbers;
+    if (lastPage <= 5) {
+        pageNumbers = Array.from({ length: lastPage }, (_, index) => index + 1);
+    } else if (currentPage <= 3) {
+        pageNumbers = [1, 2, 3, 4, 5];
+    } else if (currentPage >= lastPage - 2) {
+        pageNumbers = [lastPage - 4, lastPage - 3, lastPage - 2, lastPage - 1, lastPage];
+    } else {
+        pageNumbers = [currentPage - 1, currentPage, currentPage + 1, currentPage + 2, currentPage + 3];
+    }
+
+    const previousPage = currentPage - 1;
+    const nextPage = currentPage + 1;
+    let paginationMarkup = `
+        <button type="button" class="mon-page-arrow${currentPage <= 1 ? ' disabled' : ''}" data-page="${previousPage}" aria-label="Halaman sebelumnya" ${currentPage <= 1 ? 'disabled' : ''}>&lsaquo;</button>`;
+
+    pageNumbers.forEach(page => {
+        paginationMarkup += page === currentPage
+            ? `<span class="mon-page-number active" aria-current="page">${page}</span>`
+            : `<button type="button" class="mon-page-number" data-page="${page}" aria-label="Halaman ${page}">${page}</button>`;
+    });
+
+    if (lastPage > 5 && currentPage < lastPage - 2) {
+        paginationMarkup += '<span class="mon-page-ellipsis" aria-hidden="true">…</span>';
+    }
+
+    paginationMarkup += `
+        <button type="button" class="mon-page-arrow${currentPage >= lastPage ? ' disabled' : ''}" data-page="${nextPage}" aria-label="Halaman berikutnya" ${currentPage >= lastPage ? 'disabled' : ''}>&rsaquo;</button>`;
+    nav.innerHTML = paginationMarkup;
 }
 
 async function loadMonitoringTable(tab, page = 1) {
@@ -3155,9 +3313,6 @@ async function loadMonitoringTable(tab, page = 1) {
     const periodeId = periodeSelect ? periodeSelect.value : '';
     const tbody = document.getElementById('monTableBody');
     const badge = document.getElementById('totalDataBadge');
-    const pageInfo = document.getElementById('monPageInfo');
-    const previousButton = document.getElementById('monPrevPage');
-    const nextButton = document.getElementById('monNextPage');
 
     if (!tbody || !periodeId) return;
     tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
@@ -3174,11 +3329,8 @@ async function loadMonitoringTable(tab, page = 1) {
         const result = await response.json();
         const data = result.data || [];
         badge.innerText = `${result.total ?? 0} Data`;
-        pageInfo.innerText = result.total
-            ? `Menampilkan ${result.from}–${result.to} dari ${result.total} pegawai`
-            : 'Tidak ada data';
-        previousButton.disabled = !result.prev_page_url;
-        nextButton.disabled = !result.next_page_url;
+        currentMonPage = Number(result.current_page || page);
+        renderMonitoringPagination(result);
 
         if (data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada data pegawai pada kategori ini untuk periode yang dipilih.</td></tr>`;
@@ -3187,11 +3339,6 @@ async function loadMonitoringTable(tab, page = 1) {
 
         tbody.innerHTML = data.map(item => {
             const status = monitoringStatus(item);
-            const correctionCount = Number(item.koreksi_count || 0);
-            const hasCorrection = correctionCount > 0 || status.label === 'Ada Koreksi';
-            const correctionLabel = hasCorrection
-                ? `Ada Koreksi${correctionCount > 0 ? ` (${correctionCount})` : ''}`
-                : 'Tidak Ada';
             const scoreValue = item.total_nilai_verifikator ?? item.total_nilai;
             const score = scoreValue === null || scoreValue === '' ? '-' : Number(scoreValue).toFixed(2);
             return `
@@ -3213,7 +3360,7 @@ async function loadMonitoringTable(tab, page = 1) {
                     <td>${dashboardDate(item.tanggal_submit)}</td>
                     <td>${escapeDashboardHtml(item.verifikator_nama || '-')}</td>
                     <td>${dashboardDate(item.tanggal_verifikasi)}</td>
-                    <td><span class="${hasCorrection ? 'badge-status-custom st-correction' : 'badge bg-light text-dark'}">${correctionLabel}</span></td>
+                    <td><span class="badge bg-light text-dark">${Number(item.koreksi_count || 0) || 'Tidak Ada'}</span></td>
                     <td class="text-center">
                         <button type="button" class="btn-action-eye" aria-label="Lihat detail ${escapeDashboardHtml(item.nama || 'pegawai')}" onclick="openPegawaiModal('${encodeURIComponent(item.pgw_id)}')">
                             <i class="fas fa-eye"></i>
@@ -3224,9 +3371,7 @@ async function loadMonitoringTable(tab, page = 1) {
     } catch (error) {
         console.error('Gagal memuat data monitoring:', error);
         badge.innerText = 'Data tidak tersedia';
-        pageInfo.innerText = '';
-        previousButton.disabled = true;
-        nextButton.disabled = true;
+        document.getElementById('monPagination').hidden = true;
         tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger">Gagal memuat data monitoring. Silakan muat ulang atau coba lagi.</td></tr>`;
     }
 }
@@ -3241,31 +3386,31 @@ function renderQuestionDetails(categories) {
     container.innerHTML = categories.map((category, categoryIndex) => `
         <section class="modal-question-category">
             <div class="modal-question-category-title">
-                <span><span class="badge bg-danger-subtle text-danger me-2">${categoryIndex + 1}</span>${escapeDashboardHtml(category.nama_kategori)}</span>
-                <span class="badge bg-light text-secondary">Bobot ${escapeDashboardHtml(category.bobot_kategori ?? 0)}%</span>
+                <span class="modal-question-category-label">
+                    <span class="modal-question-index">${categoryIndex + 1}</span>
+                    ${escapeDashboardHtml(category.nama_kategori)}
+                </span>
+                <span class="modal-question-weight">Bobot ${escapeDashboardHtml(category.bobot_kategori ?? 0)}%</span>
             </div>
             <div class="modal-question-grid">
                 ${(category.pertanyaans || []).map((question, questionIndex) => {
                     const penilaiScore = question.nilai_angka ?? question.nilai_akhir;
                     const verifierScore = question.verif_nilai_angka ?? question.verif_nilai_akhir;
-                    const hasVerifierValue = verifierScore !== null && verifierScore !== undefined;
-                    const isCorrected = String(question.verif_status || '').trim().toUpperCase() === 'KOREKSI' ||
-                        (hasVerifierValue && penilaiScore !== null && penilaiScore !== undefined &&
-                            Number(verifierScore) !== Number(penilaiScore));
                     return `
                         <article class="modal-question-card">
-                            <div class="d-flex justify-content-between gap-2">
+                            <div class="modal-question-heading">
                                 <div class="modal-question-title">${questionIndex + 1}. ${escapeDashboardHtml(question.pertanyaan || 'Pertanyaan')}</div>
-                                <span class="badge bg-light text-secondary flex-shrink-0">${escapeDashboardHtml(question.bobot_pertanyaan_persen ?? 0)}%</span>
+                                <span class="modal-question-weight">${escapeDashboardHtml(question.bobot_pertanyaan_persen ?? 0)}%</span>
                             </div>
-                            ${isCorrected ? '<div class="mt-2"><span class="modal-question-correction"><i class="fas fa-pen" aria-hidden="true"></i> Nilai dikoreksi verifikator</span></div>' : ''}
-                            ${question.deskripsi ? `<p class="modal-question-description mt-2 mb-0">${escapeDashboardHtml(question.deskripsi)}</p>` : ''}
+                            ${question.deskripsi ? `<p class="modal-question-description">${escapeDashboardHtml(question.deskripsi)}</p>` : ''}
                             <div class="modal-question-score">
-                                <div><strong>Nilai Penilai:</strong> ${escapeDashboardHtml(question.nama_nilai || '-')} ${penilaiScore !== null && penilaiScore !== undefined ? `(${escapeDashboardHtml(penilaiScore)})` : ''}</div>
-                                ${isCorrected || hasVerifierValue || question.verif_nama_nilai ? `<div class="mt-1"><strong>Nilai Verifikator:</strong> ${escapeDashboardHtml(question.verif_nama_nilai || '-')} ${verifierScore !== null && verifierScore !== undefined ? `(${escapeDashboardHtml(verifierScore)})` : ''}</div>` : ''}
+                                <div class="modal-question-score-row"><strong>Nilai Penilai:</strong> ${escapeDashboardHtml(question.nama_nilai || '-')} ${penilaiScore !== null && penilaiScore !== undefined ? `(${escapeDashboardHtml(penilaiScore)})` : ''}</div>
+                                ${question.verif_nilai_angka !== null && question.verif_nilai_angka !== undefined || question.verif_nama_nilai ? `<div class="modal-question-score-row"><strong>Nilai Verifikator:</strong> ${escapeDashboardHtml(question.verif_nama_nilai || '-')} ${verifierScore !== null && verifierScore !== undefined ? `(${escapeDashboardHtml(verifierScore)})` : ''}</div>` : ''}
                             </div>
-                            <div class="modal-question-note mt-2"><strong>Catatan penilai:</strong> ${escapeDashboardHtml(question.catatan || 'Tidak ada catatan.')}</div>
-                            ${question.verif_catatan ? `<div class="modal-question-note mt-1"><strong>Catatan verifikator:</strong> ${escapeDashboardHtml(question.verif_catatan)}</div>` : ''}
+                            <div class="modal-question-notes">
+                                <div class="modal-question-note"><strong>Catatan penilai:</strong> ${escapeDashboardHtml(question.catatan || 'Tidak ada catatan.')}</div>
+                                ${question.verif_catatan ? `<div class="modal-question-note"><strong>Catatan verifikator:</strong> ${escapeDashboardHtml(question.verif_catatan)}</div>` : ''}
+                            </div>
                         </article>`;
                 }).join('')}
             </div>
@@ -3277,6 +3422,13 @@ async function openPegawaiModal(pgwId) {
     const periodeId = periodeSelect ? periodeSelect.value : '';
     const modal = document.getElementById('pegawaiDetailModal');
     const title = document.getElementById('modalEmpTitle');
+
+    document.querySelectorAll('.modal-detail-tab').forEach((tab, index) => {
+        tab.classList.toggle('active', index === 0);
+        tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+    });
+    document.getElementById('ringkasanContent').hidden = false;
+    document.getElementById('pertanyaanContent').hidden = true;
     title.innerText = 'Memuat Detail Penilaian...';
     document.getElementById('modalQuestionsList').innerHTML = '<div class="text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i>Memuat hasil penilaian...</div>';
     modal.classList.add('show');
@@ -3291,20 +3443,8 @@ async function openPegawaiModal(pgwId) {
         const employee = result.employee || {};
         const transaction = result.trans || {};
         const status = monitoringStatus(transaction);
-        const correctionCount = (result.pertanyaan || []).flatMap(category => category.pertanyaans || [])
-            .filter(question => {
-                const penilaiScore = question.nilai_angka ?? question.nilai_akhir;
-                const verifierScore = question.verif_nilai_angka ?? question.verif_nilai_akhir;
-                return String(question.verif_status || '').trim().toUpperCase() === 'KOREKSI' ||
-                    (verifierScore !== null && verifierScore !== undefined &&
-                        penilaiScore !== null && penilaiScore !== undefined &&
-                        Number(verifierScore) !== Number(penilaiScore));
-            }).length;
-        const hasCorrection = correctionCount > 0 ||
-            Number(transaction.koreksi_count || 0) > 0 ||
-            ['KOREKSI', 'PERLU DITINJAU'].includes(
-                String(transaction.status_verifikator || transaction.status_verifitor || '').trim().toUpperCase()
-            );
+        const corrections = (result.pertanyaan || []).flatMap(category => category.pertanyaans || [])
+            .filter(question => String(question.verif_status || '').toUpperCase() === 'KOREKSI').length;
 
         title.innerText = `Detail Penilaian — ${employee.nama || '-'}`;
         document.getElementById('modalEmpSub').innerText = `${employee.nup || '-'} · ${employee.unit_kerja || '-'} · ${employee.jabatan || '-'}`;
@@ -3322,22 +3462,9 @@ async function openPegawaiModal(pgwId) {
         document.getElementById('modalPredikat').innerText = transaction.predikat_verifikator || transaction.predikat || '-';
         document.getElementById('modalStatusBadge').innerText = status.label;
         document.getElementById('modalStatusBadge').className = `badge-status-custom ${status.style}`;
-        const correctionBadge = document.getElementById('modalKoreksiBadge');
-        correctionBadge.innerText = hasCorrection
-            ? `Ada Koreksi${correctionCount ? ` (${correctionCount} pertanyaan)` : ''}`
-            : 'Tidak Ada';
-        correctionBadge.className = `badge-status-custom ${hasCorrection ? 'st-correction' : 'st-belum'}`;
+        document.getElementById('modalKoreksiBadge').innerText = corrections ? `${corrections} Koreksi` : 'Tidak Ada';
         document.getElementById('modalInfoText').innerText = transaction.catatan || 'Tidak ada catatan atau risiko waktu pada data ini.';
         renderQuestionDetails(result.pertanyaan);
-
-        document.querySelectorAll('.modal-detail-tab').forEach((tab, index) => {
-            tab.classList.toggle('active', index === 0);
-            tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-        });
-        document.querySelectorAll('.modal-detail-tab-pane').forEach((panel, index) => {
-            panel.hidden = index !== 0;
-            panel.classList.remove('d-none');
-        });
     } catch (error) {
         console.error('Gagal memuat detail penilaian:', error);
         title.innerText = 'Detail Penilaian Tidak Tersedia';

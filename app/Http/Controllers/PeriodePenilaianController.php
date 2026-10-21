@@ -1,11 +1,9 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
 use App\Models\Dp3TransPeriodePenilaian;
-use App\Models\Employee;
 use App\Exports\PeriodePenilaianExport;
-use App\Support\EmployeeAssessmentPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -264,8 +262,7 @@ class PeriodePenilaianController extends Controller
             // 4. Ambil seluruh pegawai untuk snapshot periode.
             // Semua pegawai tetap masuk ke periode agar data penilaian konsisten dengan total pegawai yang dikelola.
             $pegawaiAktif = DB::table('employee')
-                ->where('is_hapus', 0)
-                ->get();
+                    ->get();
 
             if ($pegawaiAktif->isEmpty()) {
                 return redirect()->back()->with('warning', 'Tidak ada data pegawai untuk di-generate.');
@@ -281,6 +278,7 @@ class PeriodePenilaianController extends Controller
                 $namaDepartemen = DB::table('department')->where('dept_id', $pgw->dept_id)->value('dept_name');
                 $namaSubDepartemen = DB::table('department_sub')->where('subdept_id', $pgw->subdept_id)->value('subdept_name');
                 $namaOffice = DB::table('office')->where('off_id', $pgw->off_id)->value('off_name');
+                $auto = self::getAutoAssignees((int) $pgw->occ_id, $pgw->kode_unit_kerja);
                 
                 DB::table('dp3_trans_penilaian')->updateOrInsert(
                     [
@@ -301,6 +299,9 @@ class PeriodePenilaianController extends Controller
                         'pgw_off_name' => $namaOffice,
                         'pgw_kode_unit_kerja' => $pgw->kode_unit_kerja,
                         'pgw_kode_satker' => $pgw->off_id ?? $pgw->dept_id,
+                        'penilai_id' => $auto['penilai']?->pgw_id,
+                        'verifikator_id' => $auto['verifikator']?->pgw_id,
+                        'penilai_manual' => false,
                         'status_nilai' => 'Belum Diisi',
                         'total_nilai' => 0.00,
                         'predikat' => 'Mengecewakan',
@@ -395,6 +396,46 @@ class PeriodePenilaianController extends Controller
             });
     }
 
+    public static function getAutoAssignees(?int $occId, ?string $unitCode): array
+    {
+        if (! $occId || ! $unitCode) {
+            return ['penilai' => null, 'verifikator' => null];
+        }
+
+        $currentLevel = DB::table('occupation')->where('occ_id', $occId)->value('level');
+        if (! $currentLevel) {
+            return ['penilai' => null, 'verifikator' => null];
+        }
+
+        // Penilai: Pegawai di unit kerja yang sama dengan jabatan lebih tinggi (level lebih kecil, paling dekat dengan currentLevel)
+        $penilai = DB::table('employee as e')
+            ->join('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
+            ->where('e.kode_unit_kerja', $unitCode)
+            ->where('occ.level', '<', $currentLevel)
+            ->orderBy('occ.level', 'desc')
+            ->orderBy('e.pgw_id', 'asc')
+            ->select('e.pgw_id', 'e.nama', 'occ.level', 'occ.occ_name')
+            ->first();
+
+        $penilaiLevel = $penilai ? $penilai->level : $currentLevel;
+
+        // Verifikator: Pegawai di unit kerja yang sama dengan jabatan di atas penilai
+        $verifikator = DB::table('employee as e')
+            ->join('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
+            ->where('e.kode_unit_kerja', $unitCode)
+            ->where('occ.level', '<', $penilaiLevel)
+            ->orderBy('occ.level', 'desc')
+            ->orderBy('e.pgw_id', 'asc')
+            ->select('e.pgw_id', 'e.nama', 'occ.level', 'occ.occ_name')
+            ->first();
+
+        if (! $verifikator && $penilai) {
+            $verifikator = $penilai;
+        }
+
+        return ['penilai' => $penilai, 'verifikator' => $verifikator];
+    }
+
     public function searchEmployees(string $id, Request $request)
     {
         $periode = Dp3TransPeriodePenilaian::where('periode_id', $id)->first();
@@ -411,18 +452,18 @@ class PeriodePenilaianController extends Controller
 
         $search = trim($validated['q']);
 
-        $employees = DB::table('employee as e')
-            ->where(function ($query) {
-                $query->whereNull('e.is_hapus')
-                    ->orWhere('e.is_hapus', 0);
-            });
-            
         $employees = DB::table('employee as e') 
+            ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
+            ->leftJoin('unit_kerja as uk', 'e.kode_unit_kerja', '=', 'uk.kode_unit_kerja')
+            ->leftJoin('office as o', 'e.off_id', '=', 'o.off_id')
+            ->leftJoin('department as d', 'e.dept_id', '=', 'd.dept_id')
+            ->leftJoin('department_sub as sub', 'e.subdept_id', '=', 'sub.subdept_id')
             ->whereNotExists(function ($query) use ($id) {
                 $query->selectRaw('1')
                     ->from('dp3_trans_penilaian as tp')
                     ->whereColumn('tp.pegawai_id', 'e.pgw_id')
-                    ->where('tp.periode_id', $id);
+                    ->where('tp.periode_id', $id)
+                    ->where('tp.is_active', true);
             })
             ->where(function ($query) use ($search) {
                 $query->where('e.nama', 'like', "%{$search}%")
@@ -430,9 +471,31 @@ class PeriodePenilaianController extends Controller
             })
             ->orderBy('e.nama')
             ->limit(20)
-            ->get(['e.pgw_id', 'e.nup', 'e.nama', 'e.occ_id'])
+            ->get([
+                'e.pgw_id',
+                'e.nup',
+                'e.nama',
+                'e.occ_id',
+                'e.dept_id',
+                'e.subdept_id',
+                'e.off_id',
+                'e.kode_satker',
+                'e.kode_unit_kerja',
+                'occ.occ_name as jabatan',
+                'uk.nama_unit_kerja as unit_kerja',
+                'o.off_name as penempatan',
+                'd.dept_name as departemen',
+                'sub.subdept_name as subdepartemen',
+            ])
             ->map(function ($employee) {
+                $roleNames = [1 => 'Direktur', 5 => 'Manager', 6 => 'Asmen', 9 => 'Staff'];
+                if (isset($roleNames[$employee->occ_id])) {
+                    $employee->jabatan = $roleNames[$employee->occ_id];
+                }
                 $employee->has_template = $this->matchingTemplate($employee->occ_id) !== null;
+                $auto = self::getAutoAssignees((int) $employee->occ_id, $employee->kode_unit_kerja);
+                $employee->penilai_nama = $auto['penilai'] ? $auto['penilai']->nama : 'Tidak Ada (Tingkat Tertinggi)';
+                $employee->verifikator_nama = $auto['verifikator'] ? $auto['verifikator']->nama : 'Tidak Ada (Tingkat Tertinggi)';
                 return $employee;
             });
 
@@ -449,16 +512,27 @@ class PeriodePenilaianController extends Controller
             'pegawai_id' => ['required', 'integer', 'exists:employee,pgw_id'],
         ]);
 
-        $employee = DB::table('employee')->where('pgw_id', $validated['pegawai_id'])->first();
+        $employee = DB::table('employee')
+            ->where('pgw_id', $validated['pegawai_id'])
+            ->first();
+        if (!$employee) {
+            return back()->withErrors(['pegawai_id' => 'Pegawai tidak aktif atau tidak ditemukan.']);
+        }
 
-        if (DB::table('dp3_trans_penilaian')
+        $existing = DB::table('dp3_trans_penilaian')
             ->where('periode_id', $id)
             ->where('pegawai_id', $employee->pgw_id)
-            ->exists()) {
-            return back()->withErrors(['pegawai_id' => 'Pegawai ini sudah terdaftar pada periode.']);
+            ->first();
+
+        if ($existing && $existing->is_active) {
+            return back()->withErrors(['pegawai_id' => 'Pegawai ini sudah aktif terdaftar pada periode.']);
         }
 
         $template = $this->matchingTemplate($employee->occ_id);
+        $auto = self::getAutoAssignees((int) $employee->occ_id, $employee->kode_unit_kerja);
+        $roleNames = [1 => 'Direktur', 5 => 'Manager', 6 => 'Asmen', 9 => 'Staff'];
+        $jabatanName = $roleNames[$employee->occ_id] ?? DB::table('occupation')->where('occ_id', $employee->occ_id)->value('occ_name');
+
         $snapshot = [
             'kode' => 'PEN-' . $id . '-' . $employee->pgw_id,
             'periode_id' => $id,
@@ -467,7 +541,7 @@ class PeriodePenilaianController extends Controller
             'pgw_nama' => $employee->nama,
             'pgw_sex' => $employee->sex,
             'pgw_id_jabatan' => $employee->occ_id,
-            'pgw_jabatan' => DB::table('occupation')->where('occ_id', $employee->occ_id)->value('occ_name'),
+            'pgw_jabatan' => $jabatanName,
             'pgw_id_dept' => $employee->dept_id,
             'pgw_dept_name' => DB::table('department')->where('dept_id', $employee->dept_id)->value('dept_name'),
             'pgw_id_subdept' => $employee->subdept_id,
@@ -478,18 +552,28 @@ class PeriodePenilaianController extends Controller
             'pgw_kode_unit_kerja' => $employee->kode_unit_kerja ?? null,
             'template_id' => $template?->template_id,
             'template_nama' => $template?->nama_template,
-            'status_nilai' => 'Belum Diisi',
-            'total_nilai' => 0,
-            'predikat' => 'Mengecewakan',
+            'penilai_id' => $auto['penilai']?->pgw_id,
+            'verifikator_id' => $auto['verifikator']?->pgw_id,
+            'penilai_manual' => false,
+            'status_nilai' => $existing ? $existing->status_nilai : 'Belum Diisi',
+            'total_nilai' => $existing ? $existing->total_nilai : 0,
+            'predikat' => $existing ? $existing->predikat : 'Mengecewakan',
             'is_active' => true,
-            'created_by' => auth()->user()?->name ?? 'System',
-            'created_at' => now(),
+            'inactive_reason' => null,
             'updated_at' => now(),
         ];
 
-        DB::table('dp3_trans_penilaian')->insert($snapshot);
+        if ($existing) {
+            DB::table('dp3_trans_penilaian')
+                ->where('penilaian_id', $existing->penilaian_id)
+                ->update($snapshot);
+        } else {
+            $snapshot['created_by'] = auth()->user()?->name ?? 'System';
+            $snapshot['created_at'] = now();
+            DB::table('dp3_trans_penilaian')->insert($snapshot);
+        }
 
-        return back()->with('success', 'Pegawai berhasil ditambahkan ke periode.');
+        return back()->with('success', 'Pegawai berhasil ditambahkan ke periode dengan data database terbaru.');
     }
 
     public function updateEmployees(string $id, Request $request): RedirectResponse
@@ -531,6 +615,21 @@ class PeriodePenilaianController extends Controller
             $updates['pgw_kode_unit_kerja'] = $validated['kode_unit_kerja'];
         }
 
+        $roleJabatanNames = [
+            1 => 'Direktur',
+            5 => 'Manager',
+            6 => 'Asmen',
+            9 => 'Staff',
+        ];
+
+        if (! empty($validated['occ_id'])) {
+            $updates['pgw_id_jabatan'] = $validated['occ_id'];
+            $updates['pgw_jabatan'] = $roleJabatanNames[$validated['occ_id']] ?? DB::table('occupation')->where('occ_id', $validated['occ_id'])->value('occ_name');
+            $template = $this->matchingTemplate($validated['occ_id']);
+            $updates['template_id'] = $template?->template_id;
+            $updates['template_nama'] = $template?->nama_template;
+        }
+
         if ($updates === []) {
             return back()->withErrors(['pegawai_ids' => 'Pilih setidaknya satu data pegawai yang akan diperbarui.']);
         }
@@ -539,6 +638,22 @@ class PeriodePenilaianController extends Controller
             ->where('periode_id', $id)
             ->whereIn('penilaian_id', $entries->pluck('penilaian_id'))
             ->update($updates + ['updated_at' => now()]);
+
+        if (! empty($validated['occ_id']) || ! empty($validated['kode_unit_kerja'])) {
+            foreach ($entries as $entry) {
+                if (! $entry->penilai_manual) {
+                    $newOccId = (int) ($validated['occ_id'] ?? $entry->pgw_id_jabatan);
+                    $newUnitCode = $validated['kode_unit_kerja'] ?? $entry->pgw_kode_unit_kerja;
+                    $auto = self::getAutoAssignees($newOccId, $newUnitCode);
+                    DB::table('dp3_trans_penilaian')
+                        ->where('penilaian_id', $entry->penilaian_id)
+                        ->update([
+                            'penilai_id' => $auto['penilai']?->pgw_id,
+                            'verifikator_id' => $auto['verifikator']?->pgw_id,
+                        ]);
+                }
+            }
+        }
 
         return back()->with('success', 'Data pegawai pada periode berhasil diperbarui.');
     }
@@ -576,13 +691,6 @@ class PeriodePenilaianController extends Controller
         $validated = $request->validate([
             'penilai_id' => ['required', 'integer', 'exists:employee,pgw_id'],
         ]);
-        $evaluator = Employee::query()->findOrFail($validated['penilai_id']);
-
-        foreach ($entries as $entry) {
-            abort_unless(in_array(strtoupper(trim((string) $entry->status_nilai)), ['', 'BELUM DIISI', 'DRAFT'], true), 422);
-            $target = Employee::query()->find($entry->pegawai_id);
-            abort_unless(EmployeeAssessmentPolicy::canEmployeeEvaluate($evaluator, $target), 422);
-        }
 
         DB::table('dp3_trans_penilaian')
             ->where('periode_id', $id)
@@ -603,20 +711,26 @@ class PeriodePenilaianController extends Controller
         }
 
         $entries = $this->selectedActiveEntries($request, $id);
+        $resetCount = 0;
+
         foreach ($entries as $entry) {
-            abort_unless(in_array(strtoupper(trim((string) $entry->status_nilai)), ['', 'BELUM DIISI', 'DRAFT'], true), 422);
+            $targetOccId = (int) ($entry->pgw_id_jabatan ?? 0);
+            $targetUnitCode = $entry->pgw_kode_unit_kerja;
+
+            $auto = self::getAutoAssignees($targetOccId, $targetUnitCode);
+
+            DB::table('dp3_trans_penilaian')
+                ->where('penilaian_id', $entry->penilaian_id)
+                ->update([
+                    'penilai_id' => $auto['penilai']?->pgw_id,
+                    'verifikator_id' => $auto['verifikator']?->pgw_id,
+                    'penilai_manual' => false,
+                    'updated_at' => now(),
+                ]);
+            $resetCount++;
         }
 
-        DB::table('dp3_trans_penilaian')
-            ->where('periode_id', $id)
-            ->whereIn('penilaian_id', $entries->pluck('penilaian_id'))
-            ->update([
-                'penilai_id' => null,
-                'penilai_manual' => false,
-                'updated_at' => now(),
-            ]);
-
-        return back()->with('success', 'Penugasan manual dihapus. Penilai dapat ditetapkan kembali melalui mekanisme otomatis.');
+        return back()->with('success', "Penilai dan verifikator untuk {$resetCount} pegawai berhasil dikembalikan ke otomatis sesuai hierarki jabatan dan unit kerja.");
     }
 
     public function export(string $id, Request $request)
@@ -740,6 +854,22 @@ class PeriodePenilaianController extends Controller
             $data['status_penilaian'] = strtoupper((string) ($data['status_penilaian'] ?? $data['status_nilai'] ?? 'BELUM DIISI'));
             $data['nilai_akhir'] = is_numeric($data['nilai_akhir'] ?? null) ? (float) $data['nilai_akhir'] : 0.0;
             $data['predikat'] = ! empty($data['predikat']) ? $data['predikat'] : 'Mengecewakan';
+
+            $occId = (int) ($data['pgw_id_jabatan'] ?? 0);
+            $unitCode = $data['pgw_kode_unit_kerja'] ?? null;
+
+            if (empty($data['nama_penilai']) || empty($data['nama_verifikator'])) {
+                $auto = self::getAutoAssignees($occId, $unitCode);
+                if (empty($data['nama_penilai']) && ! empty($auto['penilai'])) {
+                    $data['nama_penilai'] = $auto['penilai']->nama;
+                    $data['penilai_id'] = $auto['penilai']->pgw_id;
+                }
+                if (empty($data['nama_verifikator']) && ! empty($auto['verifikator'])) {
+                    $data['nama_verifikator'] = $auto['verifikator']->nama;
+                    $data['verifikator_id'] = $auto['verifikator']->pgw_id;
+                }
+            }
+
             return (object) $data;
         });
 
@@ -748,7 +878,19 @@ class PeriodePenilaianController extends Controller
         $occupations = DB::table('occupation')->select('occ_id', 'occ_name')->orderBy('occ_name')->get();
         $offices = DB::table('office')->select('off_id', 'off_name')->orderBy('off_name')->get();
         $unitKerjaList = DB::table('unit_kerja')->select('kode_unit_kerja', 'nama_unit_kerja')->orderBy('nama_unit_kerja')->get();
-        $employees = DB::table('employee')->select('pgw_id', 'nup', 'nama')->orderBy('nama')->get();
+        $satkers = DB::table('dp3_trans_penilaian')
+            ->whereNotNull('pgw_kode_satker')
+            ->where('pgw_kode_satker', '!=', '')
+            ->select('pgw_kode_satker')
+            ->distinct()
+            ->orderBy('pgw_kode_satker')
+            ->pluck('pgw_kode_satker');
+        $employees = DB::table('employee as e')
+            ->leftJoin('occupation as occ', 'e.occ_id', '=', 'occ.occ_id')
+            ->leftJoin('unit_kerja as uk', 'e.kode_unit_kerja', '=', 'uk.kode_unit_kerja')
+            ->select('e.pgw_id', 'e.nup', 'e.nama', 'e.occ_id', 'e.kode_unit_kerja', 'occ.occ_name', 'uk.nama_unit_kerja')
+            ->orderBy('e.nama')
+            ->get();
 
         $stats = [
             'total_pegawai'  => DB::table('dp3_trans_penilaian')->where('periode_id', $id)->where('is_active', true)->count(),
@@ -770,7 +912,8 @@ class PeriodePenilaianController extends Controller
             'occupations',
             'offices',
             'unitKerjaList',
-            'employees'
+            'employees',
+            'satkers'
         ));
     }
 }

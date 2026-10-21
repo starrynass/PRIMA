@@ -15,9 +15,8 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             SubDepartmentSeeder::class,
             OccupationSeeder::class,
-            UnitKerjaSeeder::class,
+            UnitKerjaSeeder::class,  
             EmployeeSeeder::class,
-            EmployeeAccountSeeder::class,
         ]);
     }
 }

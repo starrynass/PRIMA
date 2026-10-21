@@ -8,7 +8,6 @@ use App\Models\MasterTemplate;
 use App\Models\MasterSkalaNilai;
 use App\Models\MasterPredikatNilai;
 use App\Models\MasterPertanyaan;
-use App\Support\EmployeeAssessmentPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +17,6 @@ class FormPenilaianController extends Controller
     {
         // 1. Ambil Data Penilaian Transaksi
         $penilaian = Dp3TransPenilaian::with(['periode', 'pegawai', 'details'])->where('penilaian_id', $penilaian_id)->firstOrFail();
-        abort_unless(EmployeeAssessmentPolicy::canEdit(request()->user(), $penilaian), 403);
 
         $existingJawaban = $penilaian->details->pluck('nilai_angka', 'pertanyaan_id')->toArray();
         $existingCatatan = $penilaian->details->pluck('catatan', 'pertanyaan_id')->toArray();
@@ -57,26 +55,14 @@ class FormPenilaianController extends Controller
     public function store(Request $request, $penilaian_id)
     {
         $penilaian = Dp3TransPenilaian::where('penilaian_id', $penilaian_id)->firstOrFail();
-        abort_unless(EmployeeAssessmentPolicy::canEdit($request->user(), $penilaian), 403);
         
-        $validated = $request->validate([
-            'status_aksi' => ['required', 'in:draft,submitted'],
-            'jawaban' => ['nullable', 'array'],
-            'jawaban.*' => ['nullable', 'numeric'],
-            'catatan' => ['nullable', 'array'],
-            'catatan.*' => ['nullable', 'string'],
-            'catatan_umum' => ['nullable', 'string'],
-            'grand_total' => ['nullable', 'numeric'],
-            'predikat_nama' => ['nullable', 'string', 'max:100'],
-        ]);
-        $statusAksi = $validated['status_aksi'];
+        $statusAksi = $request->input('status_aksi', 'draft'); // 'draft' atau 'submitted'
         $jawaban = $request->input('jawaban', []); // Array [pertanyaan_id => nilai_angka]
         $catatan = $request->input('catatan', []); // Array [pertanyaan_id => teks_catatan]
         $catatanUmum = $request->input('catatan_umum');
-        $penilaiId = (int) $request->user()->employee_id;
 
         // Jalankan Transaction untuk menyimpan detail dan update header
-        DB::transaction(function () use ($penilaian, $statusAksi, $jawaban, $catatan, $catatanUmum, $request, $penilaiId) {
+        DB::transaction(function () use ($penilaian, $statusAksi, $jawaban, $catatan, $catatanUmum, $request) {
             
             foreach ($jawaban as $pertanyaanId => $skalaVal) {
                 
@@ -116,7 +102,6 @@ class FormPenilaianController extends Controller
             $penilaian->total_nilai = $totalNilai;
             $penilaian->predikat    = $predikatNama;
             $penilaian->catatan      = $catatanUmum;
-            $penilaian->penilai_id = $penilaiId;
             $penilaian->status_nilai = ($statusAksi === 'submitted') ? 'SUBMITTED' : 'DRAFT';
             
             if ($statusAksi === 'submitted') {

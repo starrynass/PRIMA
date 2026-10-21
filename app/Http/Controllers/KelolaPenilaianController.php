@@ -7,7 +7,6 @@ use App\Models\Dp3TransPenilaian;
 use App\Models\Employee;
 use App\Models\Office;
 use App\Models\UnitKerja;
-use App\Support\EmployeeAssessmentPolicy;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,13 +44,10 @@ class KelolaPenilaianController extends Controller
             if ($selectedPeriode) {
                 $hasPeriodeSelected = true;
 
-                $scopedEntries = DB::table('dp3_trans_penilaian as tp')
-                    ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
-                    ->where('tp.periode_id', $selectedPeriodeId)
-                    ->where('tp.is_active', true);
-                EmployeeAssessmentPolicy::applyEvaluationListScope($scopedEntries, $request->user());
-                $scopedStatusRows = $scopedEntries->get(['tp.pegawai_id', 'tp.status_nilai']);
-                $totalPegawai = $scopedStatusRows->pluck('pegawai_id')->unique()->count();
+                $activeEntries = Dp3TransPenilaian::query()
+                    ->where('periode_id', $selectedPeriodeId)
+                    ->where('is_active', true);
+                $totalPegawai = (clone $activeEntries)->distinct('pegawai_id')->count('pegawai_id');
 
                 $queryPenilaian = DB::table('dp3_trans_penilaian as tp')
                 ->join('employee as e', 'tp.pegawai_id', '=', 'e.pgw_id')
@@ -67,7 +63,6 @@ class KelolaPenilaianController extends Controller
                          ->on('tp.total_nilai', '<=', 'mp.nilai_max');
                 })
                 ->where('tp.periode_id', $selectedPeriodeId)
-                ->where('tp.is_active', true)
                 ->select(
                     'tp.*',
                     'e.pgw_id as pegawai_id',
@@ -81,7 +76,6 @@ class KelolaPenilaianController extends Controller
                     'penilai.nama as nama_penilai',
                     'mp.predikat as predikat' // Mengambil teks predikat dinamis dari tabel master
                 );
-                EmployeeAssessmentPolicy::applyEvaluationListScope($queryPenilaian, $request->user());
 
                 // Filter Search
                 if ($request->filled('search')) {
@@ -157,20 +151,18 @@ class KelolaPenilaianController extends Controller
 
                 $penilaians = $queryPenilaian->paginate(25)->appends($request->query());
 
-                $sudahDiajukan = $scopedStatusRows->filter(fn ($row) => in_array(
-                    strtoupper((string) $row->status_nilai),
-                    ['SUBMITTED', 'SUBMIT', 'DIAJUKAN'],
-                    true
-                ))->count();
-                $dikembalikan = $scopedStatusRows->filter(fn ($row) =>
-                    strtoupper((string) $row->status_nilai) === 'DIKEMBALIKAN'
-                )->count();
-                $masihDraft = $scopedStatusRows->filter(fn ($row) =>
-                    strtoupper((string) $row->status_nilai) === 'DRAFT'
-                )->count();
-                $belumDiisi = max(0, $totalPegawai - $scopedStatusRows
-                    ->filter(fn ($row) => !in_array(strtoupper((string) $row->status_nilai), ['', 'BELUM DIISI'], true))
-                    ->count());
+                $sudahDiajukan = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
+                    ->whereRaw('UPPER(status_nilai) IN (?, ?, ?)', ['SUBMITTED', 'SUBMIT', 'DIAJUKAN'])
+                    ->count();
+
+                $dikembalikan  = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
+                    ->where('status_nilai', 'DIKEMBALIKAN')->count();
+
+                $masihDraft    = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)
+                    ->where('status_nilai', 'DRAFT')->count();
+
+                $totalRecord   = Dp3TransPenilaian::where('periode_id', $selectedPeriodeId)->count();
+                $belumDiisi    = max(0, $totalPegawai - $totalRecord);
             }
         }
 

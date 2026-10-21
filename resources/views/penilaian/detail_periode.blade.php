@@ -293,7 +293,7 @@
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 1rem;
         margin-bottom: 1.25rem;
     }
@@ -862,7 +862,14 @@
                                 $predikat = data_get($row, 'predikat', 'Mengecewakan');
                             @endphp
                             <tr>
-                                <td><input type="checkbox" class="selection-checkbox period-row-checkbox" value="{{ data_get($row, 'penilaian_id') }}" aria-label="Pilih {{ data_get($row, 'nama', 'pegawai') }}"></td>
+                                <td>
+                                    <input type="checkbox" 
+                                           class="selection-checkbox period-row-checkbox" 
+                                           value="{{ data_get($row, 'penilaian_id') }}" 
+                                           data-nama="{{ data_get($row, 'nama', '-') }}" 
+                                           data-nup="{{ data_get($row, 'nup', '-') }}" 
+                                           aria-label="Pilih {{ data_get($row, 'nama', 'pegawai') }}">
+                                </td>
                                 <td>{{ (($penilaianList->currentPage() - 1) * $penilaianList->perPage()) + $loop->iteration }}</td>
                                 <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
                                 <td><strong>{{ data_get($row, 'nama', '-') }}</strong></td>
@@ -904,16 +911,10 @@
                                 </td>
                                 <td class="text-center table-action-cell">
                                     <div class="detail-action-group" style="justify-content:center;">
-                                        <button class="btn-action-icon" type="button" title="Lihat Detail" aria-label="Lihat Detail">
+                                        <button class="btn-action-icon" type="button" title="Lihat Detail / Preview" aria-label="Lihat Detail">
                                             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
                                                 <circle cx="12" cy="12" r="3"></circle>
-                                            </svg>
-                                        </button>
-                                        <button class="btn-action-icon" type="button" title="Verifikasi Penilaian" aria-label="Verifikasi Penilaian">
-                                            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
-                                                <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
                                             </svg>
                                         </button>
                                     </div>
@@ -1001,55 +1002,96 @@
     </div>
 </dialog>
 
-<dialog id="updateEmployeesDialog" class="period-dialog">
-    <div class="period-dialog-content">
-        <h2>Set Data Pegawai</h2>
-        <p>Perubahan hanya berlaku pada data pegawai di periode ini. Kosongkan isian yang tidak ingin diubah.</p>
-        <form method="POST" action="{{ route('periode.employees.update', $periode->periode_id) }}" data-selected-form>
+<dialog id="updateEmployeesDialog" class="period-dialog" style="max-width: 480px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+    <div class="period-dialog-content" style="padding: 1.25rem 1.4rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; padding-bottom: 0.65rem; border-bottom: 1px solid #e2e8f0;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-users" style="color: #2563eb; font-size: 1.2rem;"></i>
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: #1e3a8a; margin: 0;">Set Pegawai</h2>
+            </div>
+            <button type="button" data-close-dialog aria-label="Tutup" style="background: none; border: none; font-size: 1.4rem; line-height: 1; color: #94a3b8; cursor: pointer; padding: 0 4px;">&times;</button>
+        </div>
+
+        <form method="POST" action="{{ route('periode.employees.update', $periode->periode_id) }}" data-selected-form id="updateEmployeesForm">
             @csrf
             <div class="selected-entries"></div>
-            <label for="bulkOccupation">Jabatan</label>
-            <select name="occ_id" id="bulkOccupation">
-                <option value="">- Tidak diubah -</option>
-                @foreach($occupations as $occupation)
-                    <option value="{{ $occupation->occ_id }}">{{ $occupation->occ_name }}</option>
-                @endforeach
-            </select>
-            <label for="bulkDepartment">Departemen</label>
-            <select name="dept_id" id="bulkDepartment">
-                <option value="">- Tidak diubah -</option>
-                @foreach($departments as $department)
-                    <option value="{{ $department->dept_id }}">{{ $department->dept_name }}</option>
-                @endforeach
-            </select>
-            <label for="bulkSubDepartment">Sub Departemen</label>
-            <select name="subdept_id" id="bulkSubDepartment">
-                <option value="">- Tidak diubah -</option>
-                @foreach($subDepartments as $subDepartment)
-                    <option value="{{ $subDepartment->subdept_id }}">{{ $subDepartment->subdept_name }}</option>
-                @endforeach
-            </select>
-            <label for="bulkOffice">Penempatan</label>
-            <select name="off_id" id="bulkOffice">
-                <option value="">- Tidak diubah -</option>
-                @foreach($offices as $office)
-                    <option value="{{ $office->off_id }}">{{ $office->off_name }}</option>
-                @endforeach
-            </select>   
 
-            <label for="bulkSatker">Satker</label>
-            <input type="text" name="kode_satker" id="bulkSatker" maxlength="255" placeholder="Kode satuan kerja">
+            <div style="margin-bottom: 0.75rem;">
+                <div style="font-size: 0.825rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem;">
+                    Pegawai yang akan di-set (<span id="setPegawaiCount">0</span>):
+                </div>
+                <div id="setPegawaiListBox" style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 0.45rem 0.75rem; background: #fff; max-height: 80px; overflow-y: auto; font-size: 0.825rem; color: #1e293b; margin-bottom: 0.4rem; line-height: 1.5;">
+                    <div id="setPegawaiListItems" style="color: #64748b;">Pilih pegawai dari tabel</div>
+                </div>
+                <div style="font-size: 0.775rem; color: #64748b; display: flex; align-items: center; gap: 0.35rem;">
+                    <i class="fas fa-info-circle"></i> Kosongkan pilihan jika tidak ingin merubah data kolom tersebut (update parsial).
+                </div>
+            </div>
 
-            <label for="bulkUnitKerja">Unit Kerja</label>
-            <select name="kode_unit_kerja" id="bulkUnitKerja">
-                <option value="">- Tidak diubah -</option>
-                @foreach($unitKerjaList as $uk)
-                    <option value="{{ $uk->kode_unit_kerja }}">{{ $uk->nama_unit_kerja }}</option>
-                @endforeach
-            </select>
-            <div class="period-dialog-actions">
-                <button type="button" class="detail-toolbar-action secondary" data-close-dialog>Batalkan</button>
-                <button type="submit" class="detail-toolbar-action">Simpan Perubahan</button>
+            <div style="margin-bottom: 0.65rem;">
+                <label for="bulkOccupation" style="display: block; font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Jabatan</label>
+                <select name="occ_id" id="bulkOccupation" style="width: 100%; padding: 0.45rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.825rem; color: #334155; background: #fff;">
+                    <option value="">Pilih / Cari Jabatan...</option>
+                    <option value="1">Direktur</option>
+                    <option value="6">Asmen</option>
+                    <option value="5">Manager</option>
+                    <option value="9">Staff</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+                <label for="bulkDepartment" style="display: block; font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Departemen</label>
+                <select name="dept_id" id="bulkDepartment" style="width: 100%; padding: 0.45rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.825rem; color: #334155; background: #fff;">
+                    <option value="">Pilih / Cari Departemen...</option>
+                    @foreach($departments as $department)
+                        <option value="{{ $department->dept_id }}">{{ $department->dept_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+                <label for="bulkSubDepartment" style="display: block; font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Sub Departemen</label>
+                <select name="subdept_id" id="bulkSubDepartment" style="width: 100%; padding: 0.45rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.825rem; color: #334155; background: #fff;">
+                    <option value="">Pilih / Cari Sub Departemen...</option>
+                    @foreach($subDepartments as $subDepartment)
+                        <option value="{{ $subDepartment->subdept_id }}">{{ $subDepartment->subdept_name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+                <label for="bulkOffice" style="display: block; font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Penempatan</label>
+                <select name="off_id" id="bulkOffice" style="width: 100%; padding: 0.45rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.825rem; color: #334155; background: #fff;">
+                    <option value="">Pilih / Cari Penempatan...</option>
+                    @foreach($offices as $office)
+                        <option value="{{ $office->off_id }}">{{ $office->off_name }}</option>
+                    @endforeach
+                </select>   
+            </div>
+
+            <div style="margin-bottom: 0.65rem;">
+                <label for="bulkSatker" style="display: block; font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Satker</label>
+                <select name="kode_satker" id="bulkSatker" style="width: 100%; padding: 0.45rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.825rem; color: #334155; background: #fff;">
+                    <option value="">Pilih / Cari Satker...</option>
+                    @foreach($satkers as $satker)
+                        <option value="{{ $satker }}">{{ $satker }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="margin-bottom: 0.85rem;">
+                <label for="bulkUnitKerja" style="display: block; font-size: 0.825rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">Unit Kerja</label>
+                <select name="kode_unit_kerja" id="bulkUnitKerja" style="width: 100%; padding: 0.45rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.825rem; color: #334155; background: #fff;">
+                    <option value="">Pilih / Cari Unit Kerja...</option>
+                    @foreach($unitKerjaList as $uk)
+                        <option value="{{ $uk->kode_unit_kerja }}">{{ $uk->nama_unit_kerja }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem; padding-top: 0.65rem; border-top: 1px solid #f1f5f9;">
+                <button type="button" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; font-size: 0.825rem; font-weight: 600; padding: 0.45rem 1rem; border-radius: 4px; cursor: pointer;" data-close-dialog>Batal</button>
+                <button type="submit" style="background: #2563eb; border: 1px solid #2563eb; color: #ffffff; font-size: 0.825rem; font-weight: 600; padding: 0.45rem 1.15rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer;"><i class="fas fa-save"></i> Simpan</button>
             </div>
         </form>
     </div>
@@ -1129,13 +1171,34 @@
     document.querySelectorAll('[data-open-dialog]').forEach((button) => {
         button.addEventListener('click', () => {
             const dialog = document.getElementById(button.dataset.openDialog);
-            if (dialog.id !== 'addEmployeeDialog' && selectedIds().length === 0) {
+            const selected = checkboxes.filter(cb => cb.checked);
+            if (dialog.id !== 'addEmployeeDialog' && selected.length === 0) {
                 window.alert('Pilih setidaknya satu pegawai terlebih dahulu.');
                 return;
             }
             if (dialog.querySelector('[data-selected-form]')) {
                 addSelectedIds(dialog.querySelector('[data-selected-form]'));
             }
+
+            // Jika modal Set Pegawai (updateEmployeesDialog)
+            if (dialog.id === 'updateEmployeesDialog') {
+                const countEl = document.getElementById('setPegawaiCount');
+                const listItemsEl = document.getElementById('setPegawaiListItems');
+                if (countEl) countEl.textContent = selected.length;
+                if (listItemsEl) {
+                    listItemsEl.innerHTML = selected.map(cb => {
+                        const nama = cb.dataset.nama || 'Pegawai';
+                        const nup = cb.dataset.nup && cb.dataset.nup !== '-' ? cb.dataset.nup : '';
+                        return `<div style="padding: 1px 0;">• ${nama}${nup ? ' (' + nup + ')' : ''}</div>`;
+                    }).join('');
+                }
+                // Reset form ke nilai default (Pilih / Cari ...) seperti di gambar contoh
+                const form = document.getElementById('updateEmployeesForm');
+                if (form) {
+                    form.reset();
+                }
+            }
+
             dialog.showModal();
         });
     });
@@ -1206,21 +1269,52 @@
                     return;
                 }
                 employees.forEach((employee) => {
-                    const option = document.createElement('button');
-                    option.type = 'button';
-                    option.className = 'employee-search-result';
-                    const templateStatus = employee.has_template
-                        ? 'Template tersedia'
-                        : 'Tanpa template (pertanyaan kosong)';
-                    option.textContent = `${employee.nama} — NUP: ${employee.nup || '-'} — ${templateStatus}`;
-                    option.addEventListener('click', () => {
+                    const card = document.createElement('div');
+                    card.className = 'employee-search-result';
+                    card.style.cssText = 'padding: 0.65rem 0.75rem; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: background 0.15s; text-align: left; background: #fff;';
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                            <strong style="color: #1e293b; font-size: 0.875rem;">${employee.nama}</strong>
+                            <span style="font-size: 0.75rem; background: #f1f5f9; color: #475569; padding: 0.15rem 0.5rem; border-radius: 4px; font-family: monospace;">NUP: ${employee.nup || '-'}</span>
+                        </div>
+                        <div style="font-size: 0.775rem; color: #64748b; display: flex; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.35rem;">
+                            <span><i class="fas fa-briefcase"></i> <strong>${employee.jabatan || '-'}</strong></span>
+                            <span><i class="fas fa-building"></i> ${employee.unit_kerja || '-'}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${employee.penempatan || '-'}</span>
+                        </div>
+                        <div style="font-size: 0.725rem; color: #0369a1; background: #f0f9ff; padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid #e0f2fe;">
+                            <span>Penilai Otomatis: <strong>${employee.penilai_nama}</strong></span> &bull; 
+                            <span>Verifikator Otomatis: <strong>${employee.verifikator_nama}</strong></span>
+                        </div>
+                    `;
+                    card.addEventListener('mouseenter', () => { if (!card.classList.contains('selected')) card.style.background = '#f8fafc'; });
+                    card.addEventListener('mouseleave', () => { if (!card.classList.contains('selected')) card.style.background = '#fff'; });
+                    card.addEventListener('click', () => {
                         selectedEmployeeId.value = employee.pgw_id;
-                        selectedEmployeeLabel.textContent = `Terpilih: ${employee.nama} (${employee.nup || 'tanpa NUP'})`;
+                        selectedEmployeeLabel.innerHTML = `
+                            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 0.65rem 0.85rem; color: #065f46; font-size: 0.825rem;">
+                                <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 0.35rem;">
+                                    <i class="fas fa-check-circle text-success me-1"></i> Data Master Terpilih: ${employee.nama} (${employee.nup || 'tanpa NUP'})
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; font-size: 0.785rem;">
+                                    <div><strong>Jabatan:</strong> ${employee.jabatan || '-'}</div>
+                                    <div><strong>Unit Kerja:</strong> ${employee.unit_kerja || '-'}</div>
+                                    <div><strong>Penempatan:</strong> ${employee.penempatan || '-'}</div>
+                                    <div><strong>Departemen:</strong> ${employee.departemen || '-'}</div>
+                                    <div><strong>Penilai Otomatis:</strong> ${employee.penilai_nama}</div>
+                                    <div><strong>Verifikator Otomatis:</strong> ${employee.verifikator_nama}</div>
+                                </div>
+                            </div>
+                        `;
                         selectedEmployeeLabel.hidden = false;
-                        results.querySelectorAll('.employee-search-result').forEach((item) => item.classList.remove('selected'));
-                        option.classList.add('selected');
+                        results.querySelectorAll('.employee-search-result').forEach((item) => {
+                            item.classList.remove('selected');
+                            item.style.background = '#fff';
+                        });
+                        card.classList.add('selected');
+                        card.style.background = '#eff6ff';
                     });
-                    results.appendChild(option);
+                    results.appendChild(card);
                 });
             } catch (error) {
                 results.textContent = error.message || 'Pencarian pegawai gagal.';

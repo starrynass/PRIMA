@@ -638,17 +638,7 @@ class DashboardController extends Controller
                 'tp.tanggal_verifikasi',
                 'tp.updated_at',
                 'tp.penilaian_id',
-                DB::raw("(SELECT COUNT(*) FROM dp3_trans_penilaian_detail as tpd
-                    WHERE tpd.penilaian_id = tp.penilaian_id
-                    AND (
-                        UPPER(TRIM(COALESCE(tpd.verif_status, ''))) = 'KOREKSI'
-                        OR (
-                            tpd.verif_nilai_angka IS NOT NULL
-                            AND tpd.nilai_angka IS NOT NULL
-                            AND tpd.verif_nilai_angka <> tpd.nilai_angka
-                        )
-                    )
-                ) as koreksi_count")
+                DB::raw('(SELECT COUNT(*) FROM dp3_trans_penilaian_detail as tpd WHERE tpd.penilaian_id = tp.penilaian_id AND UPPER(COALESCE(tpd.verif_status, "")) = "KOREKSI") as koreksi_count')
             );
 
         switch ($tab) {
@@ -684,22 +674,7 @@ class DashboardController extends Controller
                 break;
 
             case 'koreksi':
-                $query->where(function ($q) use ($statusVerifikatorSql) {
-                    $q->whereIn(DB::raw($statusVerifikatorSql), ['KOREKSI', 'PERLU DITINJAU'])
-                        ->orWhereExists(function ($corrections) {
-                            $corrections->selectRaw('1')
-                                ->from('dp3_trans_penilaian_detail as tpd')
-                                ->whereColumn('tpd.penilaian_id', 'tp.penilaian_id')
-                                ->where(function ($details) {
-                                    $details->whereIn(DB::raw("UPPER(TRIM(COALESCE(tpd.verif_status, '')))"), ['KOREKSI'])
-                                        ->orWhere(function ($changedScores) {
-                                            $changedScores->whereNotNull('tpd.verif_nilai_angka')
-                                                ->whereNotNull('tpd.nilai_angka')
-                                                ->whereColumn('tpd.verif_nilai_angka', '<>', 'tpd.nilai_angka');
-                                        });
-                                });
-                        });
-                });
+                $query->whereIn(DB::raw($statusVerifikatorSql), ['KOREKSI', 'PERLU DITINJAU']);
                 break;
 
             case 'semua':
@@ -767,9 +742,9 @@ class DashboardController extends Controller
             ->select(
                 DB::raw('COALESCE(kat.nama, "Aspek Penilaian") as nama_kategori'),
                 'kat.bobot_persen as bobot_kategori',
-                DB::raw('COALESCE(NULLIF(tpd.pertanyaan, ""), q.pertanyaan, "Pertanyaan") as pertanyaan'),
-                DB::raw('COALESCE(NULLIF(tpd.deskripsi, ""), q.deskripsi) as deskripsi'),
-                DB::raw('COALESCE(tpd.bobot_pertanyaan_persen, q.bobot_persen, 0) as bobot_pertanyaan_persen'),
+                'tpd.pertanyaan',
+                'tpd.deskripsi',
+                'tpd.bobot_pertanyaan_persen',
                 'tpd.kode_nilai',
                 'tpd.nama_nilai',
                 'tpd.nilai_angka',

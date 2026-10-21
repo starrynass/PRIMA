@@ -8,7 +8,6 @@ use App\Support\EmployeeAccountSync;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class EmployeeAccountSyncTest extends TestCase
@@ -71,24 +70,6 @@ class EmployeeAccountSyncTest extends TestCase
             ->get(route('setting.hak-akses'))
             ->assertOk()
             ->assertSee('NUP pegawai: 123450009999');
-    }
-
-    public function test_hak_akses_page_handles_invalid_stored_password_ciphertext(): void
-    {
-        $user = User::factory()->create([
-            'role' => 'superadmin',
-            'password_reveal' => 'invalid-ciphertext',
-        ]);
-
-        Log::shouldReceive('warning')
-            ->once()
-            ->with('Unable to decrypt stored account password reveal.', ['user_id' => $user->id]);
-
-        $this->actingAs($user)
-            ->get(route('setting.hak-akses'))
-            ->assertOk()
-            ->assertSee('Password tersimpan tidak dapat ditampilkan.')
-            ->assertDontSee('The MAC is invalid.');
     }
 
     public function test_legacy_nup_email_account_is_linked_to_employee(): void

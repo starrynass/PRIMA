@@ -1077,13 +1077,11 @@
                                         </td>
                                         <td class="text-center table-action-cell">
                                             <div class="detail-action-group" style="justify-content:center; gap: 4px;">
-                                                @if(in_array($statusPenilaian, ['', 'BELUM DIISI', 'DRAFT', 'DIKEMBALIKAN', 'REVISI'], true))
-                                                    <a href="{{ route('penilaian.form', ['penilaian_id' => data_get($row, 'penilaian_id')]) }}"
-                                                    class="btn-action-icon btn-primary"
-                                                    title="Form Penilaian">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                @endif
+                                                <a href="{{ route('penilaian.form', ['penilaian_id' => data_get($row, 'penilaian_id')]) }}"
+                                                class="btn-action-icon btn-primary"
+                                                title="Form Penilaian">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
 
                                                 <a href="{{ route('penilaian.preview', ['id' => data_get($row, 'penilaian_id')]) }}"
                                                 class="btn-action-icon btn-info" 

@@ -49,11 +49,6 @@ class UnitKerjaSeeder extends Seeder
             ['kode_unit_kerja' => 'UK-UMUM', 'nama_unit_kerja' => 'Unit Kerja Umum'],
         ];
 
-        foreach ($unitKerja as $unit) {
-            DB::table('unit_kerja')->updateOrInsert(
-                ['kode_unit_kerja' => $unit['kode_unit_kerja']],
-                $unit
-            );
-        }
+        DB::table('unit_kerja')->insert($unitKerja);
     }
 }

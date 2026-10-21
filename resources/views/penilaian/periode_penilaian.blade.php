@@ -823,7 +823,7 @@
                         <th width="11%">TGL AKHIR</th>
                         <th class="text-center" width="8%">STATUS</th>
                         <th class="text-center" width="10%">TOTAL PEGAWAI</th>
-                        <th class="text-center" width="9%">TOTAL SATKER</th>
+                        <th class="text-center" width="9%">TOTAL UNIT KERJA</th>
                         <th width="16%">PROGRESS VERIFIKASI</th>
                         <th width="17%">KETERANGAN</th>
                     </tr>
@@ -859,7 +859,7 @@
                                 </span>
                             </td>
                             <td class="text-center"><span class="badge-count">{{ $item->total_pegawai }}</span></td>
-                            <td class="text-center"><span class="badge-count">{{ $item->total_satker }}</span></td>
+                            <td class="text-center"><span class="badge-count">{{ $item->total_unit_kerja }}</span></td>
                             <td>
                                 <div class="progress-container">
                                     <div class="progress-bar-fill" style="width: {{ $item->progress_verifikasi }}%;"></div>
