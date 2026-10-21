@@ -57,12 +57,20 @@ class EmployeeAssessmentPolicy
 
     public static function canEvaluate(User $user, ?Employee $target): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         $actor = self::employeeForUser($user);
         return self::canEmployeeEvaluate($actor, $target);
     }
 
     public static function canEdit(User $user, object $transaction): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
         $target = Employee::query()->find($transaction->pegawai_id);
         if (!self::canEvaluate($user, $target)) {
             return false;
@@ -97,6 +105,10 @@ class EmployeeAssessmentPolicy
 
     public static function canVerify(User $user, object $transaction): bool
     {
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+        
         $actor = self::employeeForUser($user);
         $target = Employee::query()->find($transaction->pegawai_id);
         $evaluator = Employee::query()->find($transaction->penilai_id);

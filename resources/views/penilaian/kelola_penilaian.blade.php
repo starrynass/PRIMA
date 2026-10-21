@@ -357,6 +357,12 @@
     border: 1px solid var(--border-color);
 }
 
+.bg-rev-light { 
+    background-color: #eee0fc; 
+    color: #6b21a8; 
+    border:  1px solid #6b21a8;
+}
+
 /* ==========================================================================
    FILTER SECTION STYLING
    ========================================================================== */
@@ -450,13 +456,11 @@
 
 .table-custom {
     width: 100%;
-    /* Naikkan min-width agar horizontal scroll aktif secara ideal jika layar sempit */
-    min-width: 1500px; 
+    min-width: 200px;
     font-size: 0.8125rem;
     text-align: left;
     border-collapse: collapse;
-    margin: 0;
-    table-layout: fixed;
+    margin: 0; 
 }
 
 .table-custom thead {
@@ -473,6 +477,8 @@
     border-left: 1px solid rgba(148, 163, 184, 0.28);
 }
 
+.table-custom th:nth-child(11), .table-custom td:nth-child(11) { width: 120px; text-align: center; }
+
 .table-custom th,
 .table-custom td {
     padding: 0.75rem 0.65rem;
@@ -483,11 +489,30 @@
 }
 
 .table-custom th {
-    white-space: nowrap;
+    white-space: nowrap !important;
 }
 
 .table-custom td {
     color: var(--text-primary);
+}
+
+.table-custom tbody tr {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table-custom tbody tr:nth-child(even) {
+    background: #fff;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #FDF7F9 !important;
+}
+
+.table-action-cell {
+    width: 110px;
+    min-width: 110px;
 }
 
 /* Badge Predikat & Status agar tidak pernah ter-wrap ke bawah */
@@ -551,6 +576,12 @@
     border-color: var(--badge-rose-border); 
 }
 
+.badge-gray { 
+    background-color: #F1F5F9;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
 .employee-filter-item {
     width: 100%;
 }
@@ -578,7 +609,7 @@
 
 .detail-action-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
@@ -751,6 +782,17 @@
         font-weight: 700;
     }
 
+    .badge-status-rev {
+        background-color: #eee0fc;
+        color: #6b21a8;
+        border: 1px solid #6b21a8;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
 @media (max-width: 1200px) {
     .filter-grid {
         grid-template-columns: repeat(3, minmax(160px, 1fr));
@@ -853,7 +895,7 @@
                             <div class="stat-label">Dikembalikan</div>
                             <div class="stat-value text-danger">{{ $dikembalikan }}</div>
                         </div>
-                        <div class="stat-icon bg-danger-light">
+                        <div class="stat-icon bg-rev-light">
                             <i class="fas fa-undo"></i>
                         </div>
                     </div>
@@ -969,8 +1011,8 @@
                                     <th width="150">PENILAI</th>
                                     <th width="110" class="text-center">STATUS</th>
                                     <th width="75" class="text-center">NILAI</th>
-                                    <th width="180" class="text-center">PREDIKAT</th>
-                                    <th width="90" class="text-center">AKSI</th>
+                                    <th width="120" class="text-center">PREDIKAT</th>
+                                    <th width="120" class="text-center">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -998,9 +1040,11 @@
                                             @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMITTED', 'SUBMIT'], true))
                                                 <span class="badge-status-success">Submit</span>
                                             @elseif($statusPenilaian === 'DIKEMBALIKAN')
-                                                <span class="badge-status-danger">Dikembalikan</span>
+                                                <span class="badge-status-rev">Dikembalikan</span>
                                             @elseif($statusPenilaian === 'DRAFT')
                                                 <span class="badge-status-warning">Draft</span>
+                                            @elseif(in_array($statusPenilaian, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']))
+                                                <span class="badge-status-success">Verified</span>
                                             @else
                                                 <span class="badge-status-gray">Belum Diisi</span>
                                             @endif
@@ -1020,8 +1064,10 @@
                                                     $badgeStyle = 'badge-amber';
                                                 } elseif ($nilai >= 60) {
                                                     $badgeStyle = 'badge-orange';
-                                                } else {
+                                                } elseif ($nilai > 0) {
                                                     $badgeStyle = 'badge-rose';
+                                                } else {
+                                                    $badgeStyle = 'badge-gray';
                                                 }
                                             @endphp
 

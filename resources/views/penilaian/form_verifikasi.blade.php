@@ -57,6 +57,15 @@
         padding: 12px 16px;
         font-weight: 600;
         font-size: 14px;
+        align-items: center;
+    }
+
+    .card-header-bobot {
+        background: var(--primary-burgundy);
+        color: #FFFFFF;
+        padding: 12px 16px;
+        font-weight: 600;
+        font-size: 14px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -423,8 +432,8 @@
             <div>
                 @foreach($template->kategoris as $catIdx => $kategori)
                     <div class="card-native card-panel" data-kat-id="{{ $kategori->kategori_id }}" data-kat-bobot="{{ $kategori->bobot_persen }}">
-                        <div class="card-header-blue">
-                            <div>📋 {{ $catIdx + 1 }}. {{ strtoupper($kategori->nama) }}</div>
+                        <div class="card-header-bobot">
+                            <div><i class="fas fa-clipboard-list me-1"></i> {{ $catIdx + 1 }}. {{ strtoupper($kategori->nama) }}</div>
                             <div style="font-size: 11px; opacity: 0.9;">Bobot {{ $kategori->bobot_persen }}%</div>
                         </div>
 
@@ -509,7 +518,7 @@
                 <!-- CATATAN UMUM VERIFIKATOR (SESUAI GAMBAR)[cite: 12] -->
                 <div class="card-native">
                     <div class="card-header-blue">
-                        💬 Catatan Umum Verifikator
+                        <i class="fas fa-comment-alt"></i> Catatan Umum Verifikator
                     </div>
                     <div class="card-body-native">
                         <textarea name="catatan_umum_verifikator" class="native-input-textarea" rows="3" placeholder="Masukkan catatan umum verifikator (opsional)...">{{ $penilaian->catatan_verifikator ?? '' }}</textarea>
@@ -544,7 +553,7 @@
 
                 <!-- Ringkasan Score Verifikator -->
                 <div class="card-native">
-                    <div class="card-header-blue">📊 Hasil Hasil Verifikasi</div>
+                    <div class="card-header-blue"><i class="fas fa-chart-bar"></i> Hasil Hasil Verifikasi</div>
                     <div class="card-body-native">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span>Total Nilai Verifikator</span>

@@ -357,6 +357,12 @@
     border: 1px solid var(--border-color);
 }
 
+.bg-rev-light { 
+    background-color: #eee0fc; 
+    color: #6b21a8; 
+    border:  1px solid #6b21a8;
+}
+
 /* ==========================================================================
    FILTER SECTION STYLING
    ========================================================================== */
@@ -514,12 +520,11 @@
 
 .table-custom {
     width: 100%;
-    min-width: 2000px;
+    min-width: 200px;
     font-size: 0.8125rem;
     text-align: left;
     border-collapse: collapse;
-    margin: 0;
-    table-layout: fixed;
+    margin: 0;  
 }
 
 .table-custom thead {
@@ -562,12 +567,10 @@
 .table-custom th:nth-child(7), .table-custom td:nth-child(7) { width: 170px; }
 .table-custom th:nth-child(8), .table-custom td:nth-child(8) { width: 185px; }
 .table-custom th:nth-child(9), .table-custom td:nth-child(9) { width: 165px; }
-.table-custom th:nth-child(10), .table-custom td:nth-child(10) { width: 165px; }
-.table-custom th:nth-child(11), .table-custom td:nth-child(11) { width: 130px; }
-.table-custom th:nth-child(12), .table-custom td:nth-child(12) { width: 80px; }
-.table-custom th:nth-child(13), .table-custom td:nth-child(13) { width: 160px; }
-.table-custom th:nth-child(14), .table-custom td:nth-child(14) { width: 190px; }
-.table-custom th:nth-child(15), .table-custom td:nth-child(15) { width: 115px; }
+.table-custom th:nth-child(10), .table-custom td:nth-child(10) { width: 130px; }
+.table-custom th:nth-child(11), .table-custom td:nth-child(11) { width: 140px; }
+.table-custom th:nth-child(12), .table-custom td:nth-child(12) { width: 160px; }
+.table-custom th:nth-child(13), .table-custom td:nth-child(13) { width: 150px; text-align: center; }
 
 .table-custom tbody tr {
     background: #ffffff;
@@ -619,7 +622,7 @@
 
 .detail-action-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
@@ -792,6 +795,61 @@
         font-weight: 700;
     }
 
+    .badge-status-rev {
+        background-color: #eee0fc;
+        color: #6b21a8;
+        border: 1px solid #6b21a8;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .badge {
+    padding: 0.2rem 0.5rem; /* Padding diperkecil */
+    border-radius: 0.375rem; /* Sudut sedikit lebih tegas/pas */
+    font-size: 0.7rem;       /* Ukuran font diperkecil */
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    letter-spacing: 0.01em;
+    border-width: 1px;       /* Ketebalan garis tepi disesuaikan */
+    border-style: solid;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    white-space: nowrap;
+}
+
+.badge-emerald { 
+    background-color: var(--badge-emerald-bg); 
+    color: var(--badge-emerald-text); 
+    border-color: var(--badge-emerald-border); 
+}
+
+.badge-blue { 
+    background-color: var(--badge-blue-bg); 
+    color: var(--badge-blue-text); 
+    border-color: var(--badge-blue-border); 
+}
+
+.badge-amber { 
+    background-color: var(--badge-amber-bg); 
+    color: var(--badge-amber-text); 
+    border-color: var(--badge-amber-border); 
+}
+
+.badge-orange { 
+    background-color: var(--badge-orange-bg); 
+    color: var(--badge-orange-text); 
+    border-color: var(--badge-orange-border); 
+}
+
+.badge-rose { 
+    background-color: var(--badge-rose-bg); 
+    color: var(--badge-rose-text); 
+    border-color: var(--badge-rose-border); 
+}
+
 @media (max-width: 1200px) {
     .filter-grid {
         grid-template-columns: repeat(3, minmax(160px, 1fr));
@@ -905,7 +963,7 @@
                             <div class="stat-label">Dikembalikan Revisi</div>
                             <div class="stat-value text-warning">{{ $dikembalikan }}</div>
                         </div>
-                        <div class="stat-icon bg-warning-light">
+                        <div class="stat-icon bg-rev-light">
                             <i class="fas fa-undo"></i>
                         </div>
                     </div>
@@ -998,7 +1056,7 @@
                                     <th width="40" class="text-center">
                                         <input type="checkbox" id="checkAll" style="cursor: pointer;">
                                     </th>
-                                    <th width="50">NO</th>
+                                    <th>NO</th>
                                     <th>NUP</th>
                                     <th>NAMA</th>
                                     <th>PENEMPATAN</th>
@@ -1006,10 +1064,9 @@
                                     <th>UNIT KERJA</th>
                                     <th>PENILAI</th>
                                     <th>VERIFIKATOR</th>
-                                    <th>STATUS</th>
-                                    <th width="60">NILAI</th>
-                                    <th width="140">PREDIKAT</th>
-                                    <th class="th-verifikasi">STATUS VERIFIKASI</th>
+                                    <th width="40">NILAI</th>
+                                    <th width="160">PREDIKAT</th>
+                                    <th width="140" class="text-center">STATUS VERIFIKASI</th>
                                     <th width="110" class="text-center">AKSI</th>
                                 </tr>
                             </thead>
@@ -1046,26 +1103,29 @@
                                                 <span class="null-pill">NULL</span>
                                             @endif
                                         </td>
-                                        <td>
-                                            @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI']))
-                                                <span class="badge-status-success">Menunggu Verifikasi</span>
-                                            @elseif(in_array($statusPenilaian, ['VERIFIED', 'TERVERIFIKASI']))
-                                                <span class="badge-status-success">Verified</span>
-                                            @elseif($statusPenilaian === 'DIKEMBALIKAN')
-                                                <span class="badge-status-danger">Dikembalikan</span>
-                                            @elseif($statusPenilaian === 'DRAFT')
-                                                <span class="badge-status-warning">Draft</span>
-                                            @else
-                                                <span class="badge-status-gray">Belum Diisi</span>
-                                            @endif
-                                        </td>
                                         <td>{{ number_format($nilaiAkhir, 2) }}</td>
                                         <td>
-                                            @if(!empty($predikat) && $predikat !== 'Mengecewakan')
-                                                <span class="badge-status-gray">{{ $predikat }}</span>
-                                            @else
-                                                <span class="badge-status-danger">Mengecewakan</span>
-                                            @endif
+                                            @php
+                                                $predikatNama = data_get($row, 'predikat', 'Belum terdapat data predikat');
+                                                // Penentuan warna badge berdasarkan nilai akhir pegawai
+                                                if ($nilaiAkhir >= 90) {
+                                                    $badgeStyle = 'badge-emerald';
+                                                } elseif ($nilaiAkhir >= 80) {
+                                                    $badgeStyle = 'badge-blue';
+                                                } elseif ($nilaiAkhir >= 70) {
+                                                    $badgeStyle = 'badge-amber';
+                                                } elseif ($nilaiAkhir >= 60) {
+                                                    $badgeStyle = 'badge-orange';
+                                                } elseif ($nilaiAkhir > 0) {
+                                                    $badgeStyle = 'badge-rose';
+                                                } else {
+                                                    $badgeStyle = 'badge-gray';
+                                                }
+                                            @endphp
+
+                                            <span class="badge {{ $badgeStyle }} text-nowrap" style="white-space: nowrap;">
+                                                {{ $predikatNama }}
+                                            </span>
                                         </td>
                                         <td>
                                             @if(in_array($statusVerifikator, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']))
@@ -1073,7 +1133,7 @@
                                             @elseif(in_array($statusVerifikator, ['KOREKSI', 'PERLU DITINJAU']))
                                                 <span class="badge-status-danger">Ada Koreksi</span>
                                             @elseif(in_array($statusVerifikator, ['REVISI', 'DIKEMBALIKAN']))
-                                                <span class="badge-status-warning">Revisi</span>
+                                                <span class="badge-status-rev">Dikembalikan</span>
                                             @elseif(in_array($statusVerifikator, ['', 'BELUM VERIFIKASI', 'UNVERIFIED']))
                                                 <span class="badge-status-gray">Menunggu Verifikasi</span>
                                             @else
@@ -1082,18 +1142,6 @@
                                         </td>
                                         <td class="text-center table-action-cell">
                                             <div class="detail-action-group">
-                                                <!-- Tombol 1: Preview Form / Detail -->
-                                                <a href="{{ route('verifikasi.preview', $penilaianId) }}" 
-                                                   class="btn-action-icon" 
-                                                   title="Lihat Detail" 
-                                                   aria-label="Lihat Detail">
-                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
-                                                        <circle cx="12" cy="12" r="3"></circle>
-                                                    </svg>
-                                                </a>
-
-                                                <!-- Tombol 2: Verifikasi Penilaian (Mengarah ke Form Verifikasi) -->
                                                 @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'], true))
                                                     <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}"
                                                        class="btn-action-icon"
@@ -1105,6 +1153,16 @@
                                                         </svg>
                                                     </a>
                                                 @endif
+
+                                                <a href="{{ route('verifikasi.preview', $penilaianId) }}" 
+                                                   class="btn-action-icon" 
+                                                   title="Lihat Detail" 
+                                                   aria-label="Lihat Detail">
+                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"></path>
+                                                        <circle cx="12" cy="12" r="3"></circle>
+                                                    </svg>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>

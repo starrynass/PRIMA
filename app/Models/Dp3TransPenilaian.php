@@ -93,7 +93,7 @@ class Dp3TransPenilaian extends Model
     // Relasi ke Penilai
     public function penilai()
     {
-        return $this->belongsTo(Employee::class, 'penilai_id', 'id');
+        return $this->belongsTo(Employee::class, 'penilai_id', 'pgw_id');
     }
 
     public function details()
