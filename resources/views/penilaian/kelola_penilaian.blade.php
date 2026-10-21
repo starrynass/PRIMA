@@ -1037,14 +1037,12 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMITTED', 'SUBMIT'], true))
+                                            @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMITTED', 'SUBMIT', 'VERIFIED', 'VERIFIKASI'], true))
                                                 <span class="badge-status-success">Submit</span>
                                             @elseif($statusPenilaian === 'DIKEMBALIKAN')
                                                 <span class="badge-status-rev">Dikembalikan</span>
                                             @elseif($statusPenilaian === 'DRAFT')
                                                 <span class="badge-status-warning">Draft</span>
-                                            @elseif(in_array($statusPenilaian, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']))
-                                                <span class="badge-status-success">Verified</span>
                                             @else
                                                 <span class="badge-status-gray">Belum Diisi</span>
                                             @endif
@@ -1052,28 +1050,27 @@
                                         <td class="text-center fw-bold">{{ number_format($nilaiAkhir, 2) }}</td>
                                         <td class="text-center">
                                             @php
-                                                $nilai = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
-                                                $predikatNama = data_get($row, 'predikat', 'Belum terdapat data predikat');
+                                            $nilaiPenilai = $row->nilai_akhir ?? $row->total_nilai ?? 0;
+                                            $predikatPenilai = $row->predikat ?: 'Belum Diisi';
 
-                                                // Penentuan warna badge berdasarkan nilai akhir pegawai
-                                                if ($nilai >= 90) {
-                                                    $badgeStyle = 'badge-emerald';
-                                                } elseif ($nilai >= 80) {
-                                                    $badgeStyle = 'badge-blue';
-                                                } elseif ($nilai >= 70) {
-                                                    $badgeStyle = 'badge-amber';
-                                                } elseif ($nilai >= 60) {
-                                                    $badgeStyle = 'badge-orange';
-                                                } elseif ($nilai > 0) {
-                                                    $badgeStyle = 'badge-rose';
-                                                } else {
-                                                    $badgeStyle = 'badge-gray';
-                                                }
-                                            @endphp
+                                            if ($nilaiPenilai >= 90) {
+                                                $badgeStyle = 'badge-emerald';
+                                            } elseif ($nilaiPenilai >= 80) {
+                                                $badgeStyle = 'badge-blue';
+                                            } elseif ($nilaiPenilai >= 70) {
+                                                $badgeStyle = 'badge-amber';
+                                            } elseif ($nilaiPenilai >= 60) {
+                                                $badgeStyle = 'badge-orange';
+                                            } elseif ($nilaiPenilai > 0) {
+                                                $badgeStyle = 'badge-rose';
+                                            } else {
+                                                $badgeStyle = 'badge-gray';
+                                            }
+                                        @endphp
 
-                                            <span class="badge {{ $badgeStyle }} text-nowrap" style="white-space: nowrap;">
-                                                {{ $predikatNama }}
-                                            </span>
+                                        <span class="badge {{ $badgeStyle }} text-nowrap">
+                                            {{ $predikatPenilai }}
+                                        </span>
                                         </td>
                                         <td class="text-center table-action-cell">
                                             <div class="detail-action-group" style="justify-content:center; gap: 4px;">

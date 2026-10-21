@@ -332,25 +332,30 @@ class VerifikasiPenilaianController extends Controller
                 $detail->save();
             }
 
-            // 2. Ambil Nilai Akhir & Predikat Verifikator
-            $totalNilai   = $request->input('grand_total', 0);
-            $predikatNama = $request->input('predikat_nama', '-');
+            // 1. Ambil total nilai baru dari form verifikator
+            $totalNilai = (float) $request->input('grand_total', 0);
 
+            // 2. Cari master predikat berdasarkan rentang nilai verifikator
+            $masterPredikatVerif = MasterPredikatNilai::where('nilai_min', '<=', $totalNilai)
+                ->where('nilai_max', '>=', $totalNilai)
+                ->first();
+
+            $predikatNamaVerif = $masterPredikatVerif?->predikat ?? $request->input('predikat_nama', '-');
+
+            // 3. Simpan KHUSUS ke field verifikator tanpa mengganggu field penilai awal
             $penilaian->total_nilai_verifikator = $totalNilai;
-            $penilaian->predikat_verifikator    = $predikatNama;
+            $penilaian->predikat_verifikator    = $predikatNamaVerif;
             $penilaian->catatan_verifikator     = $catatanUmum;
             $penilaian->verifikator_id          = $actorEmployeeId ?: $penilaian->verifikator_id;
 
-            // 3. Tentukan Status Akhir Berdasarkan Tombol Aksi yang Ditekan
             if ($statusAksi === 'verified') {
                 $penilaian->status_verifikator = 'VERIFIED';
                 $penilaian->status_nilai       = 'VERIFIED';
                 $penilaian->tanggal_verifikasi = now();
             } elseif ($statusAksi === 'revisi') {
                 $penilaian->status_verifikator = 'REVISI';
-                $penilaian->status_nilai       = 'DIKEMBALIKAN'; // Dikembalikan ke penilai agar bisa diedit kembali
+                $penilaian->status_nilai       = 'DIKEMBALIKAN';
             } else {
-                // 'koreksi' -> Hanya simpan draf koreksi verifikator
                 $hasCorrections = Dp3TransPenilaianDetail::where('penilaian_id', $penilaian->penilaian_id)
                     ->whereNotNull('verif_nilai_angka')
                     ->whereNotNull('nilai_angka')

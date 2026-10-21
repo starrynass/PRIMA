@@ -1106,26 +1106,34 @@
                                         <td>{{ number_format($nilaiAkhir, 2) }}</td>
                                         <td>
                                             @php
-                                                $predikatNama = data_get($row, 'predikat', 'Belum terdapat data predikat');
-                                                // Penentuan warna badge berdasarkan nilai akhir pegawai
-                                                if ($nilaiAkhir >= 90) {
-                                                    $badgeStyle = 'badge-emerald';
-                                                } elseif ($nilaiAkhir >= 80) {
-                                                    $badgeStyle = 'badge-blue';
-                                                } elseif ($nilaiAkhir >= 70) {
-                                                    $badgeStyle = 'badge-amber';
-                                                } elseif ($nilaiAkhir >= 60) {
-                                                    $badgeStyle = 'badge-orange';
-                                                } elseif ($nilaiAkhir > 0) {
-                                                    $badgeStyle = 'badge-rose';
-                                                } else {
-                                                    $badgeStyle = 'badge-gray';
-                                                }
-                                            @endphp
+                                            // Prioritaskan nilai & predikat verifikator
+                                            $nilaiTampil = ($row->total_nilai_verifikator > 0) 
+                                                ? $row->total_nilai_verifikator 
+                                                : ($row->nilai_akhir ?? $row->total_nilai ?? 0);
 
-                                            <span class="badge {{ $badgeStyle }} text-nowrap" style="white-space: nowrap;">
-                                                {{ $predikatNama }}
-                                            </span>
+                                            $predikatTampil = $row->predikat_verifikator 
+                                                ?: $row->predikat 
+                                                ?: 'Belum Diisi';
+
+                                            // Penentuan warna badge berdasarkan nilai yang ditampilkan
+                                            if ($nilaiTampil >= 90) {
+                                                $badgeStyle = 'badge-emerald';
+                                            } elseif ($nilaiTampil >= 80) {
+                                                $badgeStyle = 'badge-blue';
+                                            } elseif ($nilaiTampil >= 70) {
+                                                $badgeStyle = 'badge-amber';
+                                            } elseif ($nilaiTampil >= 60) {
+                                                $badgeStyle = 'badge-orange';
+                                            } elseif ($nilaiTampil > 0) {
+                                                $badgeStyle = 'badge-rose';
+                                            } else {
+                                                $badgeStyle = 'badge-gray';
+                                            }
+                                        @endphp
+
+                                        <span class="badge {{ $badgeStyle }} text-nowrap">
+                                            {{ $predikatTampil }}
+                                        </span>
                                         </td>
                                         <td>
                                             @if(in_array($statusVerifikator, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']))
@@ -1142,7 +1150,7 @@
                                         </td>
                                         <td class="text-center table-action-cell">
                                             <div class="detail-action-group">
-<<<<<<< Updated upstream
+
                                                 @if(in_array($statusPenilaian, ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI'], true))
                                                     <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}"
                                                        class="btn-action-icon"
@@ -1155,9 +1163,7 @@
                                                     </a>
                                                 @endif
 
-=======
                                                 <!-- Tombol 1: Preview Form / Detail -->
->>>>>>> Stashed changes
                                                 <a href="{{ route('verifikasi.preview', $penilaianId) }}" 
                                                    class="btn-action-icon" 
                                                    title="Lihat Detail" 
@@ -1167,20 +1173,6 @@
                                                         <circle cx="12" cy="12" r="3"></circle>
                                                     </svg>
                                                 </a>
-<<<<<<< Updated upstream
-=======
-
-                                                <!-- Tombol 2: Verifikasi Penilaian (Mengarah ke Form Verifikasi) -->
-                                                <a href="{{ route('verifikasi-penilaian.form', $penilaianId) }}" 
-                                                   class="btn-action-icon" 
-                                                   title="Verifikasi Penilaian" 
-                                                   aria-label="Verifikasi Penilaian">
-                                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M12 3l7 3v5c0 4.2-2.6 8.1-7 10-4.4-1.9-7-5.8-7-10V6l7-3z"></path>
-                                                        <path d="M9.5 12.5l1.6 1.6 3.4-3.9"></path>
-                                                    </svg>
-                                                </a>
->>>>>>> Stashed changes
                                             </div>
                                         </td>
                                     </tr>
