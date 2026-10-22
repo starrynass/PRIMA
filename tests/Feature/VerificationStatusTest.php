@@ -143,4 +143,63 @@ class VerificationStatusTest extends TestCase
             ->assertSeeText('Pegawai Verifikasi')
             ->assertSeeText('Ada Koreksi');
     }
+
+    public function test_bulk_verify_and_bulk_unverify(): void
+    {
+        // 1. Bulk verify
+        $this->post(route('verifikasi-penilaian.bulk-verify'), [
+            'penilaian_ids' => [1],
+            'periode_id' => 'PER-VERIFY-TEST',
+        ])->assertRedirect(route('verifikasi-penilaian.index', ['periode_id' => 'PER-VERIFY-TEST']));
+
+        $this->assertDatabaseHas('dp3_trans_penilaian', [
+            'penilaian_id' => 1,
+            'status_nilai' => 'VERIFIED',
+            'status_verifikator' => 'VERIFIED',
+        ]);
+
+        // 2. Bulk unverify
+        $this->post(route('verifikasi-penilaian.bulk-unverify'), [
+            'penilaian_ids' => [1],
+            'periode_id' => 'PER-VERIFY-TEST',
+            'catatan' => 'Perlu ditinjau kembali',
+        ])->assertRedirect(route('verifikasi-penilaian.index', ['periode_id' => 'PER-VERIFY-TEST']));
+
+        $this->assertDatabaseHas('dp3_trans_penilaian', [
+            'penilaian_id' => 1,
+            'status_nilai' => 'SUBMIT',
+            'status_verifikator' => 'BELUM VERIFIKASI',
+        ]);
+    }
+
+    public function test_revision_requires_reason(): void
+    {
+        // Tanpa alasan revisi -> gagal / error
+        $this->post(route('verifikasi-penilaian.store-form', 1), [
+            'status_aksi' => 'revisi',
+            'alasan_revisi' => '',
+        ])->assertSessionHas('error');
+
+        // Dengan alasan revisi -> berhasil
+        $this->post(route('verifikasi-penilaian.store-form', 1), [
+            'status_aksi' => 'revisi',
+            'alasan_revisi' => 'Mohon lengkapi data pendukung',
+        ])->assertRedirect(route('verifikasi-penilaian.index', ['periode_id' => 'PER-VERIFY-TEST']));
+
+        $this->assertDatabaseHas('dp3_trans_penilaian', [
+            'penilaian_id' => 1,
+            'status_nilai' => 'DIKEMBALIKAN',
+            'status_verifikator' => 'REVISI',
+        ]);
+    }
+
+    public function test_correcting_score_requires_reason(): void
+    {
+        // Koreksi nilai tanpa alasan / catatan -> ditolak dengan pesan error
+        $this->post(route('verifikasi-penilaian.store-form', 1), [
+            'status_aksi' => 'koreksi',
+            'jawaban' => ['Q-VERIFY-1' => 7],
+            'catatan_verifikator' => ['Q-VERIFY-1' => ''],
+        ])->assertSessionHas('error');
+    }
 }

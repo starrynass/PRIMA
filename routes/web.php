@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function () {
         // KELOLA PENILAIAN
         Route::get('/penilaian/kelola-penilaian', [KelolaPenilaianController::class, 'index'])->name('kelola-penilaian.index');
         Route::get('/penilaian/preview/{id}', [PreviewPenilaianController::class, 'show'])->name('penilaian.preview');
+        Route::get('/penilaian/cetak-pdf/{id}', [PreviewPenilaianController::class, 'cetakPdf'])->name('penilaian.cetak-pdf');
 
         // FORM PENILAIAN
         Route::get('/penilaian/form/{penilaian_id}', [FormPenilaianController::class, 'index'])->name('penilaian.form');
@@ -121,9 +122,12 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:penilaian.verifikasi,view')->group(function () {
         // VERIFIKASI PENILAIAN
         Route::get('/penilaian/verifikasi-penilaian', [VerifikasiPenilaianController::class, 'index'])->name('verifikasi-penilaian.index');
+        Route::post('/penilaian/verifikasi-penilaian/bulk-verify', [VerifikasiPenilaianController::class, 'bulkVerify'])->name('verifikasi-penilaian.bulk-verify');
+        Route::post('/penilaian/verifikasi-penilaian/bulk-unverify', [VerifikasiPenilaianController::class, 'bulkUnverify'])->name('verifikasi-penilaian.bulk-unverify');
         Route::get('/penilaian/verifikasi-penilaian/{penilaian_id}/form', [VerifikasiPenilaianController::class, 'form'])->name('verifikasi-penilaian.form');
         Route::post('/penilaian/verifikasi-penilaian/{penilaian_id}/store', [VerifikasiPenilaianController::class, 'storeForm'])->name('verifikasi-penilaian.store-form');
         Route::get('/verifikasi/preview/{id}', [PreviewVerifikasiController::class, 'show'])->name('verifikasi.preview');
+        Route::get('/verifikasi/cetak-pdf/{id}', [PreviewVerifikasiController::class, 'cetakPdf'])->name('verifikasi.cetak-pdf');
     });
 
     Route::middleware('permission:penilaian.catatan,view')->group(function () {

@@ -492,9 +492,9 @@
             <button onclick="window.print()" class="preview-action-btn btn-maroon-soft" type="button">
                 <i class="fa-solid fa-print" aria-hidden="true"></i> Preview Cetak
             </button>
-            <button onclick="window.print()" class="preview-action-btn btn-maroon" type="button">
-                <i class="fa-solid fa-file-pdf" aria-hidden="true"></i> Cetak PDF
-            </button>
+            <a href="{{ route('penilaian.cetak-pdf', $penilaian->penilaian_id) }}" target="_blank" class="preview-action-btn btn-maroon">
+                <i class="fa-solid fa-file-pdf"></i> Cetak PDF
+            </a>
         </div>
     </div>
 

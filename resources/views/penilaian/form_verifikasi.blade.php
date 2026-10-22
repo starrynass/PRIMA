@@ -395,12 +395,143 @@
         .verification-footer > div:last-child,
         .verification-footer .btn-rev-orange { width: 100%; }
     }
+
+    /* Modal Pop-up Revisi & Notifikasi Form Verifikasi */
+    .form-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 1rem;
+        animation: fadeInModal 0.15s ease-out;
+    }
+
+    .form-modal-dialog {
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        width: 100%;
+        max-width: 520px;
+        overflow: hidden;
+        border: 1px solid #E2E8F0;
+    }
+
+    .form-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #E2E8F0;
+        background: #ffffff;
+    }
+
+    .form-modal-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1E293B;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+    }
+
+    .form-modal-close {
+        background: none;
+        border: none;
+        font-size: 1.35rem;
+        line-height: 1;
+        color: #94A3B8;
+        cursor: pointer;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .form-modal-close:hover {
+        color: #334155;
+    }
+
+    .form-modal-body {
+        padding: 1.25rem;
+        font-size: 0.875rem;
+        color: #334155;
+    }
+
+    .form-modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.6rem;
+        padding: 0.85rem 1.25rem;
+        background: #F8FAFC;
+        border-top: 1px solid #E2E8F0;
+    }
+
+    .btn-modal-gray {
+        background: #64748B;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1.1rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .btn-modal-gray:hover { background: #475569; }
+
+    .btn-modal-orange {
+        background: #F59E0B;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1.15rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-modal-orange:hover { background: #D97706; }
+
+    @keyframes fadeInModal {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
 </style>
 
 <div class="form-penilaian-wrapper">
+    @if(session('success'))
+        <div style="background-color: #ECFDF5; border: 1px solid #10B981; color: #065F46; padding: 0.85rem 1.25rem; border-radius: var(--radius); margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <i class="fas fa-check-circle" style="color: #10B981; font-size: 1.1rem;"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #065F46; cursor: pointer; font-size: 1rem;">&times;</button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div style="background-color: #FFF1F2; border: 1px solid #F43F5E; color: #9F1239; padding: 0.85rem 1.25rem; border-radius: var(--radius); margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <i class="fas fa-exclamation-triangle" style="color: #F43F5E; font-size: 1.1rem;"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #9F1239; cursor: pointer; font-size: 1rem;">&times;</button>
+        </div>
+    @endif
+
     <form id="formVerifikasi" action="{{ route('verifikasi-penilaian.store-form', $penilaian->penilaian_id) }}" method="POST">
         @csrf
         <input type="hidden" name="status_aksi" id="statusAksi" value="koreksi">
+        <input type="hidden" name="alasan_revisi" id="alasanRevisiInput" value="">
         <input type="hidden" name="grand_total" id="inputGrandTotal" value="0">
         <input type="hidden" name="predikat_nama" id="inputPredikatNama" value="-">
 
@@ -506,7 +637,7 @@
                                             <textarea name="catatan_verifikator[{{ $questionId }}]"
                                                 class="native-input-textarea"
                                                 rows="2"
-                                                placeholder="Catatan koreksi verifikator untuk item ini (opsional)...">{{ $existingCatatan[$questionId] ?? '' }}</textarea>
+                                                placeholder="Catatan / alasan koreksi verifikator untuk item ini (wajib diisi jika nilai diubah)...">{{ $existingCatatan[$questionId] ?? '' }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -570,12 +701,91 @@
     </form>
 </div>
 
+<!-- Modal Pop-up Revisi Penilaian -->
+<div id="modalRevisiPopUp" class="form-modal-backdrop">
+    <div class="form-modal-dialog">
+        <div class="form-modal-header">
+            <h3 class="form-modal-title">
+                <i class="fas fa-undo" style="color: #F59E0B;"></i>
+                Kembalikan Revisi ke Penilai
+            </h3>
+            <button type="button" class="form-modal-close" id="btnCloseRevisiModal">&times;</button>
+        </div>
+        <div class="form-modal-body">
+            <p style="margin-bottom: 0.75rem; line-height: 1.45; font-size: 0.85rem; color: #475569;">
+                Penilaian pegawai <strong>{{ $penilaian->pgw_nama }}</strong> akan dikembalikan statusnya ke penilai untuk diperbaiki / direvisi. <strong>Alasan revisi wajib diisi.</strong>
+            </p>
+            <div style="margin-bottom: 0.5rem;">
+                <label for="inputModalAlasanRevisi" style="display: block; font-size: 0.8125rem; font-weight: 600; color: #1E293B; margin-bottom: 0.35rem;">
+                    Alasan Revisi <span style="color: #EF4444;">*</span>
+                </label>
+                <textarea id="inputModalAlasanRevisi" class="native-input-textarea" rows="4" placeholder="Tuliskan catatan/alasan detail mengapa penilaian ini perlu direvisi oleh penilai..." required></textarea>
+                <div id="errorModalAlasanRevisi" style="color: #EF4444; font-size: 0.75rem; margin-top: 0.35rem; display: none;">
+                    Alasan revisi wajib diisi sebelum mengembalikan penilaian!
+                </div>
+            </div>
+        </div>
+        <div class="form-modal-footer">
+            <button type="button" class="btn-modal-gray" id="btnBatalRevisiModal">
+                <i class="fas fa-times me-1"></i> Batal
+            </button>
+            <button type="button" class="btn-modal-orange" id="btnKonfirmasiKirimRevisi">
+                <i class="fas fa-paper-plane me-1"></i> Kirim Revisi
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pop-up Peringatan Validasi Alasan Koreksi -->
+<div id="modalAlertPopUp" class="form-modal-backdrop">
+    <div class="form-modal-dialog">
+        <div class="form-modal-header">
+            <h3 class="form-modal-title" style="color: #EF4444;">
+                <i class="fas fa-exclamation-triangle"></i>
+                Peringatan Validasi
+            </h3>
+            <button type="button" class="form-modal-close" id="btnCloseAlertModal">&times;</button>
+        </div>
+        <div class="form-modal-body">
+            <div id="modalAlertMessage" style="font-size: 0.875rem; line-height: 1.5; color: #334155;"></div>
+        </div>
+        <div class="form-modal-footer">
+            <button type="button" class="btn-modal-gray" id="btnOkAlertModal">
+                Mengerti
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- SCRIPT LOGIC REALTIME SCORE & ACTIONS -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('formVerifikasi');
     const statusAksiInput = document.getElementById('statusAksi');
+    const alasanRevisiInput = document.getElementById('alasanRevisiInput');
     const predikatList = @json($predikatNilai ?? []);
+
+    const modalRevisi = document.getElementById('modalRevisiPopUp');
+    const inputAlasanRevisi = document.getElementById('inputModalAlasanRevisi');
+    const errorAlasanRevisi = document.getElementById('errorModalAlasanRevisi');
+
+    const modalAlert = document.getElementById('modalAlertPopUp');
+    const modalAlertMsg = document.getElementById('modalAlertMessage');
+
+    function showAlertPopUp(message) {
+        modalAlertMsg.innerHTML = message;
+        modalAlert.style.display = 'flex';
+    }
+
+    function closeAlertPopUp() {
+        modalAlert.style.display = 'none';
+    }
+
+    document.getElementById('btnCloseAlertModal').addEventListener('click', closeAlertPopUp);
+    document.getElementById('btnOkAlertModal').addEventListener('click', closeAlertPopUp);
+    modalAlert.addEventListener('click', function(e) {
+        if (e.target === this) closeAlertPopUp();
+    });
 
     function calculateVerifikatorScore() {
         const questionItems = document.querySelectorAll('.question-item');
@@ -629,7 +839,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const questionItem = radio.closest('.question-item');
             const state = questionItem.querySelector('.verification-state');
             const selected = questionItem.querySelector('.radio-score:checked');
-            const sameAsAssessor = selected && selected.value === questionItem.dataset.originalScore;
+            const sameAsAssessor = selected && String(selected.value) === String(questionItem.dataset.originalScore);
 
             state.classList.toggle('is-corrected', !sameAsAssessor);
             state.innerHTML = sameAsAssessor
@@ -655,24 +865,89 @@ document.addEventListener('DOMContentLoaded', function () {
 
     calculateVerifikatorScore();
 
+    // Fungsi validasi: Setiap butir yang nilainya diubah wajib memiliki alasan / catatan koreksi
+    function validateCorrections() {
+        const questionItems = document.querySelectorAll('.question-item');
+        let unnotedCount = 0;
+        let firstUnnotedInput = null;
+
+        questionItems.forEach(item => {
+            const checked = item.querySelector('.radio-score:checked');
+            const origScore = item.dataset.originalScore;
+            if (checked && origScore !== '' && String(checked.value) !== String(origScore)) {
+                const noteInput = item.querySelector('textarea[name^="catatan_verifikator"]');
+                const noteVal = noteInput ? noteInput.value.trim() : '';
+                if (noteVal === '') {
+                    unnotedCount++;
+                    if (!firstUnnotedInput && noteInput) {
+                        firstUnnotedInput = noteInput;
+                    }
+                }
+            }
+        });
+
+        if (unnotedCount > 0) {
+            showAlertPopUp(`Terdapat <strong>${unnotedCount} butir penilaian</strong> yang Anda koreksi nilainya namun belum diberikan alasan koreksi.<br><br>Mohon isi catatan koreksi pada setiap butir yang nilainya diubah.`);
+            if (firstUnnotedInput) {
+                firstUnnotedInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstUnnotedInput.focus();
+                firstUnnotedInput.style.borderColor = '#EF4444';
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     // Event Handlers Tombol Aksi
     document.getElementById('btnSimpanKoreksi').addEventListener('click', function() {
+        if (!validateCorrections()) return;
         statusAksiInput.value = 'koreksi';
         form.submit();
     });
 
     document.getElementById('btnVerifikasiFinal').addEventListener('click', function() {
+        if (!validateCorrections()) return;
         if(confirm('Apakah Anda yakin ingin memverifikasi final penilaian ini?')) {
             statusAksiInput.value = 'verified';
             form.submit();
         }
     });
 
+    // Pop-up Revisi Modal Handlers
+    function openRevisiModal() {
+        inputAlasanRevisi.value = '';
+        errorAlasanRevisi.style.display = 'none';
+        modalRevisi.style.display = 'flex';
+        inputAlasanRevisi.focus();
+    }
+
+    function closeRevisiModal() {
+        modalRevisi.style.display = 'none';
+    }
+
     document.getElementById('btnKembalikanRevisi').addEventListener('click', function() {
-        if(confirm('Apakah Anda yakin ingin mengembalikan penilaian ini ke penilai untuk direvisi?')) {
-            statusAksiInput.value = 'revisi';
-            form.submit();
+        openRevisiModal();
+    });
+
+    document.getElementById('btnCloseRevisiModal').addEventListener('click', closeRevisiModal);
+    document.getElementById('btnBatalRevisiModal').addEventListener('click', closeRevisiModal);
+    modalRevisi.addEventListener('click', function(e) {
+        if (e.target === this) closeRevisiModal();
+    });
+
+    document.getElementById('btnKonfirmasiKirimRevisi').addEventListener('click', function() {
+        const alasan = inputAlasanRevisi.value.trim();
+        if (alasan === '') {
+            errorAlasanRevisi.style.display = 'block';
+            inputAlasanRevisi.focus();
+            return;
         }
+
+        errorAlasanRevisi.style.display = 'none';
+        alasanRevisiInput.value = alasan;
+        statusAksiInput.value = 'revisi';
+        form.submit();
     });
 
     document.getElementById('btnPreview').addEventListener('click', function() {

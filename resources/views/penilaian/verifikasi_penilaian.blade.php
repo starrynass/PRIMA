@@ -448,7 +448,7 @@
 }
 
 .btn-success-custom {
-    background-color: #28a745;
+    background-color: #10B981;
     color: #ffffff;
     border: none;
     padding: 0.5rem 1.1rem;
@@ -460,23 +460,26 @@
     justify-content: center;
     gap: 0.4rem;
     cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease-in-out;
 }
 
 .btn-success-custom:hover:not(:disabled) {
-    background-color: #218838;
+    background-color: #059669;
     color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
 }
 
 .btn-success-custom:disabled {
-    background-color: #8ce19d;
+    background-color: #A7F3D0;
     cursor: not-allowed;
     color: #ffffff;
-    opacity: 0.8;
+    opacity: 0.7;
+    box-shadow: none;
 }
 
 .btn-warning-custom {
-    background-color: #f0ad4e;
+    background-color: #F59E0B;
     color: #ffffff;
     border: none;
     padding: 0.5rem 1.1rem;
@@ -488,19 +491,246 @@
     justify-content: center;
     gap: 0.4rem;
     cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.15s ease-in-out;
 }
 
 .btn-warning-custom:hover:not(:disabled) {
-    background-color: #ec971f;
+    background-color: #D97706;
     color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2);
 }
 
 .btn-warning-custom:disabled {
-    background-color: #f7d4a0;
+    background-color: #FDE68A;
     cursor: not-allowed;
     color: #ffffff;
-    opacity: 0.8;
+    opacity: 0.7;
+    box-shadow: none;
+}
+
+/* Modal Konfirmasi Massal (Verifikasi & Unverifikasi) */
+.custom-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+    animation: fadeInModal 0.15s ease-out;
+}
+
+.custom-modal-dialog {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-width: 780px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #E2E8F0;
+}
+
+.custom-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #E2E8F0;
+    background: #ffffff;
+}
+
+.custom-modal-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1E293B;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+}
+
+.custom-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.35rem;
+    line-height: 1;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 0.2rem 0.4rem;
+}
+
+.custom-modal-close:hover {
+    color: #334155;
+}
+
+.custom-modal-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    font-size: 0.875rem;
+    color: #334155;
+}
+
+.modal-notice-banner {
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+}
+
+.modal-notice-warning {
+    background-color: #FFFBEB;
+    border: 1px solid #FDE68A;
+    color: #92400E;
+}
+
+.modal-notice-success {
+    background-color: #ECFDF5;
+    border: 1px solid #A7F3D0;
+    color: #065F46;
+}
+
+.modal-table-container {
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    overflow: hidden;
+    max-height: 280px;
+    overflow-y: auto;
+    margin-top: 0.75rem;
+}
+
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+}
+
+.modal-table th {
+    background: #F8FAFC;
+    color: #475569;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid #E2E8F0;
+    text-align: left;
+}
+
+.modal-table td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid #F1F5F9;
+    color: #1E293B;
+}
+
+.modal-table tr:last-child td {
+    border-bottom: none;
+}
+
+.custom-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    padding: 0.85rem 1.25rem;
+    background: #F8FAFC;
+    border-top: 1px solid #E2E8F0;
+}
+
+.btn-modal-cancel {
+    background: #475569;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.15s;
+}
+
+.btn-modal-cancel:hover {
+    background: #334155;
+    color: #ffffff;
+}
+
+.btn-modal-unverify {
+    background: #F59E0B;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1.15rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.15s;
+}
+
+.btn-modal-unverify:hover {
+    background: #D97706;
+    color: #ffffff;
+}
+
+.btn-modal-verify {
+    background: #10B981;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1.15rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.15s;
+}
+
+.btn-modal-verify:hover {
+    background: #059669;
+    color: #ffffff;
+}
+
+.modal-form-textarea {
+    width: 100%;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.8125rem;
+    font-family: var(--font-main);
+    color: #1E293B;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.modal-form-textarea:focus {
+    border-color: var(--maroon-primary);
+    box-shadow: 0 0 0 2px var(--maroon-glow);
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* ==========================================================================
@@ -921,6 +1151,26 @@
             </div>
         </div><br>
 
+        @if(session('success'))
+            <div style="background-color: #ECFDF5; border: 1px solid #10B981; color: #065F46; padding: 0.85rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <i class="fas fa-check-circle" style="color: #10B981; font-size: 1.1rem;"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #065F46; cursor: pointer; font-size: 1rem;">&times;</button>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div style="background-color: #FFF1F2; border: 1px solid #F43F5E; color: #9F1239; padding: 0.85rem 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <i class="fas fa-exclamation-triangle" style="color: #F43F5E; font-size: 1.1rem;"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+                <button type="button" onclick="this.parentElement.remove()" style="background: none; border: none; color: #9F1239; cursor: pointer; font-size: 1rem;">&times;</button>
+            </div>
+        @endif
+
         @if($hasPeriodeSelected)
             <!-- CARD RINGKASAN STATISTIK -->
             <div class="stats-grid">
@@ -1078,10 +1328,28 @@
                                         $statusVerifikator = strtoupper((string) data_get($row, 'status_verifikator_display', data_get($row, 'status_verifikator', '')));
                                         $nilaiAkhir = is_numeric(data_get($row, 'nilai_akhir')) ? (float) data_get($row, 'nilai_akhir') : 0.00;
                                         $predikat = data_get($row, 'predikat', 'Mengecewakan');
+
+                                        // Prioritaskan nilai & predikat verifikator
+                                        $nilaiTampil = ($row->total_nilai_verifikator > 0) 
+                                            ? $row->total_nilai_verifikator 
+                                            : ($row->nilai_akhir ?? $row->total_nilai ?? 0);
+
+                                        $predikatTampil = $row->predikat_verifikator 
+                                            ?: $row->predikat 
+                                            ?: 'Belum Diisi';
                                     @endphp
                                     <tr>
                                         <td class="text-center">
-                                            <input type="checkbox" class="row-checkbox" value="{{ $penilaianId }}" style="cursor: pointer;">
+                                            <input type="checkbox" class="row-checkbox" value="{{ $penilaianId }}" 
+                                                   data-id="{{ $penilaianId }}"
+                                                   data-nup="{{ data_get($row, 'nup', '-') }}"
+                                                   data-nama="{{ data_get($row, 'nama', '-') }}"
+                                                   data-jabatan="{{ data_get($row, 'jabatan', '-') }}"
+                                                   data-nilai="{{ number_format($nilaiTampil, 2) }}"
+                                                   data-predikat="{{ $predikatTampil }}"
+                                                   data-status-badge="{{ in_array($statusVerifikator, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']) ? 'Terverifikasi' : 'Menunggu Verifikasi' }}"
+                                                   data-is-verified="{{ in_array($statusVerifikator, ['VERIFIED', 'VERIFIKASI', 'APPROVED', 'SELESAI']) ? '1' : '0' }}"
+                                                   style="cursor: pointer;">
                                         </td>
                                         <td>{{ (($penilaians->currentPage() - 1) * $penilaians->perPage()) + $loop->iteration }}</td>
                                         <td><code>{{ data_get($row, 'nup', '-') }}</code></td>
@@ -1106,15 +1374,6 @@
                                         <td>{{ number_format($nilaiAkhir, 2) }}</td>
                                         <td>
                                             @php
-                                            // Prioritaskan nilai & predikat verifikator
-                                            $nilaiTampil = ($row->total_nilai_verifikator > 0) 
-                                                ? $row->total_nilai_verifikator 
-                                                : ($row->nilai_akhir ?? $row->total_nilai ?? 0);
-
-                                            $predikatTampil = $row->predikat_verifikator 
-                                                ?: $row->predikat 
-                                                ?: 'Belum Diisi';
-
                                             // Penentuan warna badge berdasarkan nilai yang ditampilkan
                                             if ($nilaiTampil >= 90) {
                                                 $badgeStyle = 'badge-emerald';
@@ -1229,51 +1488,283 @@
     </div>
 </div>
 
+<!-- Modal Konfirmasi Verifikasi Multiple -->
+<div id="modalBulkVerify" class="custom-modal-backdrop">
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-header">
+            <h3 class="custom-modal-title">
+                <i class="fas fa-check-circle" style="color: #10B981;"></i>
+                Konfirmasi Verifikasi Multiple
+            </h3>
+            <button type="button" class="custom-modal-close" data-close-modal="modalBulkVerify">&times;</button>
+        </div>
+        <form id="formBulkVerify" action="{{ route('verifikasi-penilaian.bulk-verify') }}" method="POST">
+            @csrf
+            <input type="hidden" name="periode_id" value="{{ request('periode_id', $selectedPeriode->periode_id ?? '') }}">
+            <div id="verifyHiddenInputs"></div>
+
+            <div class="custom-modal-body">
+                <div class="modal-notice-banner modal-notice-success">
+                    <i class="fas fa-info-circle" style="font-size: 1.15rem; margin-top: 2px;"></i>
+                    <div>
+                        Verifikasi sekaligus untuk <strong id="verifyModalCount">0</strong> penilaian terpilih. Penilaian akan ditandai <strong>Terverifikasi</strong> menggunakan nilai &amp; predikat yang tertera tanpa mengubah butir koreksi.
+                    </div>
+                </div>
+
+                <div class="modal-table-container">
+                    <table class="modal-table">
+                        <thead>
+                            <tr>
+                                <th width="40">NO</th>
+                                <th>NUP</th>
+                                <th>NAMA</th>
+                                <th>JABATAN</th>
+                                <th width="70">NILAI</th>
+                                <th width="140">PREDIKAT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verifyTableBody">
+                            <!-- Diisi via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-modal-cancel" data-close-modal="modalBulkVerify">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button type="submit" class="btn-modal-verify">
+                    <i class="fas fa-check-circle"></i> Verifikasi Semua
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Unverifikasi Multiple -->
+<div id="modalBulkUnverify" class="custom-modal-backdrop">
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-header">
+            <h3 class="custom-modal-title">
+                <i class="fas fa-undo" style="color: #F59E0B;"></i>
+                Konfirmasi Unverifikasi Multiple
+            </h3>
+            <button type="button" class="custom-modal-close" data-close-modal="modalBulkUnverify">&times;</button>
+        </div>
+        <form id="formBulkUnverify" action="{{ route('verifikasi-penilaian.bulk-unverify') }}" method="POST">
+            @csrf
+            <input type="hidden" name="periode_id" value="{{ request('periode_id', $selectedPeriode->periode_id ?? '') }}">
+            <div id="unverifyHiddenInputs"></div>
+
+            <div class="custom-modal-body">
+                <div class="modal-notice-banner modal-notice-warning">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 1.15rem; margin-top: 2px;"></i>
+                    <div>
+                        Batalkan verifikasi untuk <strong id="unverifyModalCount">0</strong> penilaian. Status kembali ke <strong>Menunggu Verifikasi</strong>. Koreksi per-butir tetap disimpan.
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 0.85rem;">
+                    <label style="display: block; font-size: 0.8125rem; font-weight: 600; color: #475569; margin-bottom: 0.35rem;">
+                        Alasan / Catatan Unverifikasi (opsional)
+                    </label>
+                    <textarea name="catatan" class="modal-form-textarea" rows="2" placeholder="Contoh: salah verifikasi massal, perlu dikoreksi ulang..."></textarea>
+                </div>
+
+                <div class="modal-table-container">
+                    <table class="modal-table">
+                        <thead>
+                            <tr>
+                                <th width="40">NO</th>
+                                <th>NUP</th>
+                                <th>NAMA</th>
+                                <th>JABATAN</th>
+                                <th width="70">NILAI</th>
+                                <th width="140">PREDIKAT</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unverifyTableBody">
+                            <!-- Diisi via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-modal-cancel" data-close-modal="modalBulkUnverify">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button type="submit" class="btn-modal-unverify">
+                    <i class="fas fa-undo"></i> Unverifikasi Semua
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
     <!-- Library jQuery & Select2 JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <!-- Inisialisasi Select2 -->
+    <!-- Inisialisasi Script Interaksi & Modal -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        const checkAll = document.getElementById('checkAll');
-        const rowCheckboxes = document.querySelectorAll('.row-checkbox');
-        const btnVerify = document.getElementById('btnBulkVerify');
-        const btnUnverify = document.getElementById('btnBulkUnverify');
-        const countVerify = document.getElementById('countVerify');
-        const countUnverify = document.getElementById('countUnverify');
+            const checkAll = document.getElementById('checkAll');
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            const btnVerify = document.getElementById('btnBulkVerify');
+            const btnUnverify = document.getElementById('btnBulkUnverify');
+            const countVerify = document.getElementById('countVerify');
+            const countUnverify = document.getElementById('countUnverify');
 
-        function updateCounters() {
-            const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
-            if (countVerify) countVerify.textContent = checkedCount;
-            if (countUnverify) countUnverify.textContent = checkedCount;
+            const modalVerify = document.getElementById('modalBulkVerify');
+            const modalUnverify = document.getElementById('modalBulkUnverify');
 
-            if (checkedCount > 0) {
-                if (btnVerify) btnVerify.removeAttribute('disabled');
-                if (btnUnverify) btnUnverify.removeAttribute('disabled');
-            } else {
-                if (btnVerify) btnVerify.setAttribute('disabled', 'true');
-                if (btnUnverify) btnUnverify.setAttribute('disabled', 'true');
+            function getSelectedRows() {
+                const checked = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+                return checked.map(cb => ({
+                    id: cb.value,
+                    nup: cb.getAttribute('data-nup') || '-',
+                    nama: cb.getAttribute('data-nama') || '-',
+                    jabatan: cb.getAttribute('data-jabatan') || '-',
+                    nilai: cb.getAttribute('data-nilai') || '0.00',
+                    predikat: cb.getAttribute('data-predikat') || '-',
+                    statusBadge: cb.getAttribute('data-status-badge') || '',
+                    isVerified: cb.getAttribute('data-is-verified') === '1'
+                }));
             }
-        }
 
-        if (checkAll) {
-            checkAll.addEventListener('change', function() {
-                rowCheckboxes.forEach(cb => cb.checked = this.checked);
-                updateCounters();
-            });
-        }
+            function updateCounters() {
+                const checkedBoxes = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+                const checkedCount = checkedBoxes.length;
 
-        rowCheckboxes.forEach(cb => {
-            cb.addEventListener('change', function() {
-                if (!this.checked && checkAll) {
-                    checkAll.checked = false;
+                let unverifiedCount = 0;
+                let verifiedCount = 0;
+
+                checkedBoxes.forEach(cb => {
+                    if (cb.getAttribute('data-is-verified') === '1') {
+                        verifiedCount++;
+                    } else {
+                        unverifiedCount++;
+                    }
+                });
+
+                if (countVerify) countVerify.textContent = unverifiedCount;
+                if (countUnverify) countUnverify.textContent = verifiedCount;
+
+                // Jika ada yang belum diverifikasi dipilih dan TIDAK ada yang sudah diverifikasi tercampur
+                if (unverifiedCount > 0 && verifiedCount === 0) {
+                    if (btnVerify) btnVerify.removeAttribute('disabled');
+                } else {
+                    if (btnVerify) btnVerify.setAttribute('disabled', 'true');
                 }
-                updateCounters();
+
+                // Jika ada yang sudah diverifikasi dipilih dan TIDAK ada yang belum diverifikasi tercampur
+                if (verifiedCount > 0 && unverifiedCount === 0) {
+                    if (btnUnverify) btnUnverify.removeAttribute('disabled');
+                } else {
+                    if (btnUnverify) btnUnverify.setAttribute('disabled', 'true');
+                }
+            }
+
+            if (checkAll) {
+                checkAll.addEventListener('change', function() {
+                    rowCheckboxes.forEach(cb => cb.checked = this.checked);
+                    updateCounters();
+                });
+            }
+
+            rowCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    if (!this.checked && checkAll) {
+                        checkAll.checked = false;
+                    }
+                    updateCounters();
+                });
+            });
+
+            // Helper render baris tabel modal
+            function renderModalRows(tbody, hiddenContainer, items) {
+                tbody.innerHTML = '';
+                hiddenContainer.innerHTML = '';
+
+                items.forEach((item, idx) => {
+                    // hidden input
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'penilaian_ids[]';
+                    input.value = item.id;
+                    hiddenContainer.appendChild(input);
+
+                    // tr
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${idx + 1}</td>
+                        <td><code>${item.nup}</code></td>
+                        <td><strong>${item.nama}</strong></td>
+                        <td>${item.jabatan}</td>
+                        <td>${item.nilai}</td>
+                        <td>
+                            <span style="background: #2563EB; color: #fff; font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; display: inline-block;">
+                                ${item.predikat}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Buka Modal Verifikasi
+            if (btnVerify) {
+                btnVerify.addEventListener('click', function() {
+                    const selected = getSelectedRows().filter(item => !item.isVerified);
+                    if (selected.length === 0) return;
+
+                    document.getElementById('verifyModalCount').textContent = selected.length;
+                    renderModalRows(
+                        document.getElementById('verifyTableBody'),
+                        document.getElementById('verifyHiddenInputs'),
+                        selected
+                    );
+                    modalVerify.style.display = 'flex';
+                });
+            }
+
+            // Buka Modal Unverifikasi
+            if (btnUnverify) {
+                btnUnverify.addEventListener('click', function() {
+                    const selected = getSelectedRows().filter(item => item.isVerified);
+                    if (selected.length === 0) return;
+
+                    document.getElementById('unverifyModalCount').textContent = selected.length;
+                    renderModalRows(
+                        document.getElementById('unverifyTableBody'),
+                        document.getElementById('unverifyHiddenInputs'),
+                        selected
+                    );
+                    modalUnverify.style.display = 'flex';
+                });
+            }
+
+            // Tutup Modal
+            document.querySelectorAll('[data-close-modal]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-close-modal');
+                    const targetEl = document.getElementById(targetId);
+                    if (targetEl) targetEl.style.display = 'none';
+                });
+            });
+
+            // Tutup jika klik di backdrop luar
+            [modalVerify, modalUnverify].forEach(m => {
+                if (m) {
+                    m.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            this.style.display = 'none';
+                        }
+                    });
+                }
             });
         });
-    });
         
         $(document).ready(function() {
             $('.select2').select2({
