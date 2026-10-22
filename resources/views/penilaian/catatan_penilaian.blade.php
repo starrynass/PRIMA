@@ -1356,6 +1356,11 @@ body {
                 <div id="assessmentModalGeneralNote" class="note-content"></div>
             </div>
 
+            <div class="assessment-general-note">
+                <span class="assessment-modal-label">Catatan Umum Verifikator</span>
+                <div id="assessmentModalGeneralNote" class="note-content"></div>
+            </div>
+
             <!-- Tabel Detail -->
             <div class="table-responsive modal-table-wrapper">
                 <table class="assessment-detail-table">

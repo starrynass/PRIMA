@@ -46,9 +46,4 @@ class Dp3TransPenilaianDetail extends Model
     {
         return $this->belongsTo(Dp3TransPenilaian::class, 'penilaian_id', 'penilaian_id');
     }
-
-    public function pertanyaan()
-    {
-        return $this->belongsTo(MasterPertanyaan::class, 'pertanyaan_id', 'pertanyaan_id');
-    }
 }

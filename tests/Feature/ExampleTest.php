@@ -209,13 +209,13 @@ class ExampleTest extends TestCase
             'role' => 'manager',
         ]);
 
-        \App\Models\RoleMenuPermission::create([
-            'role' => 'manager',
-            'permissions' => [
+        \App\Models\RoleMenuPermission::updateOrCreate(
+            ['role' => 'manager'],
+            ['permissions' => [
                 'settings' => ['view' => true],
                 'settings.hak-akses' => ['view' => true],
-            ],
-        ]);
+            ]]
+        );
 
         $this->actingAs($user)
             ->get('/setting/hak-akses')
@@ -232,15 +232,15 @@ class ExampleTest extends TestCase
         $user = \App\Models\User::factory()->create([
             'role' => 'manager',
         ]);
-        \App\Models\RoleMenuPermission::create([
-            'role' => 'manager',
-            'permissions' => [
+        \App\Models\RoleMenuPermission::updateOrCreate(
+            ['role' => 'manager'],
+            ['permissions' => [
                 'settings' => ['view' => true],
                 'settings.roles' => ['view' => true],
                 'settings.hak-akses' => ['view' => true],
                 'settings.otorisasi-menu' => ['view' => true],
-            ],
-        ]);
+            ]]
+        );
         $this->actingAs($user);
 
         $this->post('/setting/roles', ['name' => 'Auditor Internal'])
@@ -265,10 +265,10 @@ class ExampleTest extends TestCase
         $user = \App\Models\User::factory()->create([
             'role' => 'manager',
         ]);
-        \App\Models\RoleMenuPermission::create([
-            'role' => 'manager',
-            'permissions' => ['settings' => ['view' => true], 'settings.roles' => ['view' => true]],
-        ]);
+        \App\Models\RoleMenuPermission::updateOrCreate(
+            ['role' => 'manager'],
+            ['permissions' => ['settings' => ['view' => true], 'settings.roles' => ['view' => true]]]
+        );
         $this->actingAs($user);
         $managerRole = \App\Models\Role::where('slug', 'manager')->firstOrFail();
         $superAdminRole = \App\Models\Role::where('slug', 'superadmin')->firstOrFail();

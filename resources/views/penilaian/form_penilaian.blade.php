@@ -106,23 +106,14 @@
         overflow: hidden;
     }
 
-    .card-header-bobot {
-        background-color: var(--primary-burgundy);
-        color: #FFFFFF;
-        padding: 12px 16px;
-        font-weight: 600;
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        align-items: center;
-    }
-
     .card-header-burgundy {
         background-color: var(--primary-burgundy);
         color: #FFFFFF;
         padding: 12px 16px;
         font-weight: 600;
         font-size: 14px;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
     }
 
@@ -364,7 +355,7 @@
                 <div class="card-native">
                     <div class="card-body-native">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="font-weight: 700; font-size: 14px;"><i class="fas fa-edit me-1"></i> Isi Penilaian</div>
+                            <div style="font-weight: 700; font-size: 14px;">📝 Isi Penilaian</div>
                             <div>
                                 <span style="font-size: 12px; color: var(--text-muted);">Status: </span>
                                 <span class="status-badge {{ strtolower($penilaian->status_nilai) == 'submitted' ? 'badge-submitted' : 'badge-draft' }}">
@@ -388,8 +379,8 @@
                 <!-- CATEGORIES AND QUESTIONS -->
                @foreach($template->kategoris as $catIdx => $kategori)
                 <div class="card-native card-panel" data-kat-id="{{ $kategori->kategori_id }}" data-kat-bobot="{{ $kategori->bobot_persen }}">
-                    <div class="card-header-bobot">
-                        <div><i class="fas fa-clipboard-list me-1"></i>  {{ $catIdx + 1 }}. {{ strtoupper($kategori->nama) }}</div>
+                    <div class="card-header-burgundy">
+                        <div>📋 {{ $catIdx + 1 }}. {{ strtoupper($kategori->nama) }}</div>
                         <div style="font-size: 12px; opacity: 0.9;">Bobot {{ $kategori->bobot_persen }}%</div>
                     </div>
                     
@@ -446,7 +437,7 @@
             @endforeach
 
                 <div class="card-native">
-                    <div class="card-header-burgundy"><i class="fas fa-comment-alt me-3"></i> Catatan Umum</div>
+                    <div class="card-header-burgundy">Catatan Umum</div>
                     <div class="card-body-native">
                         <textarea name="catatan_umum" class="native-input-textarea" rows="4" placeholder="Masukkan catatan umum...">{{ old('catatan_umum', $penilaian->catatan) }}</textarea>
                     </div>
@@ -475,7 +466,7 @@
             <div>
                 <!-- 1. Ringkasan Pegawai -->
                 <div class="card-native">
-                    <div class="card-header-burgundy"><i class="fas fa-id-card"></i> Ringkasan Pegawai</div>
+                    <div class="card-header-burgundy">👤 Ringkasan Pegawai</div>
                     <div class="card-body-native">
                         <div class="profile-avatar-circle">
                             {{ strtoupper(substr($penilaian->pgw_nama, 0, 1)) }}
@@ -503,9 +494,7 @@
 
                 <!-- 2. Progress Pengisian -->
                 <div class="card-native">
-                   <div class="card-header-burgundy">
-                        <i class="fas fa-chart-bar me-2"></i> Progress Pengisian
-                    </div>
+                    <div class="card-header-burgundy">📊 Progress Pengisian</div>
                     <div class="card-body-native">
                         <div style="display: flex; justify-content: space-between; font-size: 12px;">
                             <span class="info-label">Pertanyaan terisi</span>
@@ -549,7 +538,7 @@
 
                 <!-- 3. Bantuan Penilaian -->
                 <div class="card-native">
-                    <div class="card-header-burgundy">ℹ<i class="fas fa-info-circle"></i> Bantuan Penilaian</div>
+                    <div class="card-header-burgundy">ℹ️ Bantuan Penilaian</div>
                     <div class="card-body-native">
                         <table class="native-table">
                             <thead>

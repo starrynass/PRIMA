@@ -121,7 +121,7 @@
                                             </div>
                                             <small style="display:block;margin-top:4px;color:#667085;">Password tersimpan secara terenkripsi agar dapat dilihat kembali.</small>
                                         @else
-                                            <div style="font-size:0.8rem;color:#667085;">Password akun lama tidak dapat ditampilkan. Hash password tidak dapat diubah kembali menjadi password aslinya.</div>
+                                            <div style="font-size:0.8rem;color:#667085;">Password tersimpan tidak dapat ditampilkan. Atur ulang password akun untuk menyimpannya kembali secara terenkripsi.</div>
                                         @endif
                                     </div>
                                 </td>

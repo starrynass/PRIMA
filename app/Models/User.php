@@ -64,6 +64,7 @@ class User extends Authenticatable
                 'superadmin' => 'Super Admin',
                 'direktur' => 'Direktur',
                 'manager' => 'Manager',
+                'asmen' => 'Asmen',
                 'staff' => 'Staff',
             ];
         }
@@ -80,6 +81,7 @@ class User extends Authenticatable
             'superadmin', 'super_admin', 'super admin', 'super-admin' => 'superadmin',
             'direktur', 'director' => 'direktur',
             'manager', 'manajer' => 'manager',
+            'asmen', 'assistant manager', 'asisten manager', 'asisten manajer' => 'asmen',
             default => $normalized,
         };
     }
@@ -93,9 +95,10 @@ class User extends Authenticatable
     {
         return match ($this->normalizeRole($role)) {
             'staff' => 1,
-            'manager' => 2,
-            'direktur' => 3,
-            'superadmin' => 4,
+            'asmen' => 2,
+            'manager' => 3,
+            'direktur' => 4,
+            'superadmin' => 5,
             default => 1,
         };
     }

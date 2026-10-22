@@ -388,7 +388,7 @@
 .bg-amber-light  { background: #fef3c7; color: #d97706; }
 .bg-orange-light { background: #ffedd5; color: #ea580c; }
 .bg-red-light    { background: #fee2e2; color: #dc2626; }
-.bg-purple-light { background: #f3e8ff; color: #9333ea; }
+.bg-purple-light { background: #eee0fc; color: #6b21a8; }
 .bg-blue-dark-light { background: #e0e7ff; color: #3730a3; }
 
 .badge-pill { padding: 0.15rem 0.5rem; border-radius: 0.375rem; font-size: 0.6875rem; font-weight: 700; }
@@ -473,6 +473,28 @@
     background: #f8fafc;
 }
 
+.assessment-modal-footer button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.75rem;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #dbe3ee;
+    border-radius: 0.55rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.assessment-modal-footer button:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
 .modal-table-wrapper {
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
@@ -522,6 +544,16 @@
 .badge-status-success { background-color: var(--badge-emerald-bg, #D1FAE5); color: var(--badge-emerald-text, #065F46); border: 1px solid #10B981; }
 .badge-status-warning { background-color: var(--badge-amber-bg, #FEF3C7); color: var(--badge-amber-text, #92400E); border: 1px solid #F59E0B; }
 .badge-status-danger { background-color: var(--badge-rose-bg, #FFE4E6); color: var(--badge-rose-text, #9F1239); border: 1px solid #F43F5E; }
+    .badge-status-rev {
+        background-color: #eee0fc;
+        color: #6b21a8;
+        border: 1px solid #6b21a8;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        display: inline-block;
+    }
 
 .badge {
     padding: 0.2rem 0.5rem;
@@ -1040,7 +1072,7 @@
 
 .distribusi-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.8fr) minmax(360px, 1fr);
+    grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr);
     gap: 0;
     padding: 0;
 }
@@ -1294,6 +1326,20 @@
 .ranking-list-scroll::-webkit-scrollbar-track {
     background: #f1f5f9;
 }
+
+.modal-question-correction {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    color: #9a3412;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    font-size: 0.67rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
 .ranking-list-scroll::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 4px;
@@ -1309,21 +1355,31 @@
     padding: 0.6rem 0.75rem;
 }
 
+.ranking-left-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    overflow: hidden;
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
 .ranking-badge {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 0.4rem;
     background: #f1f5f9;
     color: #475569;
-    font-size: 0.725rem;
+    font-size: 0.75rem;
     font-weight: 800;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Mencegah badge ikut mengecil */
 }
 
 .ranking-unit-name {
+    margin: 0;
     font-size: 0.775rem;
     font-weight: 700;
     color: #1e293b;
@@ -1341,6 +1397,7 @@
     font-size: 0.8125rem;
     font-weight: 800;
     color: #0f172a;
+    white-space: nowrap;
 }
 
 /* Container Dua Kolom Widget Predikat Terendah */
@@ -1375,8 +1432,54 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     border-bottom: 1px solid #f1f5f9;
+}
+
+.low-card-header-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.low-card-header-icon {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.65rem;
+}
+
+.low-card-header-copy {
+    min-width: 0;
+}
+
+.low-card-title {
+    margin: 0;
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.low-card-description {
+    margin: 0.15rem 0 0;
+    color: #64748b;
+    font-size: 0.725rem;
+    line-height: 1.35;
+}
+
+.low-card-count {
+    flex: 0 0 auto;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.725rem;
+    padding: 0.35rem 0.75rem;
+    white-space: nowrap;
 }
 
 /* Container Scroll Vertikal List Pegawai */
@@ -1494,6 +1597,24 @@
     .low-card-header {
         align-items: flex-start;
         padding: 1rem;
+        gap: 0.6rem;
+    }
+
+    .low-card-header-main {
+        gap: 0.6rem;
+    }
+
+    .low-card-title {
+        font-size: 0.85rem;
+    }
+
+    .low-card-description {
+        font-size: 0.68rem;
+    }
+
+    .low-card-count {
+        padding: 0.3rem 0.55rem;
+        font-size: 0.65rem;
     }
 
     .low-list-container {
@@ -1596,14 +1717,14 @@
 }
 
 .mon-header-count {
-    flex-shrink: 0;
-    padding: 0.45rem 0.8rem;
-    color: #334155;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
+    background: #def0fd;
+    color: #0369a1;
+    border: 1px solid #0369a1;
+    padding: 0.35rem 0.65rem;
     border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 800;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: inline-block;
 }
 
 /* Tab Navigasi Status */
@@ -1677,108 +1798,6 @@
     background: #fafafa;
 }
 
-.mon-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 0.75rem;
-    padding: 0.8rem 0 0;
-    border-top: 1px solid #dfe4ea;
-    background: transparent;
-}
-
-.mon-pagination[hidden] {
-    display: none;
-}
-
-.mon-pagination-label {
-    margin: 0;
-    color: #64748b;
-    font-size: 1rem;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.mon-pagination-nav {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 0.35rem;
-    margin-left: auto;
-}
-
-.mon-page-arrow,
-.mon-page-number,
-.mon-page-ellipsis {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    user-select: none;
-}
-
-.mon-page-arrow {
-    width: 2.6rem;
-    height: 2.5rem;
-    border: 1px solid #dfe4ea;
-    border-radius: 0.35rem;
-    background: #ffffff;
-    color: #7a838f;
-    font-size: 2rem;
-    font-weight: 400;
-    padding: 0;
-}
-
-.mon-page-number {
-    width: 2.45rem;
-    height: 2.5rem;
-    border: 1px solid #dfe4ea;
-    border-radius: 0.35rem;
-    background: #ffffff;
-    color: #2f3746;
-    font-size: 1rem;
-    font-weight: 700;
-    text-decoration: none;
-    padding: 0;
-}
-
-.mon-page-number.active {
-    background: #edf2ff;
-    border-color: #2d6cdf;
-    color: #1d4ed8;
-}
-
-.mon-page-arrow.disabled {
-    color: #a9b3c0;
-    background: #f8fafc;
-    pointer-events: none;
-}
-
-.mon-page-number:hover,
-.mon-page-arrow:hover {
-    text-decoration: none;
-}
-
-.mon-page-ellipsis {
-    width: 1.3rem;
-    height: 2.5rem;
-    color: #67748a;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.mon-page-arrow:disabled {
-    cursor: default;
-}
-
-@media (max-width: 768px) {
-    .mon-pagination {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
 /* Badge Status pada Tabel */
 .badge-status-custom {
     padding: 0.3rem 0.75rem;
@@ -1788,11 +1807,10 @@
     display: inline-block;
 }
 .st-belum { background: #f1f5f9; color: #475569; }
-.st-draft { background: #e0f2fe; color: #0369a1; }
-.st-submit { background: #fef3c7; color: #b45309; }
+.st-submit { background: #e0f2fe; color: #0369a1; }
+.st-draft { background: #fef3c7; color: #b45309; }
 .st-verified { background: #dcfce7; color: #166534; }
-.st-returned { background: #fee2e2; color: #991b1b; }
-.st-correction { background: #f3e8ff; color: #7e22ce; }
+.st-returned { background: #eee0fc; color: #6b21a8; }
 
 /* Tombol Aksi Mata */
 .btn-action-eye {
@@ -1894,9 +1912,9 @@
 
 .modal-detail-close:hover,
 .modal-detail-footer button:hover {
-    color: #801b2b;
-    border-color: #e8c5cc;
-    background: #fff7f7;
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #0f172a;
 }
 
 .modal-detail-body {
@@ -1937,11 +1955,6 @@
     font-size: 1.25rem;
     font-weight: 800;
     line-height: 1.2;
-}
-
-.modal-summary-predikat {
-    font-size: 0.9rem;
-    overflow-wrap: anywhere;
 }
 
 .modal-info-table {
@@ -2038,38 +2051,6 @@
     font-weight: 800;
 }
 
-.modal-question-category-label,
-.modal-question-heading {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 0;
-}
-
-.modal-question-index,
-.modal-question-weight {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 0.2rem 0.45rem;
-    color: #475569;
-    background: #f1f5f9;
-    border-radius: 0.4rem;
-    font-size: 0.68rem;
-    font-weight: 800;
-}
-
-.modal-question-index {
-    min-width: 1.6rem;
-    color: #9f1239;
-    background: #ffe4e6;
-}
-
-.modal-question-weight {
-    background: #f1f5f9;
-}
-
 .modal-question-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2090,21 +2071,10 @@
     font-weight: 700;
 }
 
-.modal-question-heading {
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 0.45rem;
-}
-
 .modal-question-description,
 .modal-question-note {
     color: #64748b;
     font-size: 0.72rem;
-}
-
-.modal-question-description {
-    margin: 0.5rem 0 0;
-    line-height: 1.45;
 }
 
 .modal-question-score {
@@ -2115,23 +2085,6 @@
     background: #f8fbff;
     color: #334155;
     font-size: 0.75rem;
-}
-
-.modal-question-score-row + .modal-question-score-row {
-    margin-top: 0.3rem;
-}
-
-.modal-question-notes {
-    margin-top: 0.55rem;
-}
-
-.modal-question-note {
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-}
-
-.modal-question-note + .modal-question-note {
-    margin-top: 0.25rem;
 }
 
 .modal-question-note strong {
@@ -2175,15 +2128,6 @@
     .modal-detail-footer {
         padding-right: 1rem;
         padding-left: 1rem;
-    }
-
-    .modal-detail-content {
-        max-height: 94vh;
-        border-radius: 0.8rem;
-    }
-
-    .modal-detail-title {
-        font-size: 0.95rem;
     }
 
     .modal-summary-grid {
@@ -2274,11 +2218,11 @@
 
     <!-- BARIS CARD RINGKASAN BOTTOM (4 CARD LANGSUNG DI BAWAHNYA) -->
     <div class="dash-cards-row-bottom">
-        <div class="metric-card card-undo" onclick="openDetailModal('dikembalikan')">
-            <div class="card-icon bg-orange-light"><i class="fas fa-undo text-orange"></i></div>
+        <div class="metric-card card-purple" onclick="openDetailModal('dikembalikan')">
+            <div class="card-icon bg-purple-light"><i class="fas fa-undo text-orange"></i></div>
             <div class="metric-value">{{ $dikembalikan }}</div>
             <div class="metric-label">Dikembalikan</div>
-            <div class="metric-sub"><span class="badge-pill bg-red-soft text-red">Revisi</span> Menunggu Perbaikan Penilai</div>
+            <div class="metric-sub"><span class="badge-pill bg-purple-light text-purple">Revisi</span> Menunggu Perbaikan Penilai</div>
         </div>
 
         <div class="metric-card card-danger" onclick="openDetailModal('at_risk')">
@@ -2288,11 +2232,11 @@
             <div class="metric-sub"><span class="text-red fw-bold">Prioritas</span> Tindak Lanjut SDM</div>
         </div>
 
-        <div class="metric-card card-purple" onclick="openDetailModal('dikoreksi')">
-            <div class="card-icon bg-purple-light"><i class="fas fa-edit text-purple"></i></div>
+        <div class="metric-card card-undo" onclick="openDetailModal('dikoreksi')">
+            <div class="card-icon bg-orange-light"><i class="fas fa-edit text-purple"></i></div>
             <div class="metric-value">{{ $dikoreksi }}</div>
             <div class="metric-label">Penilaian Dikoreksi</div>
-            <div class="metric-sub"><span class="badge-pill bg-orange-soft text-orange">Tercatat</span> Dalam Audit Trail</div>
+            <div class="metric-sub"><span class="badge-pill bg-red-soft text-red">Tercatat</span> Dalam Audit Trail</div>
         </div>
 
         <div class="metric-card card-gray" onclick="openDetailModal('belum_dinilai')">
@@ -2601,7 +2545,7 @@
                     @empty
                         <tr>
                             <td colspan="8" class="text-center py-4 text-muted">
-                                Tidak ada unit kerja yang memiliki data penilaian pada periode ini[cite: 11].
+                                Tidak ada unit kerja yang memiliki data penilaian pada periode ini.
                             </td>
                         </tr>
                     @endforelse
@@ -2678,7 +2622,7 @@
                     @empty
                         <div class="text-center py-5 text-muted">
                             <i class="fas fa-chart-pie fs-3 mb-2 opacity-50"></i>
-                            <p class="mb-0 small">Belum ada pegawai yang nilainya disubmit / diverifikasi pada periode ini[cite: 16].</p>
+                            <p class="mb-0 small">Belum ada pegawai yang nilainya disubmit / diverifikasi pada periode ini.</p>
                         </div>
                     @endforelse
                 </div>
@@ -2701,22 +2645,21 @@
                     Peringkat Rata-Rata Unit Kerja
                 </div>
 
-                <!-- List Peringkat Unit Kerja (Scrollable) -->
                 <div class="ranking-list-scroll">
                     @forelse($rankingUnits as $idx => $rk)
                         <div class="ranking-item">
-                            <div class="d-flex align-items-center gap-2.5 overflow-hidden me-2">
+                            <div class="ranking-left-group">
                                 <div class="ranking-badge">{{ $idx + 1 }}</div>
-                                <div class="overflow-hidden">
+                                <div class="overflow-hidden flex-grow-1">
                                     <div class="ranking-unit-name" title="{{ $rk->nama_unit }}">{{ $rk->nama_unit }}</div>
                                     <div class="ranking-unit-sub">{{ $rk->jumlah_bernilai }} Pegawai Bernilai</div>
                                 </div>
                             </div>
-                            <div class="ranking-score">{{ $rk->rata_rata }}</div>
+                            <div class="ranking-score flex-shrink-0">{{ $rk->rata_rata }}</div>
                         </div>
                     @empty
                         <div class="text-center py-4 text-muted small">
-                            Tidak ada data peringkat[cite: 16].
+                            Tidak ada data peringkat.
                         </div>
                     @endforelse
                 </div>
@@ -2729,16 +2672,16 @@
         <!-- Kiri: Predikat Terendah Bulan Ini -->
         <div class="low-card">
             <div class="low-card-header">
-                <div class="d-flex align-items-center gap-2.5">
-                    <div class="widget-icon-box" style="background: #fff7ed; color: #c2410c; width: 38px; height: 38px; border-radius: 0.65rem; display: flex; align-items: center; justify-content: center;">
+                <div class="low-card-header-main">
+                    <div class="low-card-header-icon" style="background: #fff7ed; color: #c2410c;">
                         <i class="fas fa-arrow-up" style="transform: rotate(45deg); font-size: 1rem;"></i>
                     </div>
-                    <div>
-                        <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Predikat Terendah Bulan Ini</h6>
-                        <p class="text-muted small mb-0" style="font-size: 0.725rem;">Pegawai dengan Nilai Terendah Periode Aktif</p>
+                    <div class="low-card-header-copy">
+                        <h6 class="low-card-title">Predikat Terendah Bulan Ini</h6>
+                        <p class="low-card-description">Pegawai dengan Nilai Terendah Periode Aktif</p>
                     </div>
                 </div>
-                <span class="badge" style="background: #ffedd5; color: #9a3412; border-radius: 999px; font-weight: 700; font-size: 0.725rem; padding: 0.35rem 0.75rem;">
+                <span class="badge low-card-count" style="background: #ffedd5; color: #9a3412;">
                     {{ $totalTerendahBulanIni ?? 0 }} Pegawai
                 </span>
             </div>
@@ -2773,7 +2716,7 @@
                 @empty
                     <div class="text-center py-5 text-muted">
                         <i class="fas fa-check-circle text-success fs-3 mb-2 opacity-50"></i>
-                        <p class="mb-0 small">Tidak ada pegawai berpredikat rendah pada periode aktif ini[cite: 18].</p>
+                        <p class="mb-0 small">Tidak ada pegawai berpredikat rendah pada periode aktif ini.</p>
                     </div>
                 @endforelse
             </div>
@@ -2782,16 +2725,16 @@
         <!-- Kanan: Terendah 3 Bulan Berturut-turut -->
         <div class="low-card">
             <div class="low-card-header">
-                <div class="d-flex align-items-center gap-2.5">
-                    <div class="widget-icon-box" style="background: #ffe4e6; color: #9f1239; width: 38px; height: 38px; border-radius: 0.65rem; display: flex; align-items: center; justify-content: center;">
+                <div class="low-card-header-main">
+                    <div class="low-card-header-icon" style="background: #ffe4e6; color: #9f1239;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 1rem;"></i>
                     </div>
-                    <div>
-                        <h6 class="fw-bold text-dark mb-0" style="font-size: 0.95rem;">Terendah 3 Bulan Berturut-turut</h6>
-                        <p class="text-muted small mb-0" style="font-size: 0.725rem;">Kandidat yang Membutuhkan Pembinaan atau Evaluasi</p>
+                    <div class="low-card-header-copy">
+                        <h6 class="low-card-title">Terendah 3 Bulan Berturut-turut</h6>
+                        <p class="low-card-description">Kandidat yang Membutuhkan Pembinaan atau Evaluasi</p>
                     </div>
                 </div>
-                <span class="badge" style="background: #ffe4e6; color: #881337; border-radius: 999px; font-weight: 700; font-size: 0.725rem; padding: 0.35rem 0.75rem;">
+                <span class="badge low-card-count" style="background: #ffe4e6; color: #881337;">
                     {{ $totalTerendahTigaBulan ?? 0 }} Pegawai
                 </span>
             </div>
@@ -2825,7 +2768,7 @@
                     </div>
                 @empty
                     <div class="text-center py-5 text-muted">
-                        <p class="mb-0 small" style="color: #64748b;">Tidak ada pegawai pada kategori ini[cite: 18].</p>
+                        <p class="mb-0 small" style="color: #64748b;">Tidak ada pegawai pada kategori ini.</p>
                     </div>
                 @endforelse
             </div>
@@ -2835,16 +2778,16 @@
     <!-- WIDGET: Monitoring Detail Pegawai -->
     <div class="mon-card">
         <div class="mon-header">
-            <div class="mon-header-main">
-                <div class="mon-header-icon">
-                    <i class="fas fa-users" aria-hidden="true"></i>
+                <div class="mon-header-main">
+                    <div class="mon-header-icon">
+                    <i class="fas fa-users" style="font-size: 1.1rem;"></i>
                 </div>
-                <div class="mon-header-copy">
-                    <h6 class="mon-header-title">Monitoring Detail Pegawai</h6>
-                    <p class="mon-header-description">Daftar Status Penilaian Untuk Tindak Lanjut Operasional</p>
+                    <div class="mon-header-copy">
+                        <h6 class="mon-header-title">Monitoring Detail Pegawai</h6>
+                        <p class="mon-header-description">Daftar Status Penilaian Untuk Tindak Lanjut Operasional</p>
                 </div>
             </div>
-            <span id="totalDataBadge" class="mon-header-count">
+                <span id="totalDataBadge" class="mon-header-count">
                 0 Data
             </span>
         </div>
@@ -2884,9 +2827,12 @@
                 </tbody>
             </table>
         </div>
-        <div id="monPagination" class="mon-pagination" hidden>
-            <p id="monPageInfo" class="mon-pagination-label"></p>
-            <nav id="monPaginationNav" class="mon-pagination-nav" aria-label="Pagination tabel monitoring"></nav>
+        <div id="monPagination" class="d-flex justify-content-between align-items-center gap-2 px-3 py-3 border-top">
+            <span id="monPageInfo" class="small text-muted"></span>
+            <div class="d-flex gap-2">
+                <button type="button" id="monPrevPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage - 1)">Sebelumnya</button>
+                <button type="button" id="monNextPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage + 1)">Berikutnya</button>
+            </div>
         </div>
     </div>
 @endif
@@ -2929,7 +2875,7 @@
 </div>
 
 <div class="modal-detail-backdrop" id="pegawaiDetailModal">
-    <div class="modal-detail-content" role="dialog" aria-modal="true" aria-labelledby="modalEmpTitle" aria-describedby="modalEmpSub">
+    <div class="modal-detail-content">
         <div class="modal-detail-header">
             <div class="modal-detail-heading">
                 <h5 class="modal-detail-title" id="modalEmpTitle">Detail Penilaian</h5>
@@ -3073,42 +3019,51 @@ function openDetailModal(type) {
                     let empNup = item.nup || '-';
                     let unitKerja = item.unit_kerja || '-';
                     let jabatan = item.jabatan || '-';
-                    let nilai = isNaN(parseFloat(item.total_nilai)) ? 0 : parseFloat(item.total_nilai);
 
-                    // Penentuan Badge Status
-                    let statusNilaiRaw = (item.status_nilai || '').toUpperCase().trim();
-                    let statusVerifRaw = (item.status_verifikator || '').toUpperCase().trim();
+                    // Ambil nilai akhir dengan prioritas nilai verifikator jika ada
+                    let rawNilai = item.total_nilai_verifikator ?? item.total_nilai;
+                    let nilai = isNaN(parseFloat(rawNilai)) ? 0 : parseFloat(rawNilai);
 
+                    // Penentuan Badge Status khusus untuk card Koreksi atau card lainnya
                     let statusClass = 'badge-status-gray';
                     let statusLabel = 'Belum Diisi';
 
-                    if (['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(statusVerifRaw)) {
-                        statusClass = 'badge-status-success';
-                        statusLabel = 'Terverifikasi';
-                    } else if (['DIKEMBALIKAN', 'REVISI'].includes(statusVerifRaw) || ['DIKEMBALIKAN', 'REVISI'].includes(statusNilaiRaw)) {
+                    if (type === 'dikoreksi') {
                         statusClass = 'badge-status-danger';
-                        statusLabel = 'Dikembalikan';
-                    } else if (['DRAFT', 'SIMPAN'].includes(statusNilaiRaw)) {
-                        statusClass = 'badge-status-warning';
-                        statusLabel = 'DRAFT';
-                    } else if (
-                        ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI', 'MENUNGGU'].includes(statusNilaiRaw) ||
-                        (nilai > 0 && (!statusVerifRaw || ['BELUM VERIFIKASI', 'UNVERIFIED', ''].includes(statusVerifRaw)))
-                    ) {
-                        statusClass = 'badge-status-warning';
-                        statusLabel = 'Menunggu Verifikasi';
+                        statusLabel = 'Ada Koreksi';
+                    } else {
+                        let statusNilaiRaw = (item.status_nilai || '').toUpperCase().trim();
+                        let statusVerifRaw = (item.status_verifikator || '').toUpperCase().trim();
+
+                        if (['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(statusVerifRaw)) {
+                            statusClass = 'badge-status-success';
+                            statusLabel = 'Terverifikasi';
+                        } else if (['DIKEMBALIKAN', 'REVISI'].includes(statusVerifRaw) || ['DIKEMBALIKAN', 'REVISI'].includes(statusNilaiRaw)) {
+                            statusClass = 'badge-status-rev';
+                            statusLabel = 'Dikembalikan';
+                        } else if (['DRAFT', 'SIMPAN'].includes(statusNilaiRaw)) {
+                            statusClass = 'badge-status-warning';
+                            statusLabel = 'DRAFT';
+                        } else if (
+                            ['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI', 'MENUNGGU'].includes(statusNilaiRaw) ||
+                            (nilai > 0 && (!statusVerifRaw || ['BELUM VERIFIKASI', 'UNVERIFIED', ''].includes(statusVerifRaw)))
+                        ) {
+                            statusClass = 'badge-status-warning';
+                            statusLabel = 'Menunggu Verifikasi';
+                        }
                     }
 
                     let statusBadge = `<span class="${statusClass} text-nowrap">${statusLabel}</span>`;
 
-                    // Penentuan Badge Predikat
+                    // Penentuan Badge Predikat (Mengambil predikat verifikator jika ada)
+                    let textPredikat = item.predikat_verifikator || item.predikat;
                     let badgeStyle = 'badge-rose';
                     if (nilai >= 90) badgeStyle = 'badge-emerald';
                     else if (nilai >= 80) badgeStyle = 'badge-blue';
                     else if (nilai >= 70) badgeStyle = 'badge-amber';
                     else if (nilai >= 60) badgeStyle = 'badge-orange';
 
-                    let predikatNama = item.predikat ? item.predikat : 'Belum terdapat data predikat';
+                    let predikatNama = textPredikat ? textPredikat : 'Belum terdapat data predikat';
                     let predikatBadge = `<span class="badge ${badgeStyle} text-nowrap">${predikatNama}</span>`;
 
                     rows += `
@@ -3170,29 +3125,20 @@ document.addEventListener("DOMContentLoaded", function () {
         periodeDropdown.addEventListener('change', () => loadMonitoringTable(currentMonTab, 1));
     }
 
-    const paginationNav = document.getElementById('monPaginationNav');
-    if (paginationNav) {
-        paginationNav.addEventListener('click', event => {
-            const pageButton = event.target.closest('[data-page]');
-            if (pageButton && !pageButton.disabled) {
-                loadMonitoringTable(currentMonTab, Number(pageButton.dataset.page));
-            }
-        });
-    }
-
     document.querySelectorAll('.modal-detail-tab').forEach(button => {
         button.addEventListener('click', function () {
+            const selectedPanelId = this.dataset.modalTab;
             document.querySelectorAll('.modal-detail-tab').forEach(tab => {
                 tab.classList.remove('active');
                 tab.setAttribute('aria-selected', 'false');
             });
             document.querySelectorAll('.modal-detail-tab-pane').forEach(panel => {
-                panel.hidden = true;
+                panel.hidden = panel.id !== selectedPanelId;
+                panel.classList.remove('d-none');
             });
 
             this.classList.add('active');
             this.setAttribute('aria-selected', 'true');
-            document.getElementById(this.dataset.modalTab).hidden = false;
         });
     });
 
@@ -3202,12 +3148,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (event.target === detailModal) closePegawaiModal();
         });
     }
-
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && detailModal?.classList.contains('show')) {
-            closePegawaiModal();
-        }
-    });
 });
 
 function switchMonTab(tabName, btnElement) {
@@ -3240,17 +3180,13 @@ function dashboardDate(value) {
 
 function monitoringStatus(item) {
     const nilai = String(item.status_nilai || '').trim().toUpperCase();
-    const verifikator = String(item.status_verifikator || '').trim().toUpperCase();
-
+    const verifikator = String(item.status_verifikator || item.status_verifitor || '').trim().toUpperCase();
+    if (['DIKEMBALIKAN', 'REVISI'].includes(nilai) || ['DIKEMBALIKAN', 'REVISI'].includes(verifikator)) {
+        return { label: 'Dikembalikan', style: 'st-returned' };
+    }
     if (['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(verifikator) ||
         ['VERIFIED', 'VERIFIKASI', 'SELESAI', 'APPROVED'].includes(nilai)) {
         return { label: 'Verified', style: 'st-verified' };
-    }
-    if (['DIKEMBALIKAN', 'REVISI'].includes(nilai) || ['DIKEMBALIKAN', 'REVISI'].includes(verifikator)) {
-        return { label: 'Returned', style: 'st-returned' };
-    }
-    if (['KOREKSI', 'PERLU DITINJAU'].includes(verifikator)) {
-        return { label: 'Ada Koreksi', style: 'st-correction' };
     }
     if (['DRAFT', 'SIMPAN', 'SAVED'].includes(nilai)) {
         return { label: 'Draft', style: 'st-draft' };
@@ -3258,54 +3194,10 @@ function monitoringStatus(item) {
     if (['DIAJUKAN', 'SUBMIT', 'SUBMITTED', 'MENUNGGU VERIFIKASI', 'MENUNGGU'].includes(nilai)) {
         return { label: 'Menunggu Verifikasi', style: 'st-submit' };
     }
+    if (['KOREKSI', 'PERLU DITINJAU'].includes(verifikator)) {
+        return { label: 'Menunggu Verifikasi', style: 'st-submit' };
+    }
     return { label: 'Belum Dinilai', style: 'st-belum' };
-}
-
-function renderMonitoringPagination(result) {
-    const pagination = document.getElementById('monPagination');
-    const pageInfo = document.getElementById('monPageInfo');
-    const nav = document.getElementById('monPaginationNav');
-    const currentPage = Number(result.current_page || 1);
-    const lastPage = Number(result.last_page || 1);
-
-    if (lastPage <= 1) {
-        pagination.hidden = true;
-        nav.innerHTML = '';
-        return;
-    }
-
-    pagination.hidden = false;
-    pageInfo.innerText = `Menampilkan ${result.from ?? 0} sampai ${result.to ?? 0} dari ${result.total ?? 0} data`;
-
-    let pageNumbers;
-    if (lastPage <= 5) {
-        pageNumbers = Array.from({ length: lastPage }, (_, index) => index + 1);
-    } else if (currentPage <= 3) {
-        pageNumbers = [1, 2, 3, 4, 5];
-    } else if (currentPage >= lastPage - 2) {
-        pageNumbers = [lastPage - 4, lastPage - 3, lastPage - 2, lastPage - 1, lastPage];
-    } else {
-        pageNumbers = [currentPage - 1, currentPage, currentPage + 1, currentPage + 2, currentPage + 3];
-    }
-
-    const previousPage = currentPage - 1;
-    const nextPage = currentPage + 1;
-    let paginationMarkup = `
-        <button type="button" class="mon-page-arrow${currentPage <= 1 ? ' disabled' : ''}" data-page="${previousPage}" aria-label="Halaman sebelumnya" ${currentPage <= 1 ? 'disabled' : ''}>&lsaquo;</button>`;
-
-    pageNumbers.forEach(page => {
-        paginationMarkup += page === currentPage
-            ? `<span class="mon-page-number active" aria-current="page">${page}</span>`
-            : `<button type="button" class="mon-page-number" data-page="${page}" aria-label="Halaman ${page}">${page}</button>`;
-    });
-
-    if (lastPage > 5 && currentPage < lastPage - 2) {
-        paginationMarkup += '<span class="mon-page-ellipsis" aria-hidden="true">…</span>';
-    }
-
-    paginationMarkup += `
-        <button type="button" class="mon-page-arrow${currentPage >= lastPage ? ' disabled' : ''}" data-page="${nextPage}" aria-label="Halaman berikutnya" ${currentPage >= lastPage ? 'disabled' : ''}>&rsaquo;</button>`;
-    nav.innerHTML = paginationMarkup;
 }
 
 async function loadMonitoringTable(tab, page = 1) {
@@ -3313,6 +3205,9 @@ async function loadMonitoringTable(tab, page = 1) {
     const periodeId = periodeSelect ? periodeSelect.value : '';
     const tbody = document.getElementById('monTableBody');
     const badge = document.getElementById('totalDataBadge');
+    const pageInfo = document.getElementById('monPageInfo');
+    const previousButton = document.getElementById('monPrevPage');
+    const nextButton = document.getElementById('monNextPage');
 
     if (!tbody || !periodeId) return;
     tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
@@ -3329,8 +3224,11 @@ async function loadMonitoringTable(tab, page = 1) {
         const result = await response.json();
         const data = result.data || [];
         badge.innerText = `${result.total ?? 0} Data`;
-        currentMonPage = Number(result.current_page || page);
-        renderMonitoringPagination(result);
+        pageInfo.innerText = result.total
+            ? `Menampilkan ${result.from}–${result.to} dari ${result.total} pegawai`
+            : 'Tidak ada data';
+        previousButton.disabled = !result.prev_page_url;
+        nextButton.disabled = !result.next_page_url;
 
         if (data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada data pegawai pada kategori ini untuk periode yang dipilih.</td></tr>`;
@@ -3339,6 +3237,11 @@ async function loadMonitoringTable(tab, page = 1) {
 
         tbody.innerHTML = data.map(item => {
             const status = monitoringStatus(item);
+            const correctionCount = Number(item.koreksi_count || 0);
+            const hasCorrection = correctionCount > 0 || status.label === 'Ada Koreksi';
+            const correctionLabel = hasCorrection
+                ? `Ada Koreksi${correctionCount > 0 ? ` (${correctionCount})` : ''}`
+                : 'Tidak Ada';
             const scoreValue = item.total_nilai_verifikator ?? item.total_nilai;
             const score = scoreValue === null || scoreValue === '' ? '-' : Number(scoreValue).toFixed(2);
             return `
@@ -3360,7 +3263,12 @@ async function loadMonitoringTable(tab, page = 1) {
                     <td>${dashboardDate(item.tanggal_submit)}</td>
                     <td>${escapeDashboardHtml(item.verifikator_nama || '-')}</td>
                     <td>${dashboardDate(item.tanggal_verifikasi)}</td>
-                    <td><span class="badge bg-light text-dark">${Number(item.koreksi_count || 0) || 'Tidak Ada'}</span></td>
+
+                    <td>
+                        ${Number(item.koreksi_count || 0) > 0 
+                            ? `<span class="badge-status-danger text-dark fw-bold px-2.5 py-1" style="font-size: 0.75rem;">${item.koreksi_count} Koreksi</span>` 
+                            : `<span class="badge bg-light text-dark">Tidak Ada</span>`}
+                    </td>
                     <td class="text-center">
                         <button type="button" class="btn-action-eye" aria-label="Lihat detail ${escapeDashboardHtml(item.nama || 'pegawai')}" onclick="openPegawaiModal('${encodeURIComponent(item.pgw_id)}')">
                             <i class="fas fa-eye"></i>
@@ -3371,7 +3279,9 @@ async function loadMonitoringTable(tab, page = 1) {
     } catch (error) {
         console.error('Gagal memuat data monitoring:', error);
         badge.innerText = 'Data tidak tersedia';
-        document.getElementById('monPagination').hidden = true;
+        pageInfo.innerText = '';
+        previousButton.disabled = true;
+        nextButton.disabled = true;
         tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger">Gagal memuat data monitoring. Silakan muat ulang atau coba lagi.</td></tr>`;
     }
 }
@@ -3386,31 +3296,31 @@ function renderQuestionDetails(categories) {
     container.innerHTML = categories.map((category, categoryIndex) => `
         <section class="modal-question-category">
             <div class="modal-question-category-title">
-                <span class="modal-question-category-label">
-                    <span class="modal-question-index">${categoryIndex + 1}</span>
-                    ${escapeDashboardHtml(category.nama_kategori)}
-                </span>
-                <span class="modal-question-weight">Bobot ${escapeDashboardHtml(category.bobot_kategori ?? 0)}%</span>
+                <span><span class="badge bg-danger-subtle text-danger me-2">${categoryIndex + 1}</span>${escapeDashboardHtml(category.nama_kategori)}</span>
+                <span class="badge bg-light text-secondary">Bobot ${escapeDashboardHtml(category.bobot_kategori ?? 0)}%</span>
             </div>
             <div class="modal-question-grid">
                 ${(category.pertanyaans || []).map((question, questionIndex) => {
                     const penilaiScore = question.nilai_angka ?? question.nilai_akhir;
                     const verifierScore = question.verif_nilai_angka ?? question.verif_nilai_akhir;
+                    const hasVerifierValue = verifierScore !== null && verifierScore !== undefined;
+                    const isCorrected = String(question.verif_status || '').trim().toUpperCase() === 'KOREKSI' ||
+                        (hasVerifierValue && penilaiScore !== null && penilaiScore !== undefined &&
+                            Number(verifierScore) !== Number(penilaiScore));
                     return `
                         <article class="modal-question-card">
-                            <div class="modal-question-heading">
+                            <div class="d-flex justify-content-between gap-2">
                                 <div class="modal-question-title">${questionIndex + 1}. ${escapeDashboardHtml(question.pertanyaan || 'Pertanyaan')}</div>
-                                <span class="modal-question-weight">${escapeDashboardHtml(question.bobot_pertanyaan_persen ?? 0)}%</span>
+                                <span class="badge bg-light text-secondary flex-shrink-0">${escapeDashboardHtml(question.bobot_pertanyaan_persen ?? 0)}%</span>
                             </div>
-                            ${question.deskripsi ? `<p class="modal-question-description">${escapeDashboardHtml(question.deskripsi)}</p>` : ''}
+                            ${isCorrected ? '<div class="mt-2"><span class="modal-question-correction"><i class="fas fa-pen" aria-hidden="true"></i> Nilai dikoreksi verifikator</span></div>' : ''}
+                            ${question.deskripsi ? `<p class="modal-question-description mt-2 mb-0">${escapeDashboardHtml(question.deskripsi)}</p>` : ''}
                             <div class="modal-question-score">
-                                <div class="modal-question-score-row"><strong>Nilai Penilai:</strong> ${escapeDashboardHtml(question.nama_nilai || '-')} ${penilaiScore !== null && penilaiScore !== undefined ? `(${escapeDashboardHtml(penilaiScore)})` : ''}</div>
-                                ${question.verif_nilai_angka !== null && question.verif_nilai_angka !== undefined || question.verif_nama_nilai ? `<div class="modal-question-score-row"><strong>Nilai Verifikator:</strong> ${escapeDashboardHtml(question.verif_nama_nilai || '-')} ${verifierScore !== null && verifierScore !== undefined ? `(${escapeDashboardHtml(verifierScore)})` : ''}</div>` : ''}
+                                <div><strong>Nilai Penilai:</strong> ${escapeDashboardHtml(question.nama_nilai || '-')} ${penilaiScore !== null && penilaiScore !== undefined ? `(${escapeDashboardHtml(penilaiScore)})` : ''}</div>
+                                ${isCorrected || hasVerifierValue || question.verif_nama_nilai ? `<div class="mt-1"><strong>Nilai Verifikator:</strong> ${escapeDashboardHtml(question.verif_nama_nilai || '-')} ${verifierScore !== null && verifierScore !== undefined ? `(${escapeDashboardHtml(verifierScore)})` : ''}</div>` : ''}
                             </div>
-                            <div class="modal-question-notes">
-                                <div class="modal-question-note"><strong>Catatan penilai:</strong> ${escapeDashboardHtml(question.catatan || 'Tidak ada catatan.')}</div>
-                                ${question.verif_catatan ? `<div class="modal-question-note"><strong>Catatan verifikator:</strong> ${escapeDashboardHtml(question.verif_catatan)}</div>` : ''}
-                            </div>
+                            <div class="modal-question-note mt-2"><strong>Catatan penilai:</strong> ${escapeDashboardHtml(question.catatan || 'Tidak ada catatan.')}</div>
+                            ${question.verif_catatan ? `<div class="modal-question-note mt-1"><strong>Catatan verifikator:</strong> ${escapeDashboardHtml(question.verif_catatan)}</div>` : ''}
                         </article>`;
                 }).join('')}
             </div>
@@ -3422,13 +3332,6 @@ async function openPegawaiModal(pgwId) {
     const periodeId = periodeSelect ? periodeSelect.value : '';
     const modal = document.getElementById('pegawaiDetailModal');
     const title = document.getElementById('modalEmpTitle');
-
-    document.querySelectorAll('.modal-detail-tab').forEach((tab, index) => {
-        tab.classList.toggle('active', index === 0);
-        tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
-    });
-    document.getElementById('ringkasanContent').hidden = false;
-    document.getElementById('pertanyaanContent').hidden = true;
     title.innerText = 'Memuat Detail Penilaian...';
     document.getElementById('modalQuestionsList').innerHTML = '<div class="text-muted py-3"><i class="fas fa-spinner fa-spin me-2"></i>Memuat hasil penilaian...</div>';
     modal.classList.add('show');
@@ -3443,8 +3346,20 @@ async function openPegawaiModal(pgwId) {
         const employee = result.employee || {};
         const transaction = result.trans || {};
         const status = monitoringStatus(transaction);
-        const corrections = (result.pertanyaan || []).flatMap(category => category.pertanyaans || [])
-            .filter(question => String(question.verif_status || '').toUpperCase() === 'KOREKSI').length;
+        const correctionCount = (result.pertanyaan || []).flatMap(category => category.pertanyaans || [])
+            .filter(question => {
+                const penilaiScore = question.nilai_angka ?? question.nilai_akhir;
+                const verifierScore = question.verif_nilai_angka ?? question.verif_nilai_akhir;
+                return String(question.verif_status || '').trim().toUpperCase() === 'KOREKSI' ||
+                    (verifierScore !== null && verifierScore !== undefined &&
+                        penilaiScore !== null && penilaiScore !== undefined &&
+                        Number(verifierScore) !== Number(penilaiScore));
+            }).length;
+        const hasCorrection = correctionCount > 0 ||
+            Number(transaction.koreksi_count || 0) > 0 ||
+            ['KOREKSI', 'PERLU DITINJAU'].includes(
+                String(transaction.status_verifikator || transaction.status_verifitor || '').trim().toUpperCase()
+            );
 
         title.innerText = `Detail Penilaian — ${employee.nama || '-'}`;
         document.getElementById('modalEmpSub').innerText = `${employee.nup || '-'} · ${employee.unit_kerja || '-'} · ${employee.jabatan || '-'}`;
@@ -3462,9 +3377,32 @@ async function openPegawaiModal(pgwId) {
         document.getElementById('modalPredikat').innerText = transaction.predikat_verifikator || transaction.predikat || '-';
         document.getElementById('modalStatusBadge').innerText = status.label;
         document.getElementById('modalStatusBadge').className = `badge-status-custom ${status.style}`;
-        document.getElementById('modalKoreksiBadge').innerText = corrections ? `${corrections} Koreksi` : 'Tidak Ada';
+
+        const modalKoreksiElement = document.getElementById('modalKoreksiBadge');
+        const totalKoreksi = Number(transaction.koreksi_count ?? correctionCount ?? 0);
+        if (modalKoreksiElement) {
+            if (totalKoreksi > 0) {
+                modalKoreksiElement.innerText = `${totalKoreksi} Koreksi`;
+                modalKoreksiElement.className = 'badge-status-danger text-dark fw-bold px-2.5 py-1';
+                modalKoreksiElement.style.fontSize = '0.75rem';
+            } else {
+                modalKoreksiElement.innerText = 'Tidak Ada';
+                modalKoreksiElement.className = 'badge bg-light text-dark';
+                modalKoreksiElement.style.fontSize = '';
+            }
+        }
+
         document.getElementById('modalInfoText').innerText = transaction.catatan || 'Tidak ada catatan atau risiko waktu pada data ini.';
         renderQuestionDetails(result.pertanyaan);
+
+        document.querySelectorAll('.modal-detail-tab').forEach((tab, index) => {
+            tab.classList.toggle('active', index === 0);
+            tab.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
+        });
+        document.querySelectorAll('.modal-detail-tab-pane').forEach((panel, index) => {
+            panel.hidden = index !== 0;
+            panel.classList.remove('d-none');
+        });
     } catch (error) {
         console.error('Gagal memuat detail penilaian:', error);
         title.innerText = 'Detail Penilaian Tidak Tersedia';
