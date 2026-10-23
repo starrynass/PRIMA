@@ -1327,19 +1327,6 @@
     background: #f1f5f9;
 }
 
-.modal-question-correction {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.25rem 0.55rem;
-    color: #9a3412;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 999px;
-    font-size: 0.67rem;
-    font-weight: 800;
-    white-space: nowrap;
-}
 .ranking-list-scroll::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 4px;
@@ -1855,7 +1842,7 @@
 .modal-detail-content {
     background: #ffffff;
     width: 100%;
-    max-width: 960px;
+    max-width: 1050px;
     max-height: 92vh;
     border-radius: 1rem;
     display: flex;
@@ -2034,61 +2021,212 @@
 }
 
 .modal-question-category {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
 }
 
 .modal-question-category-title {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.75rem !important;
+    padding: 0.85rem 1.25rem !important;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
-    margin-bottom: 0.75rem;
-    color: #1e293b;
-    font-size: 0.85rem;
-    font-weight: 800;
+    gap: 1rem;
 }
 
+/* Grid 2 Kolom untuk Kartu Pertanyaan */
 .modal-question-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .modal-question-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .modal-question-card {
-    min-width: 0;
-    padding: 0.85rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.65rem;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.75rem !important;
     background: #ffffff;
+    padding: 1.15rem !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.modal-question-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.modal-question-card.has-correction {
+    border-color: #fed7aa !important;
+    background: #fffdfb;
+}
+
+.modal-question-header {
+    display: flex;
+    align-items: flex-start; /* Mengatur agar sejajar di bagian atas */
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-question-left-group {
+    display: flex;
+    align-items: flex-start; /* Mengatur agar sejajar di bagian atas */
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.modal-question-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.75rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-top: 0.15rem; /* Penyesuaian mikro agar sejajar dengan baris pertama teks */
 }
 
 .modal-question-title {
-    color: #1e293b;
-    font-size: 0.8rem;
+    font-size: 0.77rem;
     font-weight: 700;
+    color: #1e293b;
+    line-height: 1.35;
+    margin: 0;
 }
 
-.modal-question-description,
-.modal-question-note {
-    color: #64748b;
+.modal-question-bobot {
     font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
-.modal-question-score {
+.modal-question-description {
+    color: #64748b;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    margin-bottom: 0.75rem;
+}
+
+.modal-question-correction {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background-color: #fff7ed !important;
+    color: #c2410c !important;
+    border: 1px solid #ffedd5 !important;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    margin-bottom: 0.6rem;
+}
+
+.modal-question-score-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.6rem;
+    padding: 0.75rem 0.9rem;
+    margin-bottom: 0.6rem;
+}
+
+.modal-score-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.modal-score-item + .modal-score-item {
     margin-top: 0.65rem;
-    padding: 0.65rem;
-    border: 1px solid #dbeafe;
-    border-radius: 0.5rem;
-    background: #f8fbff;
-    color: #334155;
+    padding-top: 0.65rem;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.modal-score-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.modal-score-badge-custom {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-grade-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 5px;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.modal-grade-pill.blue {
+    background: #2563eb;
+}
+
+.modal-grade-pill.orange {
+    background: #ea580c;
+}
+
+.modal-score-text {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.modal-question-note-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.6rem;
+    padding: 0.65rem 0.9rem;
     font-size: 0.75rem;
 }
 
-.modal-question-note strong {
-    color: #475569;
+.modal-note-title {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+}
+
+.modal-note-desc {
+    color: #94a3b8;
+    font-style: italic;
+    line-height: 1.35;
+}
+
+.modal-note-desc.has-content {
+    color: #334155;
+    font-style: normal;
+}
+
+.modal-question-note-box + .modal-question-note-box {
+    margin-top: 0.45rem;
 }
 
 .modal-summary-alert {
@@ -2163,9 +2301,6 @@
         padding-top: 0.1rem !important;
     }
 
-    .modal-question-grid {
-        grid-template-columns: 1fr;
-    }
 }
 </style>
 
@@ -3289,16 +3424,23 @@ async function loadMonitoringTable(tab, page = 1) {
 function renderQuestionDetails(categories) {
     const container = document.getElementById('modalQuestionsList');
     if (!categories || categories.length === 0) {
-        container.innerHTML = '<div class="alert alert-light border mb-0">Belum ada rincian penilaian per pertanyaan untuk pegawai ini pada periode tersebut.</div>';
+        container.innerHTML = '<div class="alert alert-light border mb-0 text-center py-4 text-muted"><i class="fas fa-inbox me-2 fa-lg text-secondary"></i>Belum ada rincian penilaian per pertanyaan untuk pegawai ini pada periode tersebut.</div>';
         return;
     }
 
     container.innerHTML = categories.map((category, categoryIndex) => `
-        <section class="modal-question-category">
+        <section class="modal-question-category mb-4">
+            <!-- Header Kategori: Judul di kiri, Bobot di ujung kanan secara sejajar -->
             <div class="modal-question-category-title">
-                <span><span class="badge bg-danger-subtle text-danger me-2">${categoryIndex + 1}</span>${escapeDashboardHtml(category.nama_kategori)}</span>
-                <span class="badge bg-light text-secondary">Bobot ${escapeDashboardHtml(category.bobot_kategori ?? 0)}%</span>
+                <div class="d-flex align-items-center gap-2.5 overflow-hidden">
+                    <span class="modal-question-number">${categoryIndex + 1}</span>
+                    <span class="fw-bold text-dark text-uppercase tracking-wide text-truncate" style="font-size: 0.88rem; letter-spacing: 0.02em;">${escapeDashboardHtml(category.nama_kategori)}</span>
+                </div>
+                <span class="modal-question-bobot">
+                    Bobot ${escapeDashboardHtml(category.bobot_kategori ?? 0)}%
+                </span>
             </div>
+            
             <div class="modal-question-grid">
                 ${(category.pertanyaans || []).map((question, questionIndex) => {
                     const penilaiScore = question.nilai_angka ?? question.nilai_akhir;
@@ -3307,20 +3449,60 @@ function renderQuestionDetails(categories) {
                     const isCorrected = String(question.verif_status || '').trim().toUpperCase() === 'KOREKSI' ||
                         (hasVerifierValue && penilaiScore !== null && penilaiScore !== undefined &&
                             Number(verifierScore) !== Number(penilaiScore));
+
+                    const penilaiKode = String(question.kode_nilai || '').trim();
+                    const verifKode = String(question.verif_kode_nilai || '').trim();
+                    
                     return `
-                        <article class="modal-question-card">
-                            <div class="d-flex justify-content-between gap-2">
-                                <div class="modal-question-title">${questionIndex + 1}. ${escapeDashboardHtml(question.pertanyaan || 'Pertanyaan')}</div>
-                                <span class="badge bg-light text-secondary flex-shrink-0">${escapeDashboardHtml(question.bobot_pertanyaan_persen ?? 0)}%</span>
+                        <article class="modal-question-card ${isCorrected ? 'has-correction' : ''}">
+                            <div>
+                                <div class="modal-question-header">
+                                    <div class="modal-question-left-group">
+                                        <span class="modal-question-number">${questionIndex + 1}</span>
+                                        <h6 class="modal-question-title">${escapeDashboardHtml(question.pertanyaan || 'Pertanyaan')}</h6>
+                                    </div>
+                                    <span class="modal-question-bobot">${escapeDashboardHtml(question.bobot_pertanyaan_persen ?? 0)}%</span>
+                                </div>
+                                
+                                ${isCorrected ? `
+                                <div class="mb-2">
+                                    <span class="modal-question-correction">
+                                        <i class="fas fa-pen-nib"></i> Nilai dikoreksi verifikator
+                                    </span>
+                                </div>` : ''}
+                                
+                                ${question.deskripsi ? `<div class="modal-question-description">${escapeDashboardHtml(question.deskripsi)}</div>` : ''}
                             </div>
-                            ${isCorrected ? '<div class="mt-2"><span class="modal-question-correction"><i class="fas fa-pen" aria-hidden="true"></i> Nilai dikoreksi verifikator</span></div>' : ''}
-                            ${question.deskripsi ? `<p class="modal-question-description mt-2 mb-0">${escapeDashboardHtml(question.deskripsi)}</p>` : ''}
-                            <div class="modal-question-score">
-                                <div><strong>Nilai Penilai:</strong> ${escapeDashboardHtml(question.nama_nilai || '-')} ${penilaiScore !== null && penilaiScore !== undefined ? `(${escapeDashboardHtml(penilaiScore)})` : ''}</div>
-                                ${isCorrected || hasVerifierValue || question.verif_nama_nilai ? `<div class="mt-1"><strong>Nilai Verifikator:</strong> ${escapeDashboardHtml(question.verif_nama_nilai || '-')} ${verifierScore !== null && verifierScore !== undefined ? `(${escapeDashboardHtml(verifierScore)})` : ''}</div>` : ''}
+                            
+                            <div class="mt-auto">
+                                <div class="modal-question-score-box">
+                                    <div class="modal-score-item">
+                                        <div class="modal-score-label">Nilai dari Penilai</div>
+                                        <div class="modal-score-badge-custom">
+                                            ${penilaiKode ? `<span class="modal-grade-pill ${penilaiKode.toUpperCase() === 'B' ? 'blue' : (penilaiKode.toUpperCase() === 'C' ? 'orange' : '')}">${escapeDashboardHtml(penilaiKode)}</span>` : ''}
+                                            <span class="modal-score-text">${escapeDashboardHtml(question.nama_nilai || '-')} ${penilaiScore !== null && penilaiScore !== undefined ? `(${escapeDashboardHtml(penilaiScore)})` : ''}</span>
+                                        </div>
+                                    </div>
+                                    ${isCorrected || hasVerifierValue || question.verif_nama_nilai ? `
+                                    <div class="modal-score-item">
+                                        <div class="modal-score-label ${isCorrected ? 'text-warning-emphasis fw-semibold' : ''}">Nilai dari Verifikator</div>
+                                        <div class="modal-score-badge-custom">
+                                            ${verifKode ? `<span class="modal-grade-pill ${verifKode.toUpperCase() === 'B' ? 'blue' : (verifKode.toUpperCase() === 'C' ? 'orange' : '')}">${escapeDashboardHtml(verifKode)}</span>` : ''}
+                                            <span class="modal-score-text ${isCorrected ? 'text-dark' : ''}">${escapeDashboardHtml(question.verif_nama_nilai || '-')} ${verifierScore !== null && verifierScore !== undefined ? `(${escapeDashboardHtml(verifierScore)})` : ''}</span>
+                                        </div>
+                                    </div>` : ''}
+                                </div>
+                                
+                                <div class="modal-question-note-box">
+                                    <div class="modal-note-title">Catatan Penilai</div>
+                                    <div class="modal-note-desc ${question.catatan ? 'has-content' : ''}">${escapeDashboardHtml(question.catatan || 'Tidak ada catatan.')}</div>
+                                </div>
+                                ${question.verif_catatan ? `
+                                <div class="modal-question-note-box">
+                                    <div class="modal-note-title text-warning-emphasis">Catatan Verifikator</div>
+                                    <div class="modal-note-desc has-content">${escapeDashboardHtml(question.verif_catatan)}</div>
+                                </div>` : ''}
                             </div>
-                            <div class="modal-question-note mt-2"><strong>Catatan penilai:</strong> ${escapeDashboardHtml(question.catatan || 'Tidak ada catatan.')}</div>
-                            ${question.verif_catatan ? `<div class="modal-question-note mt-1"><strong>Catatan verifikator:</strong> ${escapeDashboardHtml(question.verif_catatan)}</div>` : ''}
                         </article>`;
                 }).join('')}
             </div>

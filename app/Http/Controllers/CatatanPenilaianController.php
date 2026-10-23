@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Dp3TransPenilaian;
 use App\Models\Dp3TransPeriodePenilaian;
 use App\Models\Office;
 use App\Models\Department;
+use App\Models\UnitKerja;
 
 class CatatanPenilaianController extends Controller
 {
@@ -23,6 +25,7 @@ class CatatanPenilaianController extends Controller
 
         $listPenempatan = Office::orderBy('off_name', 'asc')->get();
         $listDepartemen = Department::where('isaktif', true)->orderBy('dept_name', 'asc')->get();
+        $listUnitKerja = UnitKerja::orderBy('nama_unit_kerja', 'asc')->get();
 
         // Query Utama Transaksi Penilaian
         $query = Dp3TransPenilaian::with([
@@ -31,7 +34,8 @@ class CatatanPenilaianController extends Controller
             'verifikator', 
             'details',
             'office',
-            'department'
+            'department',
+            'unitKerja',
         ]);
 
         if ($hasPeriodeSelected) {
@@ -56,7 +60,7 @@ class CatatanPenilaianController extends Controller
             })
             ->orWhereHas('details', function ($det) {
                 $det->whereNotNull('catatan')->where('catatan', '!=', '')
-                   ->orWhereNotNull('verif_catatan')->where('verif_catatan', '!=', '');
+                     ->orWhereNotNull('verif_catatan')->where('verif_catatan', '!=', '');
             });
         });
 
@@ -69,30 +73,21 @@ class CatatanPenilaianController extends Controller
             });
         }
 
-        // Filter Penempatan (Office)
-        if ($request->filled('off_id')) {
-            $offId = (string) $request->off_id;
-            $queryPenilaian->where(function ($q) use ($offId) {
-                $q->where('o.off_id', $offId)
-                ->orWhere('e.off_id', $offId)
-                ->orWhere('tp.pgw_off_id', $offId);
+        // Filter Unit Kerja (Diterapkan langsung ke $query Eloquent)
+        if ($request->filled('kode_unit_kerja')) {
+            $kodeUnitKerja = (string) $request->kode_unit_kerja;
+            $query->where(function ($q) use ($kodeUnitKerja) {
+                $q->where('pgw_kode_unit_kerja', $kodeUnitKerja)
+                  ->orWhereHas('pegawai', function ($sub) use ($kodeUnitKerja) {
+                      $sub->where('kode_unit_kerja', $kodeUnitKerja);
+                  });
             });
         }
 
-        // Filter Departemen
-        if ($request->filled('dept_id')) {
-            $deptId = (string) $request->dept_id;
-            $queryPenilaian->where(function ($q) use ($deptId) {
-                $q->where('d.dept_id', $deptId)
-                ->orWhere('e.dept_id', $deptId)
-                ->orWhere('tp.pgw_id_dept', $deptId);
-            });
-        }
-
-        // Hitung Ringkasan Statistik Catatan[cite: 5]
+        // Hitung Ringkasan Statistik Catatan
         $totalCatatan = (clone $query)->count();
-        $verifikasi   = (clone $query)->whereNotNull('catatan_verifikator')->where('catatan_verifikator', '!=', '')->count();
-        $belum        = $totalCatatan - $verifikasi;
+        $verifikasi   = (clone $query)->whereIn(\Illuminate\Support\Facades\DB::raw('UPPER(status_nilai)'), ['VERIFIED', 'VERIFIKASI'])->count();
+        $belum        = (clone $query)->whereIn(\Illuminate\Support\Facades\DB::raw('UPPER(status_nilai)'), ['SUBMIT', 'SUBMITTED', 'DIAJUKAN', 'DIKEMBALIKAN'])->count();
 
         // Paginasi Data
         $penilaians = $query->paginate(25)->appends($request->all());
@@ -112,7 +107,8 @@ class CatatanPenilaianController extends Controller
             'penempatans',
             'departemens',
             'listDepartemen',
-            'listPenempatan'
+            'listPenempatan',
+            'listUnitKerja'
         ));
     }
 }

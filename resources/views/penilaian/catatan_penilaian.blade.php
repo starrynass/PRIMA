@@ -335,7 +335,7 @@ body {
 }
 
 .table-custom th {
-    white-space: nowrap;
+    white-space: nowrap !important;
 }
 
 .table-custom td {
@@ -965,27 +965,26 @@ body {
     width: 100%;
     border: 1px solid var(--border-light);
     border-radius: 0.5rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden; /* Mencegah kemunculan scrollbar horizontal */
 }
 
 .custom-table.catatan-table {
     width: 100%;
-    min-width: 1800px;
-    table-layout: fixed;
+    min-width: 100% !important; /* Menghapus paksaan min-width 1800px */
+    table-layout: auto; /* Mengubah dari fixed ke auto agar menyesuaikan layar */
     border-collapse: collapse;
     background: var(--surface);
 }
 
 .custom-table.catatan-table th {
     background: var(--maroon-primary);
+    white-space: nowrap; /* Mencegah teks header turun ke bawah */
 }
 
-
 .custom-table.catatan-table td {
-    padding: 0.75rem 0.65rem;
+    padding: 0.6rem 0.4rem; /* Sedikit memadatkan padding agar lebih muat */
     color: var(--text-primary);
-    line-height: 1.4;
+    line-height: 1.3;
     vertical-align: middle;
     overflow-wrap: break-word;
     border: 0;
@@ -1001,30 +1000,18 @@ body {
     border-bottom: 0;
 }
 
-.custom-table.catatan-table th:nth-child(1),
-.custom-table.catatan-table td:nth-child(1) { width: 52px; }
-.custom-table.catatan-table th:nth-child(2),
-.custom-table.catatan-table td:nth-child(2) { width: 120px; }
-.custom-table.catatan-table th:nth-child(3),
-.custom-table.catatan-table td:nth-child(3) { width: 170px; }
-.custom-table.catatan-table th:nth-child(4),
-.custom-table.catatan-table td:nth-child(4) { width: 155px; }
-.custom-table.catatan-table th:nth-child(5),
-.custom-table.catatan-table td:nth-child(5) { width: 145px; }
-.custom-table.catatan-table th:nth-child(6),
-.custom-table.catatan-table td:nth-child(6) { width: 260px; }
-.custom-table.catatan-table th:nth-child(7),
-.custom-table.catatan-table td:nth-child(7) { width: 145px; }
-.custom-table.catatan-table th:nth-child(8),
-.custom-table.catatan-table td:nth-child(8) { width: 260px; }
-.custom-table.catatan-table th:nth-child(9),
-.custom-table.catatan-table td:nth-child(9) { width: 110px; }
-.custom-table.catatan-table th:nth-child(10),
-.custom-table.catatan-table td:nth-child(10) { width: 180px; }
-.custom-table.catatan-table th:nth-child(11),
-.custom-table.catatan-table td:nth-child(11) { width: 125px; }
-.custom-table.catatan-table th:nth-child(12),
-.custom-table.catatan-table td:nth-child(12) { width: 75px; }
+.custom-table.catatan-table th:nth-child(1), .custom-table.catatan-table td:nth-child(1) { width: 52px; }
+.custom-table.catatan-table th:nth-child(2), .custom-table.catatan-table td:nth-child(2) { width: 120px; }
+.custom-table.catatan-table th:nth-child(3), .custom-table.catatan-table td:nth-child(3) { width: 120px; }
+.custom-table.catatan-table th:nth-child(4), .custom-table.catatan-table td:nth-child(4) { width: 180px; }
+.custom-table.catatan-table th:nth-child(5), .custom-table.catatan-table td:nth-child(5) { width: 110px; }
+.custom-table.catatan-table th:nth-child(6), .custom-table.catatan-table td:nth-child(6) { width: 260px; }
+.custom-table.catatan-table th:nth-child(7), .custom-table.catatan-table td:nth-child(7) { width: 120px; }
+.custom-table.catatan-table th:nth-child(8), .custom-table.catatan-table td:nth-child(8) { width: 260px; }
+.custom-table.catatan-table th:nth-child(9), .custom-table.catatan-table td:nth-child(9) { width: 110px; }
+.custom-table.catatan-table th:nth-child(10), .custom-table.catatan-table td:nth-child(10) { width: 180px; }
+.custom-table.catatan-table th:nth-child(11), .custom-table.catatan-table td:nth-child(11) { width: 125px; }
+.custom-table.catatan-table th:nth-child(12), .custom-table.catatan-table td:nth-child(12) { width: 75px; }
 
 .catatan-note {
     display: block;
@@ -1033,34 +1020,39 @@ body {
     line-height: 1.45;
 }
 
-.catatan-table .badge {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-}
-
 .catatan-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 1rem;
-    padding-top: 0.75rem;
+    padding: 0.85rem 1.25rem; /* Beri jarak padding agar tidak menempel ke border */
+    background-color: var(--surface, #ffffff);
+    border-top: 1px solid var(--border-light, #e2e8f0); /* Garis pemisah tipis dari tabel di atasnya */
     color: var(--text-secondary);
     font-size: 0.8125rem;
 }
 
-.catatan-pagination > div:last-child {
-    max-width: 100%;
-    overflow-x: auto;
+/* Sesuaikan nama kelas agar sinkron dengan HTML (sebelumnya tercatat .catatan-detail-label) */
+.catatan-pagination-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Menghilangkan margin bawaan elemen pagination agar pas di tengah secara vertikal */
+.catatan-pagination nav {
+    display: flex;
+    align-items: center;
+}
+
+.catatan-pagination .pagination {
+    margin-bottom: 0 !important;
 }
 
 @media (max-width: 768px) {
     .catatan-pagination {
         align-items: flex-start !important;
         flex-direction: column;
-    }
-
-    .card-header-daftarpegawai {
-        flex-direction: row;
-        align-items: center;
+        gap: 0.75rem;
     }
 }
 </style>
@@ -1182,22 +1174,11 @@ body {
                             </div>
 
                             <div>
-                                <select name="off_id" class="select2">
-                                    <option value="">- Semua Penempatan -</option>
-                                    @foreach($listPenempatan as $off)
-                                        <option value="{{ $off->off_id }}" {{ request('off_id') == $off->off_id ? 'selected' : '' }}>
-                                            {{ $off->off_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <select name="dept_id" class="select2">
-                                    <option value="">- Semua Departemen -</option>
-                                    @foreach($listDepartemen as $dept)
-                                        <option value="{{ $dept->dept_id }}" {{ request('dept_id') == $dept->dept_id ? 'selected' : '' }}>
-                                            {{ $dept->dept_name }}
+                                <select name="kode_unit_kerja" class="select2">
+                                    <option value="">- Semua Unit Kerja -</option>
+                                    @foreach($listUnitKerja as $unitKerja)
+                                        <option value="{{ $unitKerja->kode_unit_kerja }}" {{ request('kode_unit_kerja') == $unitKerja->kode_unit_kerja ? 'selected' : '' }}>
+                                            {{ $unitKerja->nama_unit_kerja }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -1216,10 +1197,10 @@ body {
                         <table class="table table-bordered table-hover align-middle custom-table catatan-table">
                             <thead>
                                 <tr class="text-center">
-                                    <th width="40">NO</th>
+                                    <th width="20">NO</th>
                                     <th>NUP</th>
                                     <th>NAMA</th>
-                                    <th>DEPARTEMEN</th>
+                                    <th>UNIT KERJA</th>
                                     <th>PENILAI</th>
                                     <th>CATATAN PENILAI</th>
                                     <th>VERIFIKATOR</th>
@@ -1233,7 +1214,10 @@ body {
                             <tbody>
                                 @forelse($penilaians as $index => $row)
                                     @php
-                                        $nilai = (float) ($row->total_nilai ?? 0);
+                                        $isVerified = in_array(strtoupper($row->status_nilai ?? ''), ['VERIFIED', 'VERIFIKASI']);
+                                        $nilai = $isVerified ? (float) ($row->total_nilai_verifikator ?? $row->total_nilai ?? 0) : (float) ($row->total_nilai ?? 0);
+                                        $predikatTampil = $isVerified ? ($row->predikat_verifikator ?: $row->predikat ?: 'Belum ada') : ($row->predikat ?: 'Belum ada');
+
                                         if ($nilai >= 90) $badgeStyle = 'badge-emerald';
                                         elseif ($nilai >= 80) $badgeStyle = 'badge-blue';
                                         elseif ($nilai >= 70) $badgeStyle = 'badge-amber';
@@ -1241,24 +1225,22 @@ body {
                                         else $badgeStyle = 'badge-rose';
 
                                         $catatanPenilai = $row->catatan;
-                                        $catatanVerifikator = filled($row->catatan_verifikator)
-                                            ? $row->catatan_verifikator
-                                            : $row->details->pluck('verif_catatan')->filter(fn ($catatan) => filled($catatan))->implode(' | ');
+                                        $catatanVerifikator = $row->catatan_verifikator;
                                     @endphp
                                     <tr>
                                         <td class="text-center">{{ $penilaians->firstItem() + $index }}</td>
                                         <td>{{ $row->pgw_nup ?? '-' }}</td>
                                         <td class="fw-bold">{{ $row->pgw_nama ?? '-' }}</td>
-                                        <td>{{ $row->pgw_dept_name ?? '-' }}</td>
+                                        <td>{{ $row->unitKerja->nama_unit_kerja ?? '-' }}</td>
                                         <td>{{ $row->penilai_manual ?? ($row->penilai->nama ?? '-') }}</td>
                                         <td><span class="catatan-note" title="{{ $catatanPenilai ?: '-' }}">{{ $catatanPenilai ?: '-' }}</span></td>
                                         <td>{{ $row->verifikator->nama ?? '-' }}</td>
                                         <td><span class="catatan-note" title="{{ $catatanVerifikator ?: '-' }}">{{ $catatanVerifikator ?: '-' }}</span></td>
                                         <td class="text-center fw-bold">{{ number_format($nilai, 2) }}</td>
                                         <td class="text-center">
-                                            <span class="badge {{ $badgeStyle }}" title="{{ $row->predikat ?? 'Belum ada' }}">
+                                            <span class="badge {{ $badgeStyle }}" title="{{ $predikatTampil }}">
                                                 <span class="badge-dot"></span>
-                                                {{ $row->predikat ?? 'Belum ada' }}
+                                                {{ $predikatTampil }}
                                             </span>
                                         </td>
                                         <td class="text-center">
@@ -1275,6 +1257,9 @@ body {
                                                     'score_code' => $detail->kode_nilai,
                                                     'score_name' => $detail->nama_nilai,
                                                     'score' => $detail->nilai_angka,
+                                                    'verif_score_code' => $detail->verif_kode_nilai,
+                                                    'verif_score_name' => $detail->verif_nama_nilai,
+                                                    'verif_score' => $detail->verif_nilai_angka,
                                                     'note' => $detail->catatan,
                                                     'verifier_note' => $detail->verif_catatan,
                                                 ];
@@ -1286,8 +1271,9 @@ body {
                                                 aria-label="Detail penilaian {{ $row->pgw_nama }}"
                                                 data-employee="{{ $row->pgw_nama }}"
                                                 data-total="{{ number_format($nilai, 2) }}"
-                                                data-predikat="{{ $row->predikat ?? 'Belum ada' }}"
+                                                data-predikat="{{ $predikatTampil }}"
                                                 data-general-note="{{ $row->catatan ?? '' }}"
+                                                data-general-note-verifikator="{{ $row->catatan_verifikator ?? '' }}"
                                                 data-details="{{ json_encode($detailPenilaian, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG) }}">
                                                 <i class="fas fa-eye"></i>
                                             </button>
@@ -1305,8 +1291,8 @@ body {
                     </div>
 
                     <!-- PAGINATION -->
-                    <div class="mt-3 d-flex justify-content-between align-items-center catatan-pagination">
-                        <div>
+                    <div class="catatan-pagination">
+                        <div class="catatan-pagination-label">
                             Menampilkan {{ $penilaians->firstItem() ?? 0 }} sampai {{ $penilaians->lastItem() ?? 0 }} dari {{ $penilaians->total() }} data
                         </div>
                         <div>
@@ -1358,7 +1344,7 @@ body {
 
             <div class="assessment-general-note">
                 <span class="assessment-modal-label">Catatan Umum Verifikator</span>
-                <div id="assessmentModalGeneralNote" class="note-content"></div>
+                <div id="assessmentModalVerifNote" class="note-content"></div>
             </div>
 
             <!-- Tabel Detail -->
@@ -1366,11 +1352,12 @@ body {
                 <table class="assessment-detail-table">
                     <thead>
                         <tr>
-                            <th style="width: 30%;">Pertanyaan</th>
-                            <th style="width: 10%; text-align: center;">Bobot</th>
-                            <th style="width: 20%;">Nilai</th>
-                            <th style="width: 20%;">Catatan Penilai</th>
-                            <th style="width: 20%;">Catatan Verifikator</th>
+                            <th style="width: 25%;">Pertanyaan</th>
+                            <th style="width: 8%; text-align: center;">Bobot</th>
+                            <th style="width: 17%;">Nilai Penilai</th>
+                            <th style="width: 17%;">Nilai Verifikator</th>
+                            <th style="width: 16%;">Catatan Penilai</th>
+                            <th style="width: 17%;">Catatan Verifikator</th>
                         </tr>
                     </thead>
                     <tbody id="assessmentModalDetails">
@@ -1413,6 +1400,10 @@ body {
                     document.getElementById('assessmentModalPredikat').textContent = button.dataset.predikat || '-';
                     document.getElementById('assessmentModalCount').textContent = details.length;
                     document.getElementById('assessmentModalGeneralNote').textContent = button.dataset.generalNote || '-';
+                    const modalVerifNoteEl = document.getElementById('assessmentModalVerifNote');
+                    if (modalVerifNoteEl) {
+                        modalVerifNoteEl.textContent = button.dataset.generalNoteVerifikator || '-';
+                    }
                     detailBody.replaceChildren();
 
                     details.forEach(function (detail) {
@@ -1426,9 +1417,14 @@ body {
                             questionCell.appendChild(description);
                         }
                         row.appendChild(questionCell);
+
+                        const penilaiScore = [detail.score_code, detail.score_name, detail.score].filter(function(v) { return v !== null && v !== undefined && v !== ''; }).join(' / ') || '-';
+                        const verifScore = [detail.verif_score_code, detail.verif_score_name, detail.verif_score].filter(function(v) { return v !== null && v !== undefined && v !== ''; }).join(' / ') || '-';
+
                         [
                             detail.weight ? detail.weight + '%' : '-',
-                            [detail.score_code, detail.score_name, detail.score].filter(Boolean).join(' / ') || '-',
+                            penilaiScore,
+                            verifScore,
                             detail.note || '-',
                             detail.verifier_note || '-'
                         ].forEach(function (value) {
@@ -1442,7 +1438,7 @@ body {
                     if (details.length === 0) {
                         const row = document.createElement('tr');
                         const cell = document.createElement('td');
-                        cell.colSpan = 5;
+                        cell.colSpan = 6;
                         cell.className = 'text-center text-muted';
                         cell.textContent = 'Tidak ada rincian pertanyaan.';
                         row.appendChild(cell);
