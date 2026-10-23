@@ -151,12 +151,18 @@ class LaporanRekapNilaiController extends Controller
         $tglNow = now()->format('d-m-Y H:i:s');
 
         if ($action === 'pdf') {
-            $pdf = Pdf::loadView('laporan.RekapNilai.pdf', compact('groupedData', 'profile', 'periodeText', 'tglNow', 'questions'))->setPaper('a4', 'landscape');
-            return $pdf->stream('Laporan_Rekap_Nilai.pdf');
+            $pdf = Pdf::loadView('laporan.RekapNilai.pdf', [
+                'groupedData' => $groupedData,
+                'profile' => $profile,
+                'periodeText' => $periodeText,
+                'questions' => $questions,
+                'tglNow' => $tglNow
+            ])->setPaper('a4', 'landscape');
+            return $pdf->stream('Laporan_Rekap_Nilai_' . str_replace(' ', '_', $periodeText) . '.pdf');
         }
 
         if ($action === 'excel') {
-            return Excel::download(new LaporanRekapNilaiExport($groupedData, $periodeText, $questions), 'Laporan_Rekap_Nilai.xlsx');
+            return Excel::download(new LaporanRekapNilaiExport($groupedData, $periodeText, $questions), 'Laporan_Rekap_Nilai_' . str_replace(' ', '_', $periodeText) . '.xlsx');
         }
 
         return view('laporan.RekapNilai.preview', compact('groupedData', 'profile', 'periodeText', 'questions'));

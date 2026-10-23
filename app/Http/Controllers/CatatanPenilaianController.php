@@ -111,4 +111,71 @@ class CatatanPenilaianController extends Controller
             'listUnitKerja'
         ));
     }
+
+    public function exportExcel(Request $request)
+    {
+        $selectedPeriodeId = $request->get('periode_id');
+        
+        $query = Dp3TransPenilaian::with([
+            'pegawai', 
+            'penilai', 
+            'verifikator', 
+            'details', 
+            'unitKerja'
+        ]);
+
+        if (!empty($selectedPeriodeId)) {
+            $query->where('periode_id', $selectedPeriodeId);
+        }
+
+        $query->whereIn(\Illuminate\Support\Facades\DB::raw('UPPER(status_nilai)'), [
+            'SUBMITTED', 'SUBMIT', 'DIAJUKAN', 'DIKEMBALIKAN', 'VERIFIED',
+        ]);
+
+        $query->where(function ($q) {
+            $q->where(function($sub) {
+                $sub->whereNotNull('catatan')->where('catatan', '!=', '');
+            })
+            ->orWhere(function($sub) {
+                $sub->whereNotNull('catatan_verifikator')->where('catatan_verifikator', '!=', '');
+            })
+            ->orWhereHas('details', function ($det) {
+                $det->whereNotNull('catatan')->where('catatan', '!=', '')
+                    ->orWhereNotNull('verif_catatan')->where('verif_catatan', '!=', '');
+            });
+        });
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('pgw_nama', 'like', "%{$search}%")
+                ->orWhere('pgw_nup', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('kode_unit_kerja')) {
+            $kodeUnitKerja = (string) $request->kode_unit_kerja;
+            $query->where(function ($q) use ($kodeUnitKerja) {
+                $q->where('pgw_kode_unit_kerja', $kodeUnitKerja)
+                ->orWhereHas('pegawai', function ($sub) use ($kodeUnitKerja) {
+                    $sub->where('kode_unit_kerja', $kodeUnitKerja);
+                });
+            });
+        }
+
+        $penilaians = $query->get();
+        $periode = Dp3TransPeriodePenilaian::find($selectedPeriodeId);
+
+        // Penamaan file dinamis: misal PER202603.xls
+        if ($periode) {
+            $bulanFormatted = str_pad($periode->bulan, 2, '0', STR_PAD_LEFT);
+            $filename = 'Catatan_Penilaian_PER' . $periode->tahun . $bulanFormatted . '.xls';
+        } else {
+            $filename = 'Catatan_Penilaian_PER_Semua_Periode_' . date('Ymd') . '.xls';
+        }
+
+        return response(view('penilaian.catatan_excel', compact('penilaians', 'periode'))->render())
+            ->header('Content-Type', 'application/vnd.ms-excel')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
 }

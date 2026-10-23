@@ -197,13 +197,13 @@ class LaporanIndeksKompetensiController extends Controller
         if (($filters['action'] ?? 'preview') === 'pdf') {
             return Pdf::loadView('laporan.IndeksKompetensi.pdf', $viewData)
                 ->setPaper('a4', 'landscape')
-                ->stream('Laporan_Indeks_Kompetensi.pdf');
+                ->stream('Laporan_Indeks_Kompetensi_' . str_replace(' ', '_', $periodeText) . '.pdf');
         }
 
         if (($filters['action'] ?? 'preview') === 'excel') {
             return Excel::download(
                 new LaporanIndeksKompetensiExport($viewData),
-                'Laporan_Indeks_Kompetensi.xlsx'
+                'Laporan_Indeks_Kompetensi_' . str_replace(' ', '_', $periodeText) . '.xlsx'
             );
         }
 

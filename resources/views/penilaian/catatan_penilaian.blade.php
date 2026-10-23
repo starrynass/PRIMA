@@ -1158,7 +1158,7 @@ body {
                     <div class="card-title-daftarpegawai">
                         <i class="fas fa-list me-2"></i> Daftar Catatan Penilaian Pegawai
                     </div>
-                    <a href="{{ route('catatan-penilaian.export', request()->all()) }}" class="btn-export">
+                    <a href="{{ route('penilaian.catatan.export', request()->all()) }}" class="btn-export">
                         <i class="fas fa-file-excel me-1"></i> Export Excel
                     </a>
                 </div>

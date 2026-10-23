@@ -133,7 +133,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:penilaian.catatan,view')->group(function () {
         // CATATAN PENILAIAN
         Route::get('/penilaian/catatan-penilaian', [CatatanPenilaianController::class, 'index'])->name('catatan-penilaian.index');
-        Route::get('/penilaian/catatan-penilaian/export', [CatatanPenilaianController::class, 'exportExcel'])->name('catatan-penilaian.export');
+        Route::get('/penilaian/catatan/export', [CatatanPenilaianController::class, 'exportExcel'])->name('penilaian.catatan.export');
     });
 
     Route::middleware('permission:laporan.tahunan,view')->prefix('laporan')->name('laporan.')->group(function () {
