@@ -519,21 +519,36 @@ class VerifikasiPenilaianController extends Controller
                     continue;
                 }
 
-                $hasCorrections = Dp3TransPenilaianDetail::where('penilaian_id', $penilaian->penilaian_id)
-                    ->whereNotNull('verif_nilai_angka')
-                    ->whereNotNull('nilai_angka')
-                    ->whereColumn('verif_nilai_angka', '<>', 'nilai_angka')
-                    ->exists();
+                // Reset seluruh data koreksi butir penilaian pada detail transaksi
+                Dp3TransPenilaianDetail::where('penilaian_id', $penilaian->penilaian_id)
+                    ->update([
+                        'verif_nilai_angka'      => null,
+                        'verif_kode_nilai'       => null,
+                        'verif_nama_nilai'       => null,
+                        'verif_catatan'          => null,
+                        'verif_nilai_sebelumnya' => null,
+                        'verif_alasan_koreksi'   => null,
+                        'verif_status'           => null,
+                        'verifikator_id'         => null,
+                        'verif_tanggal'          => null,
+                    ]);
 
-                $penilaian->status_nilai = 'SUBMIT';
-                $penilaian->status_verifikator = $hasCorrections ? 'KOREKSI' : 'BELUM VERIFIKASI';
-                $penilaian->tanggal_verifikasi = null;
+                // Reset seluruh status dan kalkulasi verifikator pada header penilaian
+                $penilaian->total_nilai_verifikator = null;
+                $penilaian->predikat_verifikator    = null;
+                $penilaian->status_nilai            = 'SUBMIT';
+                $penilaian->status_verifikator      = 'BELUM VERIFIKASI';
+                $penilaian->status_verifitor        = 'BELUM VERIFIKASI';
+                $penilaian->tanggal_verifikasi      = null;
+                $penilaian->tanggal_revisi          = null;
 
                 if (!empty($validated['catatan'])) {
                     $prefix = "[Unverifikasi: " . now()->format('d/m/Y H:i') . "] " . $validated['catatan'];
                     $penilaian->catatan_verifikator = $penilaian->catatan_verifikator
                         ? $prefix . "\n" . $penilaian->catatan_verifikator
                         : $prefix;
+                } else {
+                    $penilaian->catatan_verifikator = null;
                 }
 
                 $penilaian->save();

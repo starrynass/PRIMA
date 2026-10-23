@@ -840,18 +840,18 @@
                     <thead>
                         <tr>
                             <th width="40"><input type="checkbox" id="selectAllRows" class="selection-checkbox" aria-label="Pilih semua pegawai di halaman"></th>
-                            <th width="40">NO</th>
-                            <th>NUP</th>
-                            <th>NAMA</th>
-                            <th>PENEMPATAN</th>
-                            <th>JABATAN</th>
-                            <th>UNIT KERJA</th>
-                            <th>PENILAI</th>
-                            <th>VERIFIKATOR</th>
-                            <th>STATUS</th>
-                            <th>NILAI</th>
-                            <th>PREDIKAT</th>
-                            <th width="90" class="text-center">AKSI</th>
+                            <th width="40" class="text-center">NO</th>
+                            <th width="90">NUP</th>
+                            <th width="160">NAMA</th>
+                            <th width="130">PENEMPATAN</th>
+                            <th width="120">JABATAN</th>
+                            <th width="130">UNIT KERJA</th>
+                            <th width="140">PENILAI</th>
+                            <th width="140">VERIFIKATOR</th>
+                            <th width="110" class="text-center">STATUS</th>
+                            <th width="75" class="text-center">NILAI</th>
+                            <th width="150" class="text-center">PREDIKAT</th>
+                            <th width="75" class="text-center">AKSI</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -904,8 +904,8 @@
                                         <span class="badge-status-gray">Belum Diisi</span>
                                     @endif
                                 </td>
-                                <td>{{ number_format($nilaiAkhir, 2) }}</td>
-                                <td>
+                                <td class="text-center">{{ number_format($nilaiAkhir, 2) }}</td>
+                                <td class="text-center">
                                     @php
                                         if ($nilaiAkhir >= 90) {
                                             $predikatStyle = 'background-color: #D1FAE5; color: #065F46; border: 1px solid #10B981;';
@@ -921,7 +921,7 @@
                                             $predikatStyle = 'background-color: #F1F5F9; color: #475569; border: 1px solid #CBD5E1;';
                                         }
                                     @endphp
-                                    <span class="badge" style="padding: 0.35rem 0.65rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; {{ $predikatStyle }}">
+                                    <span class="badge" style="display: inline-block; max-width: 100%; padding: 0.28rem 0.55rem; border-radius: 999px; font-size: 0.68rem; font-weight: 700; white-space: nowrap; box-sizing: border-box; vertical-align: middle; {{ $predikatStyle }}">
                                         {{ $predikat }}
                                     </span>
                                 </td>

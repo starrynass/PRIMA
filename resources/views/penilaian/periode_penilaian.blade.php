@@ -49,7 +49,12 @@
         --radius-md: 0.5rem;
 
         --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.04), 0 4px 6px -2px rgba(15, 23, 42, 0.02);
-        --overdue-bg: #Ffffff;
+        --overdue-bg: #FFF1F2;
+    }
+
+    @keyframes blink-overdue {
+        0%, 100% { background-color: #FFF1F2 !important; }
+        50% { background-color: #FECDD3 !important; }
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -318,7 +323,7 @@
 
     .table-periode tbody tr:hover { background-color: #FDF7F9; }
     .table-periode tbody tr.selected-row { background-color: #F1F5F9 !important; }
-    .tr-overdue { background-color: var(--overdue-bg) !important; }
+    .tr-overdue { background-color: var(--overdue-bg) !important; animation: blink-overdue 1.4s ease-in-out infinite; }
 
     /* Badge & Progress Bar */
     .badge-status {
@@ -365,6 +370,61 @@
     .tag-red { background-color: var(--badge-rose-bg); color: var(--badge-rose-text); }
     .tag-orange { background-color: var(--badge-orange-bg); color: var(--badge-orange-text); }
     .tag-green { background-color: var(--badge-emerald-bg); color: var(--badge-emerald-text); }
+    .tag-blue { background-color: var(--badge-blue-bg); color: var(--badge-blue-text); }
+    .tag-penilai-kosong { background-color: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+    .tag-verifikator-kosong { background-color: #FFEDD5; color: #9A3412; border: 1px solid #FDBA74; }
+
+    /* Progress bar color variants */
+    .progress-bar-fill.fill-low  { background: linear-gradient(90deg, #EF4444 0%, #F87171 100%); }
+    .progress-bar-fill.fill-mid  { background: linear-gradient(90deg, #F59E0B 0%, #FBBF24 100%); }
+    .progress-bar-fill.fill-full { background: linear-gradient(90deg, #10B981 0%, #34D399 100%); }
+
+    /* Legend / Keterangan Section */
+    .keterangan-section {
+        margin-top: 1rem;
+        padding: 1rem 1.25rem;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 0.75rem;
+    }
+    .keterangan-title {
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .keterangan-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+        align-items: center;
+    }
+    .keterangan-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.775rem;
+        color: var(--text-secondary);
+    }
+    .keterangan-item .ket-sample-row {
+        width: 1.1rem;
+        height: 1.1rem;
+        border-radius: 3px;
+        animation: blink-overdue 1.4s ease-in-out infinite;
+        background-color: #FECDD3;
+        border: 1px solid #FDA4AF;
+        flex-shrink: 0;
+    }
+    .keterangan-divider {
+        width: 1px;
+        height: 1.25rem;
+        background-color: #CBD5E1;
+    }
 
     .progress-container {
         background: #E2E8F0;
@@ -823,7 +883,7 @@
                         <th width="11%">TGL AKHIR</th>
                         <th class="text-center" width="8%">STATUS</th>
                         <th class="text-center" width="10%">TOTAL PEGAWAI</th>
-                        <th class="text-center" width="9%">TOTAL SATKER</th>
+                        <th class="text-center" width="9%">TOTAL UNIT KERJA</th>
                         <th width="16%">PROGRESS VERIFIKASI</th>
                         <th width="17%">KETERANGAN</th>
                     </tr>
@@ -845,6 +905,9 @@
                             data-tanggal-deadline="{{ $item->tanggal_deadline?->format('Y-m-d') }}"
                             data-status="{{ $statusUpper }}"
                             data-is-generated="{{ $isGenerated ? '1' : '0' }}"
+                            data-is-overdue="{{ $isOverdue ? '1' : '0' }}"
+                            data-bulan="{{ $item->bulan }}"
+                            data-tahun="{{ $item->tahun }}"
                             onclick="selectRow(this)">
                             
                             <td class="text-center font-monospace">{{ $periodeList->firstItem() + $index }}</td>
@@ -859,11 +922,15 @@
                                 </span>
                             </td>
                             <td class="text-center"><span class="badge-count">{{ $item->total_pegawai }}</span></td>
-                            <td class="text-center"><span class="badge-count">{{ $item->total_satker }}</span></td>
+                            <td class="text-center"><span class="badge-count">{{ $item->total_unit_kerja }}</span></td>
                             <td>
+                                @php
+                                    $prog = $item->progress_verifikasi;
+                                    $fillClass = $prog >= 100 ? 'fill-full' : ($prog >= 50 ? 'fill-mid' : 'fill-low');
+                                @endphp
                                 <div class="progress-container">
-                                    <div class="progress-bar-fill" style="width: {{ $item->progress_verifikasi }}%;"></div>
-                                    <span class="progress-text">{{ $item->progress_verifikasi }}%</span>
+                                    <div class="progress-bar-fill {{ $fillClass }}" style="width: {{ $prog }}%;"></div>
+                                    <span class="progress-text">{{ $prog }}%</span>
                                 </div>
                             </td>
                             <td>
@@ -871,7 +938,15 @@
                                     @if($item->total_pegawai === 0)
                                         <span class="tag-badge tag-orange">Belum generate</span>
                                     @else
-                                        <span class="tag-badge tag-green">Sudah Generate</span>
+                                        @if($item->penilai_kosong_count > 0)
+                                            <span class="tag-badge tag-penilai-kosong">{{ $item->penilai_kosong_count }} penilai kosong</span>
+                                        @endif
+                                        @if($item->verifikator_kosong_count > 0)
+                                            <span class="tag-badge tag-verifikator-kosong">{{ $item->verifikator_kosong_count }} verifikator kosong</span>
+                                        @endif
+                                        @if($item->penilai_kosong_count === 0 && $item->verifikator_kosong_count === 0)
+                                            <span class="tag-badge tag-green">Lengkap</span>
+                                        @endif
                                     @endif
                                 </div>
                             </td>
@@ -893,6 +968,59 @@
         </small>
         <div>
             {{ $periodeList->links() }}
+        </div>
+    </div>
+
+    <!-- Keterangan / Legenda -->
+    <div class="keterangan-section">
+        <div class="keterangan-title">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Keterangan
+        </div>
+        <div class="keterangan-grid">
+            <div class="keterangan-item">
+                <span class="ket-sample-row"></span>
+                <span>Periode melewati tenggat &amp; belum selesai (tidak bisa dikunci)</span>
+            </div>
+            <div class="keterangan-divider"></div>
+            <div class="keterangan-item">
+                <span class="tag-badge badge-status badge-open" style="font-size:0.7rem;padding:0.2rem 0.5rem;">OPEN</span>
+                <span>Periode aktif / terbuka</span>
+            </div>
+            <div class="keterangan-item">
+                <span class="tag-badge badge-status badge-locked" style="font-size:0.7rem;padding:0.2rem 0.5rem;">LOCKED</span>
+                <span>Periode terkunci</span>
+            </div>
+            <div class="keterangan-divider"></div>
+            <div class="keterangan-item">
+                <span style="display:inline-block;width:2rem;height:0.55rem;border-radius:4px;background:linear-gradient(90deg,#EF4444,#F87171);"></span>
+                <span>Progress &lt; 50%</span>
+            </div>
+            <div class="keterangan-item">
+                <span style="display:inline-block;width:2rem;height:0.55rem;border-radius:4px;background:linear-gradient(90deg,#F59E0B,#FBBF24);"></span>
+                <span>Progress 50–99%</span>
+            </div>
+            <div class="keterangan-item">
+                <span style="display:inline-block;width:2rem;height:0.55rem;border-radius:4px;background:linear-gradient(90deg,#10B981,#34D399);"></span>
+                <span>Progress 100%</span>
+            </div>
+            <div class="keterangan-divider"></div>
+            <div class="keterangan-item">
+                <span class="tag-badge tag-penilai-kosong" style="font-size:0.7rem;">n penilai kosong</span>
+                <span>Ada penilai belum diisi</span>
+            </div>
+            <div class="keterangan-item">
+                <span class="tag-badge tag-verifikator-kosong" style="font-size:0.7rem;">n verifikator kosong</span>
+                <span>Ada verifikator belum diisi</span>
+            </div>
+            <div class="keterangan-item">
+                <span class="tag-badge tag-green" style="font-size:0.7rem;">Lengkap</span>
+                <span>Penilai &amp; verifikator sudah lengkap</span>
+            </div>
+            <div class="keterangan-item">
+                <span class="tag-badge tag-orange" style="font-size:0.7rem;">Belum generate</span>
+                <span>Data pegawai belum di-generate</span>
+            </div>
         </div>
     </div>
 </div>
@@ -923,7 +1051,7 @@
                 <!-- Input Bulan -->
                 <div class="custom-input-group">
                     <span class="input-label-addon">Bulan</span>
-                    <select name="bulan" class="form-select" required>
+                    <select name="bulan" id="tambah_bulan" class="form-select" required onchange="updateTambahDateRange()">
                         <option value="" selected disabled>- Pilih Bulan -</option>
                         @foreach([1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'] as $key => $namaBulan)
                             <option value="{{ $key }}">{{ $namaBulan }}</option>
@@ -934,19 +1062,19 @@
                 <!-- Input Tahun -->
                 <div class="custom-input-group">
                     <span class="input-label-addon">Tahun</span>
-                    <input type="number" name="tahun" class="form-control" placeholder="Pilih Tahun (misal: {{ date('Y') }})" min="2020" max="2099" required>
+                    <input type="number" name="tahun" id="tambah_tahun" class="form-control" placeholder="Pilih Tahun (misal: {{ date('Y') }})" min="2020" max="2099" required oninput="updateTambahDateRange()">
                 </div>
 
                 <!-- Input Tanggal Mulai -->
                 <div class="custom-input-group">
                     <span class="input-label-addon">Tanggal Mulai</span>
-                    <input type="date" name="tanggal_mulai" class="form-control" required>
+                    <input type="date" name="tanggal_mulai" id="tambah_tanggal_mulai" class="form-control" required onchange="updateTambahDeadlineMin()">
                 </div>
 
                 <!-- Input Tanggal Akhir -->
                 <div class="custom-input-group">
                     <span class="input-label-addon">Tanggal Akhir</span>
-                    <input type="date" name="tanggal_deadline" class="form-control" required>
+                    <input type="date" name="tanggal_deadline" id="tambah_tanggal_deadline" class="form-control" required>
                 </div>
 
                 <input type="hidden" name="status" value="LOCKED">
@@ -1009,7 +1137,7 @@
 
                 <div class="custom-input-group">
                     <span class="input-label-addon">Tanggal Mulai</span>
-                    <input type="date" name="tanggal_mulai" id="edit_tanggal_mulai" class="form-control" required>
+                    <input type="date" name="tanggal_mulai" id="edit_tanggal_mulai" class="form-control" required onchange="onEditMulaiChange()">
                 </div>
 
                 <div class="custom-input-group">
@@ -1134,7 +1262,10 @@
             tanggal_mulai: trElement.dataset.tanggalMulai,
             tanggal_deadline: trElement.dataset.tanggalDeadline,
             status: trElement.dataset.status,
-            is_generated: trElement.dataset.isGenerated === '1'
+            is_generated: trElement.dataset.isGenerated === '1',
+            is_overdue: trElement.dataset.isOverdue === '1',
+            bulan: trElement.dataset.bulan,
+            tahun: trElement.dataset.tahun,
         };
 
         // Catatan: tombol Generate hanya aktif saat periode OPEN dan belum generate.
@@ -1143,9 +1274,11 @@
         const isLocked = (selectedPeriodeData.status || '').toUpperCase() === 'LOCKED';
         const canGenerate = !isLocked && !selectedPeriodeData.is_generated;
         const canDetail = !isLocked && selectedPeriodeData.is_generated;
+        // Periode overdue (OPEN + lewat tenggat + belum 100%) tidak bisa dikunci
+        const canLock = !selectedPeriodeData.is_overdue;
 
         document.getElementById('btnDetailPeriode').disabled = !canDetail;
-        document.getElementById('btnToggleLock').disabled = false;
+        document.getElementById('btnToggleLock').disabled = !canLock;
         document.getElementById('btnGenerate').disabled = !canGenerate;
         document.getElementById('btnEditPeriode').disabled = false;
         document.getElementById('btnDeletePeriode').disabled = false;
@@ -1187,6 +1320,11 @@
             editTanggalDeadline.value = selectedPeriodeData.tanggal_deadline || '';
         }
 
+        // Set date constraints based on bulan/tahun of selected periode
+        if (selectedPeriodeData.bulan && selectedPeriodeData.tahun) {
+            applyEditDateConstraints(parseInt(selectedPeriodeData.bulan), parseInt(selectedPeriodeData.tahun));
+        }
+
         const form = document.getElementById('formEditPeriode');
         if (form) {
             form.action = `${baseUrl}/${selectedPeriodeData.periode_id}`;
@@ -1196,6 +1334,15 @@
         if (modal) {
             modal.classList.add('active');
         }
+    }
+
+    function applyEditDateConstraints(bulan, tahun) {
+        const firstDay = `${tahun}-${String(bulan).padStart(2,'0')}-01`;
+        const lastDay = getLastDayOfMonth(tahun, bulan);
+        const editMulai = document.getElementById('edit_tanggal_mulai');
+        const editDeadline = document.getElementById('edit_tanggal_deadline');
+        if (editMulai) { editMulai.min = firstDay; editMulai.max = lastDay; }
+        if (editDeadline) { editDeadline.min = firstDay; editDeadline.max = lastDay; }
     }
 
     function closeModalEditPeriode() {
@@ -1208,6 +1355,12 @@
     // 2. Action Form Toggle Lock (PATCH)
     function toggleLockPeriode() {
         if (!selectedPeriodeData) return;
+
+        // Guard: periode overdue tidak bisa dikunci
+        if (selectedPeriodeData.is_overdue) {
+            alert('Periode ini sudah melewati tenggat dan penilaian/verifikasi belum selesai 100%.\nSelesaikan semua penilaian & verifikasi terlebih dahulu sebelum mengunci periode.');
+            return;
+        }
 
         const currentStatus = (selectedPeriodeData.status || '').toUpperCase();
         const targetStatus = (currentStatus === 'OPEN') ? 'DIKUNCI (LOCKED)' : 'DIBUKA (OPEN)';
@@ -1286,6 +1439,65 @@
     function openDetailPeriode() {
         window.location.href = `${baseUrl}/${selectedPeriodeData.periode_id}/detail`;
     }
+
+    // ============================================================
+    // DATE RANGE VALIDATION HELPERS
+    // ============================================================
+    function getLastDayOfMonth(year, month) {
+        // month is 1-based; new Date(year, month, 0) = last day of that month
+        const d = new Date(year, month, 0);
+        return `${year}-${String(month).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    // Tambah Modal: update min/max for date inputs when bulan/tahun changes
+    function updateTambahDateRange() {
+        const bulanEl = document.getElementById('tambah_bulan');
+        const tahunEl = document.getElementById('tambah_tahun');
+        const mulaiEl = document.getElementById('tambah_tanggal_mulai');
+        const deadlineEl = document.getElementById('tambah_tanggal_deadline');
+
+        const bulan = parseInt(bulanEl ? bulanEl.value : '');
+        const tahun = parseInt(tahunEl ? tahunEl.value : '');
+
+        if (!bulan || !tahun || tahun < 2020 || tahun > 2099) return;
+
+        const firstDay = `${tahun}-${String(bulan).padStart(2,'0')}-01`;
+        const lastDay = getLastDayOfMonth(tahun, bulan);
+
+        if (mulaiEl) {
+            mulaiEl.min = firstDay;
+            mulaiEl.max = lastDay;
+            if (mulaiEl.value && (mulaiEl.value < firstDay || mulaiEl.value > lastDay)) {
+                mulaiEl.value = '';
+            }
+        }
+        if (deadlineEl) {
+            deadlineEl.min = firstDay;
+            deadlineEl.max = lastDay;
+            if (deadlineEl.value && (deadlineEl.value < firstDay || deadlineEl.value > lastDay)) {
+                deadlineEl.value = '';
+            }
+        }
+    }
+
+    // Tambah Modal: when tanggal_mulai changes, ensure deadline is after it
+    function updateTambahDeadlineMin() {
+        const mulaiEl = document.getElementById('tambah_tanggal_mulai');
+        const deadlineEl = document.getElementById('tambah_tanggal_deadline');
+        if (mulaiEl && deadlineEl && mulaiEl.value) {
+            const next = new Date(mulaiEl.value);
+            next.setDate(next.getDate() + 1);
+            const nextStr = next.toISOString().split('T')[0];
+            // Keep existing max constraint
+            const currentMax = deadlineEl.max;
+            deadlineEl.min = nextStr;
+            if (currentMax) deadlineEl.max = currentMax;
+            if (deadlineEl.value && deadlineEl.value <= mulaiEl.value) {
+                deadlineEl.value = '';
+            }
+        }
+    }
+
 </script>
 
 @endsection

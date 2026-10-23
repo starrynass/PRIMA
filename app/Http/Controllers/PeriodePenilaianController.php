@@ -90,14 +90,27 @@ class PeriodePenilaianController extends Controller
     public function store(Request $request)
     {
         // 1. Validasi Input Form Modal
+        $bulan = (int) $request->bulan;
+        $tahun = (int) $request->tahun;
+
         $request->validate([
             'bulan' => 'required|integer|between:1,12',
             'tahun' => 'required|integer|min:2020|max:2099',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_deadline' => 'required|date|after_or_equal:tanggal_mulai',
+            'tanggal_mulai' => ['required', 'date', function ($attr, $val, $fail) use ($bulan, $tahun) {
+                $d = \Carbon\Carbon::parse($val);
+                if ((int)$d->month !== $bulan || (int)$d->year !== $tahun) {
+                    $fail('Tanggal mulai harus berada dalam bulan dan tahun periode yang dipilih.');
+                }
+            }],
+            'tanggal_deadline' => ['required', 'date', 'after:tanggal_mulai', function ($attr, $val, $fail) use ($bulan, $tahun) {
+                $d = \Carbon\Carbon::parse($val);
+                if ((int)$d->month !== $bulan || (int)$d->year !== $tahun) {
+                    $fail('Tanggal akhir harus berada dalam bulan dan tahun periode yang dipilih.');
+                }
+            }],
             'status' => 'nullable|in:OPEN,LOCKED',
         ], [
-            'tanggal_deadline.after_or_equal' => 'Tanggal deadline tidak boleh sebelum tanggal mulai.',
+            'tanggal_deadline.after' => 'Tanggal akhir harus setelah tanggal mulai.',
         ]);
 
         // 2. Format Periode ID (Contoh: "2026-08")
@@ -134,11 +147,24 @@ class PeriodePenilaianController extends Controller
             return redirect()->route('periode-penilaian.index')->with('error', 'Periode tidak ditemukan atau sudah dihapus.');
         }
 
+        $bulan = (int) $periode->bulan;
+        $tahun = (int) $periode->tahun;
+
         $request->validate([
-            'tanggal_mulai' => 'required|date',
-            'tanggal_deadline' => 'required|date|after_or_equal:tanggal_mulai',
+            'tanggal_mulai' => ['required', 'date', function ($attr, $val, $fail) use ($bulan, $tahun) {
+                $d = \Carbon\Carbon::parse($val);
+                if ((int)$d->month !== $bulan || (int)$d->year !== $tahun) {
+                    $fail('Tanggal mulai harus berada dalam bulan dan tahun periode yang dipilih.');
+                }
+            }],
+            'tanggal_deadline' => ['required', 'date', 'after:tanggal_mulai', function ($attr, $val, $fail) use ($bulan, $tahun) {
+                $d = \Carbon\Carbon::parse($val);
+                if ((int)$d->month !== $bulan || (int)$d->year !== $tahun) {
+                    $fail('Tanggal akhir harus berada dalam bulan dan tahun periode yang dipilih.');
+                }
+            }],
         ], [
-            'tanggal_deadline.after_or_equal' => 'Tanggal deadline tidak boleh sebelum tanggal mulai.',
+            'tanggal_deadline.after' => 'Tanggal akhir harus setelah tanggal mulai.',
         ]);
 
         $periode->update([
@@ -175,6 +201,19 @@ class PeriodePenilaianController extends Controller
 
         if (! $periode) {
             return redirect()->route('periode-penilaian.index')->with('error', 'Periode tidak ditemukan atau sudah dihapus.');
+        }
+
+        // Jika periode saat ini OPEN dan ingin dikunci (target LOCKED), cek apakah overdue dan belum selesai 100%
+        if ($periode->status === 'OPEN') {
+            $isOverdue = $periode->tanggal_deadline && $periode->tanggal_deadline->isPast();
+            if ($isOverdue) {
+                $totalPegawai = $periode->transPenilaian()->count();
+                $verifikasiSelesai = $periode->transPenilaian()->where('status_verifikator', 'VERIFIED')->count();
+                $isCompleted = ($totalPegawai > 0 && $totalPegawai === $verifikasiSelesai);
+                if (! $isCompleted) {
+                    return redirect()->back()->with('error', 'Periode yang sudah melewati tenggat waktu dan belum selesai 100% tidak dapat dikunci.');
+                }
+            }
         }
         
         $newStatus = ($periode->status === 'OPEN') ? 'LOCKED' : 'OPEN';

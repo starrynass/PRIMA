@@ -209,7 +209,7 @@
 
         .header-inner { z-index:2; display:flex; align-items:center; gap:8px; }
 
-        .header-title { font-size:14px; font-weight:700; color:#fff; }
+        .header-title { font-size:14px !important; font-weight:700 !important; color:#fff !important; }
 
         .page-header .hamburger-btn {
             background:rgba(255,255,255,0.08);

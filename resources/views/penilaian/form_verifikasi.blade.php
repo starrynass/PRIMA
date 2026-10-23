@@ -28,13 +28,13 @@
         margin-bottom: 20px;
     }
 
-    .header-title {
+    .header-title-form {
         font-size: 18px;
         font-weight: 700;
         color: var(--text-dark);
     }
 
-    .header-title span { color: var(--primary-burgundy); }
+    .header-title-form span { color: var(--primary-burgundy); }
 
     .grid-container {
         display: grid;
@@ -537,7 +537,7 @@
 
         <!-- HEADER TOP ACTION BAR -->
         <div class="header-nav">
-            <div class="header-title">
+            <div class="header-title-form">
                 Verifikasi Penilaian » <span>{{ $penilaian->pgw_nama }}</span>
             </div>
             <!-- BARIS TOMBOL ATAS[cite: 13] -->

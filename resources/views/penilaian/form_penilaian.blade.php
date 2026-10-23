@@ -32,13 +32,13 @@
         margin-bottom: 20px;
     }
 
-    .header-title {
+    .header-title-form {
         font-size: 18px;
         font-weight: 700;
         color: var(--text-dark);
     }
 
-    .header-title span {
+    .header-title-form span {
         color: var(--primary-burgundy);
     }
 
@@ -326,7 +326,7 @@
     
     <!-- Top Header -->
     <div class="header-nav">
-        <div class="header-title">
+        <div class="header-title-form">
             Form Penilaian » <span>{{ $penilaian->pgw_nama }}</span>
         </div>
         <a href="{{ route('kelola-penilaian.index', ['periode_id' => $penilaian->periode_id]) }}" class="btn-native btn-back">
@@ -355,7 +355,7 @@
                 <div class="card-native">
                     <div class="card-body-native">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="font-weight: 700; font-size: 14px;">📝 Isi Penilaian</div>
+                            <div style="font-weight: 700; font-size: 14px;"><i class="fas fa-edit me-1"></i> Isi Penilaian</div>
                             <div>
                                 <span style="font-size: 12px; color: var(--text-muted);">Status: </span>
                                 <span class="status-badge {{ strtolower($penilaian->status_nilai) == 'submitted' ? 'badge-submitted' : 'badge-draft' }}">
@@ -380,7 +380,7 @@
                @foreach($template->kategoris as $catIdx => $kategori)
                 <div class="card-native card-panel" data-kat-id="{{ $kategori->kategori_id }}" data-kat-bobot="{{ $kategori->bobot_persen }}">
                     <div class="card-header-burgundy">
-                        <div>📋 {{ $catIdx + 1 }}. {{ strtoupper($kategori->nama) }}</div>
+                        <div><i class="fas fa-clipboard-list me-1"></i> {{ $catIdx + 1 }}. {{ strtoupper($kategori->nama) }}</div>
                         <div style="font-size: 12px; opacity: 0.9;">Bobot {{ $kategori->bobot_persen }}%</div>
                     </div>
                     
@@ -447,7 +447,7 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px; margin-bottom: 40px;">
                     <div style="display: flex; gap: 8px;">
                         <button type="button" id="btnDraft" class="btn-native btn-draft">
-                            💾 Simpan Draft
+                            <i class="fas fa-save me-1"></i> Simpan Draft
                         </button>
                         <a href="{{ route('penilaian.preview', $penilaian->penilaian_id) }}"
                             class="btn-native btn-preview">
@@ -456,7 +456,7 @@
                     </div>
                     <div>
                         <button type="button" id="btnAjukan" class="btn-native btn-submit">
-                            🚀 Ajukan Penilaian
+                            <i class="fas fa-paper-plane me-1"></i> Ajukan Penilaian
                         </button>
                     </div>
                 </div>
@@ -466,7 +466,7 @@
             <div>
                 <!-- 1. Ringkasan Pegawai -->
                 <div class="card-native">
-                    <div class="card-header-burgundy">👤 Ringkasan Pegawai</div>
+                    <div class="card-header-burgundy"><i class="fas fa-user me-1"></i> Ringkasan Pegawai</div>
                     <div class="card-body-native">
                         <div class="profile-avatar-circle">
                             {{ strtoupper(substr($penilaian->pgw_nama, 0, 1)) }}
@@ -494,7 +494,7 @@
 
                 <!-- 2. Progress Pengisian -->
                 <div class="card-native">
-                    <div class="card-header-burgundy">📊 Progress Pengisian</div>
+                    <div class="card-header-burgundy"><i class="fas fa-chart-line me-1"></i> Progress Pengisian</div>
                     <div class="card-body-native">
                         <div style="display: flex; justify-content: space-between; font-size: 12px;">
                             <span class="info-label">Pertanyaan terisi</span>
@@ -538,7 +538,7 @@
 
                 <!-- 3. Bantuan Penilaian -->
                 <div class="card-native">
-                    <div class="card-header-burgundy">ℹ️ Bantuan Penilaian</div>
+                    <div class="card-header-burgundy"><i class="fas fa-info-circle me-1"></i> Bantuan Penilaian</div>
                     <div class="card-body-native">
                         <table class="native-table">
                             <thead>
