@@ -3089,6 +3089,7 @@
     </div>
 </div>
 
+
 <!-- JAVASCRIPT FETCH DATA AJAX (FIXED ROUTE & DATA CHECK) -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {

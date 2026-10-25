@@ -19,6 +19,7 @@ use App\Http\Controllers\Laporan\LaporanIndeksKompetensiController;
 use App\Http\Controllers\FormPenilaianController;
 use App\Http\Controllers\PreviewPenilaianController;
 use App\Http\Controllers\PreviewVerifikasiController;
+use App\Http\Controllers\AiChatController;
 
 Route::get('/', [AuthController::class, 'redirectToApp']);
 
@@ -57,6 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard-penilaian/modal-detail', [DashboardController::class, 'getModalDetail'])->name('dashboard.modal-detail');
         Route::get('/dashboard-penilaian/monitoring-data', [DashboardController::class, 'getMonitoringData'])->name('dashboard.monitoring.data');
         Route::get('/dashboard-penilaian/pegawai-detail', [DashboardController::class, 'getPegawaiDetailModal'])->name('dashboard.pegawai.detail');
+        Route::post('/ai/chat', [AiChatController::class, 'chat'])->name('ai.chat');
     });
 
     Route::middleware('permission:master.skala-predikat,view')->group(function () {

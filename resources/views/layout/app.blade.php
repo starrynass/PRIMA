@@ -397,5 +397,7 @@
         });
     </script>
     @stack('scripts')
+
+    @include('components.ai_chat_widget')
 </body>
 </html>
