@@ -398,6 +398,8 @@
     </script>
     @stack('scripts')
 
-    @include('components.ai_chat_widget')
+    @if(request()->routeIs('dashboard.*') || request()->is('dashboard-penilaian*'))
+        @include('components.ai_chat_widget')
+    @endif
 </body>
 </html>
