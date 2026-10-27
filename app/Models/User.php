@@ -79,6 +79,7 @@ class User extends Authenticatable
         return match ($normalized) {
             'employee', 'staff', 'karyawan', 'pegawai' => 'staff',
             'superadmin', 'super_admin', 'super admin', 'super-admin' => 'superadmin',
+            'admin_sdm', 'adminsdm', 'admin sdm', 'admin-sdm' => 'admin_sdm',
             'direktur', 'director' => 'direktur',
             'manager', 'manajer' => 'manager',
             'asmen', 'assistant manager', 'asisten manager', 'asisten manajer' => 'asmen',
@@ -98,14 +99,15 @@ class User extends Authenticatable
             'asmen' => 2,
             'manager' => 3,
             'direktur' => 4,
-            'superadmin' => 5,
+            'admin_sdm' => 5,
+            'superadmin' => 6,
             default => 1,
         };
     }
 
     public function isSuperAdmin(): bool
     {
-        return $this->normalizeRole($this->role) === 'superadmin';
+        return in_array($this->normalizeRole($this->role), ['superadmin', 'admin_sdm'], true);
     }
 
     public function effectivePermissions(): array

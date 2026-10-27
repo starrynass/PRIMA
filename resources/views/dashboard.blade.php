@@ -2302,9 +2302,631 @@
     }
 
 }
+
+/* =========================================================
+   STYLE BIODATA PEGAWAI & RIWAYAT NILAI (SITAMPAN STYLE)
+   ========================================================= */
+.bio-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+.bio-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+.bio-avatar-wrap {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1rem;
+    position: relative;
+}
+.bio-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 14px rgba(122, 28, 56, 0.2);
+}
+.bio-avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7A1C38 0%, #4A0E17 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    font-weight: 800;
+    box-shadow: 0 4px 14px rgba(122, 28, 56, 0.2);
+}
+.bio-name {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.2rem;
+}
+.bio-nipp {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 600;
+}
+.bio-sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 2rem;
+}
+.bio-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.bio-section-title i {
+    color: #7A1C38;
+}
+.bio-table {
+    width: 100%;
+    font-size: 0.85rem;
+}
+.bio-table tr td {
+    padding: 0.45rem 0;
+    vertical-align: top;
+}
+.bio-table td.bio-label {
+    width: 40%;
+    color: #64748b;
+    font-weight: 500;
+}
+.bio-table td.bio-val {
+    width: 60%;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* Tabel Riwayat Nilai DP3 dengan Garis Grid Rapi */
+.history-card {
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    padding: 1.8rem;
+    margin-bottom: 2rem;
+}
+.history-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+.history-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.history-title i {
+    color: #7A1C38;
+}
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e2e8f0;
+}
+.history-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.85rem 1rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+.history-table td {
+    padding: 0.85rem 1rem;
+    font-size: 0.875rem;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+.history-table tr:hover td {
+    background-color: #f8fafc;
+}
+.score-badge {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 700;
+}
+.score-badge-verified { background: #dcfce7; color: #15803d; }
+.score-badge-submit { background: #e0f2fe; color: #0369a1; }
+.score-badge-draft { background: #fef3c7; color: #b45309; }
+.score-badge-unfilled { background: #f1f5f9; color: #475569; }
+.score-badge-revisi { background: #fee2e2; color: #b91c1c; }
+
+/* Aksi button for history table — clean, no blue */
+.hist-aksi-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.8rem;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9999px;
+    font-size: 0.775rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.18s, color 0.18s, border-color 0.18s;
+    white-space: nowrap;
+}
+.hist-aksi-btn:hover {
+    background: #7A1C38;
+    color: #ffffff;
+    border-color: #7A1C38;
+    text-decoration: none;
+}
+
+/* Dashboard Tabs Navigation (Admin SDM Only) */
+.dash-role-tabs {
+    display: flex;
+    gap: 0.5rem;
+    background: #f1f5f9;
+    padding: 0.35rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    width: fit-content;
+}
+.dash-role-tab {
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+.dash-role-tab.active {
+    background: #ffffff;
+    color: #7A1C38;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.dash-role-tab:hover:not(.active) {
+    color: #1e293b;
+}
+
+/* =========================================================
+   STYLE PAGINATION SESUAI KELOLA PENILAIAN
+   ========================================================= */
+.detail-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-top: 1px solid #dfe4ea;
+    padding: 0.8rem 0 0;
+    margin-top: 0.75rem;
+    background: transparent;
+}
+.detail-pagination-label {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+}
+.detail-pagination-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    margin-left: auto;
+}
+.page-arrow,
+.page-number,
+.page-ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    user-select: none;
+    text-decoration: none;
+}
+.page-arrow {
+    width: 2.5rem;
+    height: 2.35rem;
+    border: 1px solid #dfe4ea;
+    border-radius: 0.35rem;
+    background: #ffffff;
+    color: #7a838f;
+    font-size: 1.8rem;
+    font-weight: 400;
+    padding: 0;
+}
+.page-arrow.disabled {
+    color: #a9b3c0;
+    background: #f8fafc;
+    pointer-events: none;
+}
+.page-number {
+    width: 2.35rem;
+    height: 2.35rem;
+    border: 1px solid #dfe4ea;
+    border-radius: 0.35rem;
+    background: #ffffff;
+    color: #2f3746;
+    font-size: 0.925rem;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 0;
+}
+.page-number.active {
+    background: #edf2ff;
+    border-color: #2d6cdf;
+    color: #1d4ed8;
+}
+.page-ellipsis {
+    width: 1.3rem;
+    height: 2.35rem;
+    color: #67748a;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+/* Monitoring table pagination — centered below table, not competing with AI chat */
+.mon-pagination-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    border-top: 1px solid #dfe4ea;
+    padding: 0.85rem 1rem;
+    background: transparent;
+}
 </style>
 
 <div class="dashboard-container">
+
+    @if($isAdminSdm)
+        <!-- Switcher Tab untuk Admin SDM -->
+        <div class="dash-role-tabs">
+            <button type="button" class="dash-role-tab active" onclick="switchDashboardTab('monitoring')">
+                <i class="fas fa-chart-line"></i> Monitoring Penilaian
+            </button>
+            <button type="button" class="dash-role-tab" onclick="switchDashboardTab('profile')">
+                <i class="fas fa-id-card"></i> Profil & Riwayat Kinerja
+            </button>
+        </div>
+    @endif
+
+    <!-- ==============================================================
+         PANE 1: BIODATA & RIWAYAT KINERJA (UNTUK PEGAWAI / DIREKSI / MANAJER)
+         ============================================================== -->
+    <div id="pane-profile-dashboard" style="{{ $isAdminSdm ? 'display: none;' : 'display: block;' }}">
+        <!-- Banner Sapaan Personal -->
+        <div class="dash-banner" style="margin-bottom: 1.5rem;">
+            <div>
+                <span class="dash-sub">PORTAL KEPEGAWAIAN & KINERJA PRIBADI</span>
+                <h1 class="dash-title">Halo, {{ $employeeProfile ? $employeeProfile->nama : Auth::user()->name }}!</h1>
+                <p class="dash-desc">Berikut adalah informasi profil data diri dan riwayat penilaian prestasi kerja (DP3) Anda.</p>
+            </div>
+            <div class="dash-actions">
+                <span class="badge" style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 700; font-size: 0.85rem;">
+                    <i class="fas fa-user-tag me-1"></i> {{ Auth::user()->roleDisplayName() }}
+                </span>
+            </div>
+        </div>
+
+        @if($employeeProfile)
+            <!-- KARTU BIODATA LENGKAP -->
+            <div class="bio-card">
+                <div class="bio-header">
+                    <div class="bio-avatar-wrap">
+                        @if(!empty($employeeProfile->foto_pegawai) && $employeeProfile->foto_pegawai !== 'default.jpg' && file_exists(public_path('storage/' . $employeeProfile->foto_pegawai)))
+                            <img src="{{ asset('storage/' . $employeeProfile->foto_pegawai) }}" class="bio-avatar" alt="{{ $employeeProfile->nama }}">
+                        @else
+                            <div class="bio-avatar-placeholder">
+                                {{ strtoupper(substr($employeeProfile->nama, 0, 1)) }}
+                            </div>
+                        @endif
+                    </div>
+                    <div class="bio-name">{{ $employeeProfile->nama }}</div>
+                    <div class="bio-nipp">NUP: {{ $employeeProfile->nup ?? '-' }}</div>
+                </div>
+
+                <div class="bio-sections-grid">
+                    <!-- Kolom 1: Informasi Personal -->
+                    <div>
+                        <div class="bio-section-title">
+                            <i class="fas fa-user"></i> Informasi Personal
+                        </div>
+                        <table class="bio-table">
+                            <tr>
+                                <td class="bio-label">Tempat Lahir</td>
+                                <td class="bio-val">{{ $employeeProfile->tempat ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Tanggal Lahir</td>
+                                <td class="bio-val">{{ $employeeProfile->tgl_lahir ? date('d F Y', strtotime($employeeProfile->tgl_lahir)) : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Jenis Kelamin</td>
+                                <td class="bio-val">{{ $employeeProfile->sex === 'L' || $employeeProfile->sex === '1' ? 'Laki-laki' : ($employeeProfile->sex === 'P' || $employeeProfile->sex === '0' ? 'Perempuan' : '-') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">No. HP</td>
+                                <td class="bio-val">{{ $employeeProfile->nohp ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Alamat</td>
+                                <td class="bio-val">{{ $employeeProfile->alamat ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Gol. Darah</td>
+                                <td class="bio-val">{{ $employeeProfile->gol_darah ?? '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Kolom 2: Informasi Kepegawaian -->
+                    <div>
+                        <div class="bio-section-title">
+                            <i class="fas fa-briefcase"></i> Informasi Kepegawaian
+                        </div>
+                        <table class="bio-table">
+                            <tr>
+                                <td class="bio-label">NUP</td>
+                                <td class="bio-val">{{ $employeeProfile->nup ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Tanggal Masuk</td>
+                                <td class="bio-val">{{ $employeeProfile->tgl_masuk ? date('d F Y', strtotime($employeeProfile->tgl_masuk)) : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Penempatan / Kantor</td>
+                                <td class="bio-val">{{ $employeeProfile->office?->off_name ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Departemen</td>
+                                <td class="bio-val">{{ $employeeProfile->department?->dept_name ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Sub Departemen</td>
+                                <td class="bio-val">{{ $employeeProfile->subDepartment?->subdept_name ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Jabatan</td>
+                                <td class="bio-val">{{ $employeeProfile->occupation?->occ_name ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Unit Kerja</td>
+                                <td class="bio-val">{{ $employeeProfile->unitkerja?->nama_unit_kerja ?? '-' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Kolom 3: Administrasi & Rekening -->
+                    <div>
+                        <div class="bio-section-title">
+                            <i class="fas fa-wallet"></i> Administrasi & Rekening
+                        </div>
+                        <table class="bio-table">
+                            <tr>
+                                <td class="bio-label">Bank Rekening</td>
+                                <td class="bio-val">{{ $employeeProfile->bank_rek ?? 'Bank Mandiri' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">No. Rekening</td>
+                                <td class="bio-val">{{ $employeeProfile->no_rek ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">No. NPWP</td>
+                                <td class="bio-val">{{ $employeeProfile->no_npwp ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">BPJS Kesehatan</td>
+                                <td class="bio-val">{{ $employeeProfile->is_bpjskes ? 'Terdaftar' : 'Tidak' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Pendidikan Terakhir</td>
+                                <td class="bio-val">{{ $employeeProfile->jurusan_pendidikan ?? '-' }} ({{ $employeeProfile->thn_lulus ?? '-' }})</td>
+                            </tr>
+                            <tr>
+                                <td class="bio-label">Status Pegawai</td>
+                                <td class="bio-val">
+                                    <span class="score-badge score-badge-verified">Aktif</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @else
+            <!-- Peringatan jika akun belum terhubung dengan data employee -->
+            <div class="bio-card text-center py-4">
+                <i class="fas fa-user-shield text-muted" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <h5 class="fw-bold text-dark">Data Pegawai Mandiri Belum Terhubung</h5>
+                <p class="text-muted small">Akun Anda belum ditautkan dengan NUP pegawai spesifik di database sistem.</p>
+            </div>
+        @endif
+
+        <!-- TABEL RIWAYAT PENILAIAN DP3 PRIBADI — 12-BULAN PER TAHUN -->
+        <div class="history-card">
+            <div class="history-card-header">
+                <h3 class="history-title">
+                    <i class="fas fa-file-signature"></i> Riwayat Nilai Prestasi Kerja (DP3)
+                </h3>
+                {{-- Year selector --}}
+                <form method="GET" action="{{ url()->current() }}" id="historyYearForm" style="display:flex;align-items:center;gap:0.5rem;">
+                    {{-- preserve periode_id for admin sdm tab --}}
+                    @if(request('periode_id'))
+                        <input type="hidden" name="periode_id" value="{{ request('periode_id') }}">
+                    @endif
+                    <label for="historyYearSelect" style="font-size:0.8125rem;font-weight:700;color:#475569;margin:0;">Tahun:</label>
+                    <select id="historyYearSelect" name="history_year"
+                        onchange="document.getElementById('historyYearForm').submit()"
+                        style="padding:0.4rem 0.85rem;border-radius:0.5rem;border:1.5px solid #7A1C38;background:#fff;color:#7A1C38;font-size:0.8125rem;font-weight:700;outline:none;cursor:pointer;">
+                        @foreach($availableYears as $yr)
+                            <option value="{{ $yr }}" {{ (int)$selectedYear === (int)$yr ? 'selected' : '' }}>{{ $yr }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+
+            @php
+                $namaBulanIndoHist = [
+                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                    5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                ];
+            @endphp
+
+            <div class="table-responsive">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th style="width:3.5rem;">No</th>
+                            <th>Bulan</th>
+                            <th>Penilai</th>
+                            <th>Verifikator</th>
+                            <th style="text-align:center;">Nilai Penilai</th>
+                            <th style="text-align:center;">Nilai Verifikator</th>
+                            <th style="text-align:center;">Predikat</th>
+                            <th style="text-align:center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for($m = 1; $m <= 12; $m++)
+                            @php
+                                $history = $monthlyHistory[$m] ?? null;
+                                $namabulan = $namaBulanIndoHist[$m];
+
+                                if ($history) {
+                                    $rawVerif = $history->status_verifikator ?? $history->status_verifitor ?? '';
+                                    $statusVerif = strtoupper(trim((string) $rawVerif));
+                                    $statusNilai = strtoupper(trim((string) ($history->status_nilai ?? '')));
+
+                                    if (in_array($statusVerif, ['VERIFIED','VERIFIKASI','SELESAI','APPROVED'])) {
+                                        $statusLabel = 'Terverifikasi';
+                                        $statusBadgeClass = 'score-badge-verified';
+                                    } elseif (in_array($statusNilai, ['DIAJUKAN','SUBMIT','SUBMITTED','MENUNGGU VERIFIKASI','MENUNGGU'])) {
+                                        $statusLabel = 'Menunggu';
+                                        $statusBadgeClass = 'score-badge-submit';
+                                    } elseif (in_array($statusNilai, ['DIKEMBALIKAN','REVISI'])) {
+                                        $statusLabel = 'Dikembalikan';
+                                        $statusBadgeClass = 'score-badge-revisi';
+                                    } elseif (in_array($statusNilai, ['DRAFT','SIMPAN','SAVED'])) {
+                                        $statusLabel = 'Draft';
+                                        $statusBadgeClass = 'score-badge-draft';
+                                    } else {
+                                        $statusLabel = 'Belum Diisi';
+                                        $statusBadgeClass = 'score-badge-unfilled';
+                                    }
+
+                                    $nilaiPenilai = $history->total_nilai !== null && $history->total_nilai > 0
+                                        ? number_format($history->total_nilai, 2) : '-';
+                                    $nilaiVerifikator = $history->total_nilai_verifikator !== null && $history->total_nilai_verifikator > 0
+                                        ? number_format($history->total_nilai_verifikator, 2)
+                                        : ($history->total_nilai > 0 ? number_format($history->total_nilai, 2) : '-');
+                                    $predikat = $history->predikat_verifikator ?: ($history->predikat ?: '-');
+                                    $penilaiNama = $history->penilai ? $history->penilai->nama : ($history->penilai_id ? $history->penilai_id : '-');
+                                    $verifikatorNama = $history->verifikator ? $history->verifikator->nama : ($history->verifikator_id ? $history->verifikator_id : '-');
+                                } else {
+                                    $statusLabel = '';
+                                    $statusBadgeClass = '';
+                                    $nilaiPenilai = '';
+                                    $nilaiVerifikator = '';
+                                    $predikat = '';
+                                    $penilaiNama = '';
+                                    $verifikatorNama = '';
+                                }
+
+                                // Row styling: highlight current month
+                                $isCurrentMonth = ($m === (int)date('n') && (int)$selectedYear === (int)date('Y'));
+                                $rowStyle = $isCurrentMonth ? 'background:#fdf8fa;' : '';
+                            @endphp
+                            <tr style="{{ $rowStyle }}">
+                                <td class="fw-bold text-muted" style="text-align:center;">{{ $m }}</td>
+                                <td>
+                                    <span style="font-weight:700;color:{{ $isCurrentMonth ? '#7A1C38' : '#1e293b' }};">
+                                        {{ $namabulan }}
+                                        @if($isCurrentMonth)
+                                            <span style="font-size:0.7rem;font-weight:600;color:#7A1C38;margin-left:0.35rem;background:#fce7ef;padding:0.1rem 0.45rem;border-radius:9999px;">Bulan Ini</span>
+                                        @endif
+                                    </span>
+                                </td>
+                                <td style="color:#475569;">
+                                    @if($history){{ $penilaiNama }}@else<span style="color:#cbd5e1;">—</span>@endif
+                                </td>
+                                <td style="color:#475569;">
+                                    @if($history){{ $verifikatorNama }}@else<span style="color:#cbd5e1;">—</span>@endif
+                                </td>
+                                <td style="text-align:center;">
+                                    @if($history && $nilaiPenilai !== '-' && $nilaiPenilai !== '')
+                                        <span class="fw-bold" style="color:#1e293b;">{{ $nilaiPenilai }}</span>
+                                    @else
+                                        <span style="color:#cbd5e1;">—</span>
+                                    @endif
+                                </td>
+                                <td style="text-align:center;">
+                                    @if($history && $nilaiVerifikator !== '-' && $nilaiVerifikator !== '')
+                                        <span class="fw-bold" style="color:#1e293b;">{{ $nilaiVerifikator }}</span>
+                                    @else
+                                        <span style="color:#cbd5e1;">—</span>
+                                    @endif
+                                </td>
+                                <td style="text-align:center;">
+                                    @if($history && $predikat && $predikat !== '-')
+                                        <span class="score-badge score-badge-verified">{{ $predikat }}</span>
+                                    @else
+                                        <span style="color:#cbd5e1;">—</span>
+                                    @endif
+                                </td>
+                                <td style="text-align:center;">
+                                    @if($history && $statusLabel)
+                                        <span class="score-badge {{ $statusBadgeClass }}">{{ $statusLabel }}</span>
+                                    @else
+                                        <span style="color:#cbd5e1;">—</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endfor
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top:0.75rem;font-size:0.8rem;color:#94a3b8;text-align:right;">
+                Menampilkan 12 bulan tahun <strong>{{ $selectedYear }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================================
+         PANE 2: DASHBOARD MONITORING PENILAIAN (KHUSUS ADMIN SDM)
+         ============================================================== -->
+    <div id="pane-monitoring-dashboard" style="{{ $isAdminSdm ? 'display: block;' : 'display: none;' }}">
 
     <!-- Header Banner Maroon -->
     <div class="dash-banner">
@@ -2962,12 +3584,9 @@
                 </tbody>
             </table>
         </div>
-        <div id="monPagination" class="d-flex justify-content-between align-items-center gap-2 px-3 py-3 border-top">
-            <span id="monPageInfo" class="small text-muted"></span>
-            <div class="d-flex gap-2">
-                <button type="button" id="monPrevPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage - 1)">Sebelumnya</button>
-                <button type="button" id="monNextPage" class="btn btn-sm btn-outline-secondary" onclick="loadMonitoringTable(currentMonTab, currentMonPage + 1)">Berikutnya</button>
-            </div>
+        <div id="monPagination" class="mon-pagination-wrap">
+            <p id="monPageInfo" class="detail-pagination-label" style="text-align:center;margin-bottom:0.5rem;"></p>
+            <div id="monPaginationNav" class="detail-pagination-nav" style="justify-content:center;margin-left:0;"></div>
         </div>
     </div>
 @endif
@@ -3089,9 +3708,28 @@
     </div>
 </div>
 
+</div> <!-- Tutup #pane-monitoring-dashboard -->
 
 <!-- JAVASCRIPT FETCH DATA AJAX (FIXED ROUTE & DATA CHECK) -->
 <script>
+function switchDashboardTab(tabName) {
+    const paneMonitoring = document.getElementById('pane-monitoring-dashboard');
+    const paneProfile = document.getElementById('pane-profile-dashboard');
+    const tabs = document.querySelectorAll('.dash-role-tab');
+
+    if (tabName === 'monitoring') {
+        if (paneMonitoring) paneMonitoring.style.display = 'block';
+        if (paneProfile) paneProfile.style.display = 'none';
+        if (tabs[0]) tabs[0].classList.add('active');
+        if (tabs[1]) tabs[1].classList.remove('active');
+    } else {
+        if (paneMonitoring) paneMonitoring.style.display = 'none';
+        if (paneProfile) paneProfile.style.display = 'block';
+        if (tabs[0]) tabs[0].classList.remove('active');
+        if (tabs[1]) tabs[1].classList.add('active');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const select = document.getElementById('periodeSelect');
     if (select) {
@@ -3342,8 +3980,7 @@ async function loadMonitoringTable(tab, page = 1) {
     const tbody = document.getElementById('monTableBody');
     const badge = document.getElementById('totalDataBadge');
     const pageInfo = document.getElementById('monPageInfo');
-    const previousButton = document.getElementById('monPrevPage');
-    const nextButton = document.getElementById('monNextPage');
+    const paginationNav = document.getElementById('monPaginationNav');
 
     if (!tbody || !periodeId) return;
     tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Memuat data...</td></tr>`;
@@ -3361,10 +3998,61 @@ async function loadMonitoringTable(tab, page = 1) {
         const data = result.data || [];
         badge.innerText = `${result.total ?? 0} Data`;
         pageInfo.innerText = result.total
-            ? `Menampilkan ${result.from}–${result.to} dari ${result.total} pegawai`
-            : 'Tidak ada data';
-        previousButton.disabled = !result.prev_page_url;
-        nextButton.disabled = !result.next_page_url;
+            ? `Menampilkan ${result.from} sampai ${result.to} dari ${result.total} data`
+            : 'Menampilkan 0 data';
+
+        // Render Pagination Nav style Detail Periode
+        if (paginationNav) {
+            const currentPage = result.current_page || 1;
+            const lastPage = result.last_page || 1;
+
+            if (lastPage > 1) {
+                let pageNumbers = [];
+                if (lastPage <= 5) {
+                    for (let i = 1; i <= lastPage; i++) pageNumbers.push(i);
+                } else if (currentPage <= 3) {
+                    pageNumbers = [1, 2, 3, 4, 5];
+                } else if (currentPage >= lastPage - 2) {
+                    pageNumbers = [lastPage - 4, lastPage - 3, lastPage - 2, lastPage - 1, lastPage];
+                } else {
+                    pageNumbers = [currentPage - 1, currentPage, currentPage + 1, currentPage + 2, currentPage + 3];
+                }
+
+                let navHtml = '';
+                // Previous button
+                if (currentPage > 1) {
+                    navHtml += `<button type="button" class="page-arrow" onclick="loadMonitoringTable('${tab}', ${currentPage - 1})" aria-label="Previous page">&lsaquo;</button>`;
+                } else {
+                    navHtml += `<span class="page-arrow disabled" aria-hidden="true">&lsaquo;</span>`;
+                }
+
+                // Number buttons
+                pageNumbers.forEach(p => {
+                    if (p === currentPage) {
+                        navHtml += `<span class="page-number active" aria-current="page">${p}</span>`;
+                    } else {
+                        navHtml += `<button type="button" class="page-number" onclick="loadMonitoringTable('${tab}', ${p})">${p}</button>`;
+                    }
+                });
+
+                // Ellipsis
+                if (lastPage > 5 && currentPage < lastPage - 2) {
+                    navHtml += `<span class="page-ellipsis">…</span>`;
+                }
+
+                // Next button
+                if (currentPage < lastPage) {
+                    navHtml += `<button type="button" class="page-arrow" onclick="loadMonitoringTable('${tab}', ${currentPage + 1})" aria-label="Next page">&rsaquo;</button>`;
+                } else {
+                    navHtml += `<span class="page-arrow disabled" aria-hidden="true">&rsaquo;</span>`;
+                }
+
+                paginationNav.innerHTML = navHtml;
+                paginationNav.style.display = 'flex';
+            } else {
+                paginationNav.innerHTML = '';
+            }
+        }
 
         if (data.length === 0) {
             tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada data pegawai pada kategori ini untuk periode yang dipilih.</td></tr>`;

@@ -398,7 +398,7 @@
     </script>
     @stack('scripts')
 
-    @if(request()->routeIs('dashboard.*') || request()->is('dashboard-penilaian*'))
+    @if((request()->routeIs('dashboard.*') || request()->is('dashboard-penilaian*')) && Auth::check() && in_array(Auth::user()->normalizeRole(Auth::user()->role), ['superadmin', 'admin_sdm', 'direktur', 'manager']))
         @include('components.ai_chat_widget')
     @endif
 </body>

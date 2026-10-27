@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Dp3TransPeriodePenilaian;
 use App\Models\Dp3TransPenilaian;
+use App\Models\Employee;
 use App\Models\UnitKerja;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -13,6 +15,59 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+        $userRole = $user ? $user->normalizeRole($user->role) : 'staff';
+        $isAdminSdm = in_array($userRole, ['superadmin', 'admin_sdm'], true);
+
+        // Ambil data profil employee jika user terhubung ke tabel employee
+        $employeeProfile = null;
+        $employeeHistory = collect();
+
+        if ($user && $user->employee_id) {
+            $employeeProfile = Employee::with(['department', 'subDepartment', 'occupation', 'office', 'unitkerja'])
+                ->where('pgw_id', $user->employee_id)
+                ->first();
+        } elseif ($user && !$isAdminSdm) {
+            // Fallback jika bukan admin dan belum ada employee_id terpasang
+            $employeeProfile = Employee::with(['department', 'subDepartment', 'occupation', 'office', 'unitkerja'])
+                ->where('nama', $user->name)
+                ->orWhere('nup', $user->name)
+                ->first();
+        }
+
+        // ---- Year-based DP3 History ----
+        $selectedYear  = (int) $request->get('history_year', now()->year);
+        $periodeYears = Dp3TransPeriodePenilaian::orderByDesc('tahun')
+            ->distinct()
+            ->pluck('tahun')
+            ->map(fn($y) => (int) $y)
+            ->toArray();
+        $availableYears = array_values(array_unique(array_merge([now()->year, $selectedYear], $periodeYears)));
+        rsort($availableYears);
+
+        $monthlyHistory = array_fill(1, 12, null); // null for months with no data
+
+        if ($employeeProfile) {
+            // Fetch penilaian records for the selected year
+            $recordsForYear = Dp3TransPenilaian::with([
+                    'periode',
+                    'penilai',
+                    'verifikator',
+                ])
+                ->whereHas('periode', fn($q) => $q->where('tahun', $selectedYear))
+                ->where('pegawai_id', $employeeProfile->pgw_id)
+                ->where('is_active', true)
+                ->get()
+                ->keyBy(fn($r) => (int) ($r->periode->bulan ?? 0));
+
+            for ($m = 1; $m <= 12; $m++) {
+                $monthlyHistory[$m] = $recordsForYear->get($m); // null when no record
+            }
+        }
+
+        // Keep $employeeHistory as empty collection for backward compat (unused now)
+        $employeeHistory = collect();
+
         $periodes = Dp3TransPeriodePenilaian::orderBy('created_at', 'desc')->get();
         $selectedPeriodeId = $request->get('periode_id', $periodes->first()?->periode_id);
         $periodeAktif = $periodes->where('periode_id', $selectedPeriodeId)->first();
@@ -20,23 +75,41 @@ class DashboardController extends Controller
         // 1. Cek Apakah Ada Periode Penilaian
         if ($periodes->isEmpty() || !$periodeAktif) {
             return view('dashboard', [
-                'periodes'             => collect(),
-                'periodeAktif'         => null,
-                'selectedPeriodeId'    => null,
-                'totalPegawai'         => 0,
-                'sudahTerverifikasi'   => 0,
-                'menungguVerifikasi'   => 0,
-                'dikembalikan'         => 0,
-                'masihDraft'           => 0,
-                'dikoreksi'            => 0,
-                'atRisk'               => 0,
-                'belumDinilai'         => 0,
-                'percentVerifiedTotal' => 0,
-                'direktoratProgress'   => [],
-                'isOverdue'            => false,
-                'hariTerlambat'        => 0,
-                'deadlineTanggal'      => null,
-                'noPeriode'            => true // Flag penanda tidak ada periode
+                'isAdminSdm'             => $isAdminSdm,
+                'userRole'               => $userRole,
+                'employeeProfile'        => $employeeProfile,
+                'employeeHistory'        => $employeeHistory,
+                'selectedYear'           => $selectedYear,
+                'availableYears'         => $availableYears,
+                'monthlyHistory'         => $monthlyHistory,
+                'periodes'               => collect(),
+                'periodeAktif'           => null,
+                'selectedPeriodeId'      => null,
+                'totalPegawai'           => 0,
+                'sudahTerverifikasi'     => 0,
+                'menungguVerifikasi'     => 0,
+                'dikembalikan'           => 0,
+                'masihDraft'             => 0,
+                'dikoreksi'              => 0,
+                'atRisk'                 => 0,
+                'belumDinilai'           => 0,
+                'percentVerifiedTotal'   => 0,
+                'direktoratProgress'     => [],
+                'isOverdue'              => false,
+                'hariTerlambat'          => 0,
+                'deadlineTanggal'        => null,
+                'atRiskEmployees'        => [],
+                'progressPerUnitKerja'   => [],
+                'totalUnitAktif'         => 0,
+                'distribusiUnitList'     => [],
+                'rataRataKeseluruhan'    => '0.00',
+                'rankingUnits'           => [],
+                'totalPegawaiBernilai'   => 0,
+                'terendahBulanIni'       => [],
+                'totalTerendahBulanIni'  => 0,
+                'terendahTigaBulan'      => [],
+                'totalTerendahTigaBulan' => 0,
+                'noPeriode'              => true,
             ]);
         }
 
@@ -474,6 +547,13 @@ class DashboardController extends Controller
         $totalTerendahTigaBulan = count($terendahTigaBulan);
 
         return view('dashboard', compact(
+            'isAdminSdm',
+            'userRole',
+            'employeeProfile',
+            'employeeHistory',
+            'selectedYear',
+            'availableYears',
+            'monthlyHistory',
             'periodes',
             'periodeAktif',
             'selectedPeriodeId',

